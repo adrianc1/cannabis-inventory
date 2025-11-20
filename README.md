@@ -2,7 +2,7 @@
 
 A lightweight Node.js-based web application for tracking and managing cannabis inventory. Built with Express, PostgreSQL, and server-side rendering via EJS.
 
-## 🚀 Tech Stack
+##  Tech Stack
 
 Backend: Node.js, Express
 
@@ -12,7 +12,7 @@ Frontend: EJS templates (subject to change)
 
 Language: JavaScript
 
-## 📦 Features
+##  Features
 
 Add, edit, and remove cannabis products
 

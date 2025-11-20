@@ -14,10 +14,10 @@ app.get('/', (req, res) => {
 	res.render('index', { message: 'EJS rocks!' });
 });
 
-app.get('/products', productsRouter);
-app.get('/categories', categoryRouter);
-app.get('/brands', brandsRouter);
+app.use('/products', productsRouter);
+app.use('/categories', categoryRouter);
+app.use('/brands', brandsRouter);
 
-app.listen(PORT, (req, res) => {
+app.listen(PORT, () => {
 	console.log(`server running on PORT ${PORT}`);
 });

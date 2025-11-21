@@ -10,7 +10,15 @@ const getAllProducts = async (req, res) => {
 	}
 };
 
-const getProduct = async (req, res) => {};
+const getProduct = async (req, res) => {
+	try {
+		const product = await db.getProductDB(req.params.id);
+		console.log(product);
+		res.send(product);
+	} catch (error) {
+		res.status(500).json({ error: 'Database error retreiving single product' });
+	}
+};
 const createProduct = async (req, res) => {};
 const updateProduct = async (req, res) => {};
 const deleteProduct = async (req, res) => {};

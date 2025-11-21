@@ -1,8 +1,8 @@
 const express = require('express');
 const path = require('node:path');
-const brandsRouter = require('./routers/brandsRouter');
-const categoryRouter = require('./routers/categoryRouter');
-const productsRouter = require('./routers/productsRouter');
+const brandsRouter = require('./routes/brandsRouter');
+const categoryRouter = require('./routes/categoryRouter');
+const productsRouter = require('./routes/productsRouter');
 
 const app = express();
 const PORT = 3000;

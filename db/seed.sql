@@ -25,27 +25,21 @@ INSERT INTO categories (name, description) VALUES
 -- =========================
 -- PRODUCTS
 -- =========================
-INSERT INTO products (name, description, price, quantity_on_hand, unit, brand_id, strain_id, category_id) VALUES
-('Blue Dream 7g', 'Hybrid flower', 49.99, 20, 'g', 1, 1, 1),
-('Sour Diesel 3.5g', 'Sativa flower', 29.99, 15, 'g', 2, 2, 1),
-('Northern Lights 14g', 'Indica flower', 89.99, 10, 'g', 3, 3, 1),
-('Korova Diamonds', 'High-potency concentrate', 59.99, 5, 'g', 1, 1, 2),
-('Ember Valley Wax', 'Extracted cannabis wax', 39.99, 8, 'g', 2, 2, 2),
-('Mary''s Gummies 100mg', 'THC-infused gummies', 19.99, 50, 'pack', 3, NULL, 3);
+INSERT INTO products (name, description, price, unit, brand_id, strain_id, category_id) VALUES
+('Blue Dream 7g', 'Hybrid flower', 49.99, 'g', 1, 1, 1),
+('Sour Diesel 3.5g', 'Sativa flower', 29.99, 'g', 2, 2, 1),
+('Northern Lights 14g', 'Indica flower', 89.99, 'g', 3, 3, 1),
+('Korova Diamonds', 'High-potency concentrate', 59.99, 'g', 1, 1, 2),
+('Ember Valley Wax', 'Extracted cannabis wax', 39.99, 'g', 2, 2, 2),
+('Mary''s Gummies 100mg', 'THC-infused gummies', 19.99, 'pack', 3, NULL, 3);
 
 -- =========================
--- USERS
+-- INVENTORY
 -- =========================
-INSERT INTO users (name, email) VALUES
-('Alice Smith', 'alice@example.com'),
-('Bob Johnson', 'bob@example.com'),
-('Charlie Lee', 'charlie@example.com');
-
--- =========================
--- ORDERS
--- =========================
-INSERT INTO orders (user_id, product_id, quantity, total_price) VALUES
-(1, 1, 2, 99.98),   -- Alice bought 2 Blue Dream 7g
-(2, 2, 1, 29.99),   -- Bob bought 1 Sour Diesel 3.5g
-(3, 6, 3, 59.97),   -- Charlie bought 3 packs of Mary''s Gummies
-(1, 4, 1, 59.99);   -- Alice bought 1 Korova Diamonds
+INSERT INTO inventory (product_id, location, quantity, cost_price, supplier_name) VALUES
+(1, 'backroom', 20, 25.00, 'Local Supplier'),
+(2, 'backroom', 15, 15.00, 'Local Supplier'),
+(3, 'backroom', 10, 45.00, 'Local Supplier'),
+(4, 'backroom', 5, 35.00, 'Korova Inc.'),
+(5, 'backroom', 8, 20.00, 'Ember Valley'),
+(6, 'backroom', 50, 10.00, 'Mary''s Medicinal');

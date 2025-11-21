@@ -25,37 +25,22 @@ CREATE TABLE IF NOT EXISTS products (
     name VARCHAR(255),
     description TEXT,
     price DECIMAL(10,2) NOT NULL,
-    quantity_on_hand INTEGER DEFAULT 0,
     unit VARCHAR(50),
-    brand_id INTEGER NOT NULL REFERENCES brands(id),
-    strain_id INTEGER NOT NULL REFERENCES strains(id),
-    category_id INTEGER NOT NULL REFERENCES categories(id)
+    brand_id INTEGER NOT NULL REFERENCES brands(id) ON DELETE RESTRICT,
+    strain_id INTEGER NOT NULL REFERENCES strains(id) ON DELETE RESTRICT,
+    category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE RESTRICT
 );
 
 -- INVENTORY 
 
 CREATE TABLE IF NOT EXISTS inventory (
     id SERIAL PRIMARY KEY,
-    product_id INTEGER NOT NULL REFERENCES products(id),
-    location VARCHAR(255), 
+    product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    location VARCHAR(255) DEFAULT 'backroom',
     quantity INTEGER NOT NULL DEFAULT 0,
+    cost_price DECIMAL(10,2),
+    supplier_name VARCHAR(255),
     last_updated TIMESTAMP DEFAULT NOW()
 );
 
--- ORDERS / SALES 
-CREATE TABLE IF NOT EXISTS orders (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id), 
-    product_id INTEGER NOT NULL REFERENCES products(id),
-    quantity INTEGER NOT NULL,
-    total_price DECIMAL(10,2) NOT NULL,
-    sold_at TIMESTAMP DEFAULT NOW()
-);
 
--- USERS 
-CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
-);

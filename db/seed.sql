@@ -42,4 +42,4 @@ INSERT INTO inventory (product_id, location, quantity, cost_price, supplier_name
 (3, 'backroom', 10, 45.00, 'Local Supplier'),
 (4, 'backroom', 5, 35.00, 'Korova Inc.'),
 (5, 'backroom', 8, 20.00, 'Ember Valley'),
-(6, 'backroom', 50, 10.00, 'Mary''s Medicinal');
+(6, 'warehouse', 50, 10.00, 'Mary''s Medicinal');

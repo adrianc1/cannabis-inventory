@@ -4,7 +4,7 @@ const getAllProducts = async (req, res) => {
 	try {
 		const products = await db.getAllProductsDB();
 		console.log(products);
-		res.render('index', { message: 'All Products', products });
+		res.render('products', { message: 'All Products', products });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
 	}
@@ -13,8 +13,12 @@ const getAllProducts = async (req, res) => {
 const getProduct = async (req, res) => {
 	try {
 		const product = await db.getProductDB(req.params.id);
+
+		if (!product) {
+			res.status(404).json({ error: 'Product not found' });
+		}
 		console.log(product);
-		res.send(product);
+		res.render('product', { product });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error retreiving single product' });
 	}

@@ -16,6 +16,7 @@ const getProduct = async (req, res) => {
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
+			return;
 		}
 		console.log(product);
 		res.render('product', { product });

@@ -3,7 +3,20 @@ const pool = require('./pool');
 // Product Queries
 const getAllProductsDB = async () => {
 	try {
-		const { rows } = await pool.query('SELECT * FROM products');
+		const { rows } = await pool.query(`
+			SELECT 
+			p.id,
+			p.name,
+			p.description,
+			p.price,
+			p.unit,
+			brands.name AS brand_name,
+			categories.name AS category_name,
+			strains.name AS strain_name
+			FROM products AS p
+			LEFT JOIN brands ON p.brand_id = brands.id
+			LEFT JOIN categories ON p.category_id = categories.id
+			LEFT JOIN strains ON p.strain_id = strains.id`);
 		return rows;
 	} catch (error) {
 		console.error('Database error', error);

@@ -18,7 +18,6 @@ const getProduct = async (req, res) => {
 			res.status(404).json({ error: 'Product not found' });
 			return;
 		}
-		console.log(product);
 		res.render('product', { product });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error retreiving single product' });

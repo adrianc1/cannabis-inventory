@@ -9,7 +9,12 @@
 		<h1><%= message %></h1>
 		<ul>
 			<% products.map((product) => { %>
-			<li><a href="/products/<%=product.id%>"><%= product.name %></a></li>
+			<li>
+				<a href="/products/<%=product.id%>"><%= product.name %></a>
+				<!-- <p>Strain: <%=product.strain_name ? product.strain_name : 'N/A' %></p>
+				<p>Brand: <%=product.brand_name%></p> -->
+			</li>
+
 			<% }) %>
 		</ul>
 	</body>

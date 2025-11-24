@@ -14,6 +14,7 @@
 				<th class="table-header">Strain</th>
 				<th class="table-header">Brand</th>
 				<th class="table-header">Category</th>
+				<th class="table-header">Quantity</th>
 			</tr>
 			<% products.map((product) => { %>
 			<tr class="product-row">
@@ -21,6 +22,7 @@
 				<td><%=product.strain_name ? product.strain_name : 'N/A' %></td>
 				<td><%=product.brand_name%></td>
 				<td><%=product.category_name%></td>
+				<td><%=product.product_qty%></td>
 			</tr>
 			<% }) %>
 		</table>

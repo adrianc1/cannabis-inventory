@@ -3,19 +3,32 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/style.css" />
 		<title>Products Page</title>
 	</head>
 	<body>
 		<h1><%= message %></h1>
+		<table class="products-table">
+			<tr class="products-table-headers">
+				<th class="table-header">Name</th>
+				<th class="table-header">Strain</th>
+				<th class="table-header">Brand</th>
+				<th class="table-header">Category</th>
+			</tr>
+				<% products.map((product) => { %>
+					<tr class="product-row"></tr>
+				<td><a href="/products/<%=product.id%>"><%= product.name %></a></td>
+				<br />
+				<td><%=product.strain_name ? product.strain_name : 'N/A' %></td>
+				<br />
+				<td><%=product.brand_name%></td>
+				<td><%=product.category_name%></td>
+				</tr>
+				<% }) %>
+			
+		</table>
 		<ul>
-			<% products.map((product) => { %>
-			<li>
-				<a href="/products/<%=product.id%>"><%= product.name %></a>
-				<!-- <p>Strain: <%=product.strain_name ? product.strain_name : 'N/A' %></p>
-				<p>Brand: <%=product.brand_name%></p> -->
-			</li>
-
-			<% }) %>
+			<% products.map((product) => {}) %>
 		</ul>
 	</body>
 </html>

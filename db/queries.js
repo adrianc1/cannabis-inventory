@@ -44,7 +44,20 @@ const getProductDB = async (id) => {
 			[id]
 		);
 		return rows[0];
-	} catch (error) {}
+	} catch (error) {
+		throw error;
+	}
+};
+
+const insertProduct = async (product) => {
+	try {
+		await pool.query(`
+			INSERT INTO products (name, description, price, unit)
+
+			`);
+	} catch (error) {
+		throw error;
+	}
 };
 
 // Brand Queries

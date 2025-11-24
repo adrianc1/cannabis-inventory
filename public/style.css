@@ -5,17 +5,20 @@
 }
 
 .product-row {
-	display: flex;
-	flex-direction: column;
+	width: 100%;
+	border: 2px solid yellow;
 }
 
+.product-row a {
+	margin: 0;
+	padding: 0;
+	width: auto;
+}
 .products-table {
-	height: 100vh;
+	height: auto;
 	width: 100%;
-	border: 2px solid red;
-
-	color: green;
 }
 .table-header {
-	color: red;
+	border-bottom: 2px;
+	border: 2px solid green;
 }

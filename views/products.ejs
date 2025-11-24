@@ -15,17 +15,14 @@
 				<th class="table-header">Brand</th>
 				<th class="table-header">Category</th>
 			</tr>
-				<% products.map((product) => { %>
-					<tr class="product-row"></tr>
+			<% products.map((product) => { %>
+			<tr class="product-row">
 				<td><a href="/products/<%=product.id%>"><%= product.name %></a></td>
-				<br />
 				<td><%=product.strain_name ? product.strain_name : 'N/A' %></td>
-				<br />
 				<td><%=product.brand_name%></td>
 				<td><%=product.category_name%></td>
-				</tr>
-				<% }) %>
-			
+			</tr>
+			<% }) %>
 		</table>
 		<ul>
 			<% products.map((product) => {}) %>

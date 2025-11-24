@@ -12,11 +12,23 @@ const getAllProductsDB = async () => {
 			p.unit,
 			brands.name AS brand_name,
 			categories.name AS category_name,
-			strains.name AS strain_name
+			strains.name AS strain_name,
+			COALESCE(SUM(i.quantity), 0) AS product_qty
 			FROM products AS p
 			LEFT JOIN brands ON p.brand_id = brands.id
 			LEFT JOIN categories ON p.category_id = categories.id
-			LEFT JOIN strains ON p.strain_id = strains.id`);
+			LEFT JOIN strains ON p.strain_id = strains.id
+			LEFT JOIN inventory AS i ON p.id = i.product_id
+			GROUP BY p.id,
+			p.name,
+			p.description,
+			p.price,
+			p.unit,
+			brand_name,
+			category_name,
+			strain_name
+			`);
+		console.log(rows);
 		return rows;
 	} catch (error) {
 		console.error('Database error', error);
@@ -35,14 +47,17 @@ const getProductDB = async (id) => {
 			p.unit,
 			brands.name AS brand_name,
 			categories.name AS category_name,
-			strains.name AS strain_name
+			strains.name AS strain_name,
+			inventory.quantity
 			FROM products AS p
 			LEFT JOIN brands ON p.brand_id = brands.id
 			LEFT JOIN categories ON p.category_id = categories.id
 			LEFT JOIN strains ON p.strain_id = strains.id
+			RIGHT JOIN inventory ON p.id = inventory.product_id
 			WHERE p.id = $1`,
 			[id]
 		);
+		console.log(rows[0]);
 		return rows[0];
 	} catch (error) {
 		throw error;

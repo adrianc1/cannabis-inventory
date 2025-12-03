@@ -22,7 +22,20 @@ const getProduct = async (req, res) => {
 		res.status(500).json({ error: 'Database error retreiving single product' });
 	}
 };
-const createProduct = async (req, res) => {};
+const createProduct = async (req, res) => {
+	try {
+		const brands = await db.getAllBrands();
+		console.log(brands);
+
+		if (!brands) {
+			res.status(404).json({ error: 'No Brands Found' });
+		}
+
+		res.render('createProductForm', { brands });
+	} catch (error) {
+		console.error(error);
+	}
+};
 const updateProduct = async (req, res) => {};
 const deleteProduct = async (req, res) => {};
 

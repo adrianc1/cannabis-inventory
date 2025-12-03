@@ -11,6 +11,8 @@ const getAllProducts = async (req, res) => {
 
 const getProduct = async (req, res) => {
 	try {
+		console.log('Fetching product with id:', req.params.id);
+
 		const product = await db.getProductDB(req.params.id);
 
 		if (!product) {
@@ -41,7 +43,7 @@ const createProductForm = async (req, res) => {
 const insertProduct = async (req, res) => {
 	const { name, description, price, unit, brandId, strainId, categoryId } =
 		req.body;
-	const row = await db.insertProduct(
+	const product = await db.insertProduct(
 		name,
 		description,
 		price,
@@ -50,7 +52,7 @@ const insertProduct = async (req, res) => {
 		strainId,
 		categoryId
 	);
-	res.redirect('/products');
+	res.redirect(`/products/${product.id}`);
 };
 const updateProduct = async (req, res) => {};
 const deleteProduct = async (req, res) => {};

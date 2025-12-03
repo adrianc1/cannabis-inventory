@@ -64,12 +64,21 @@ const getProductDB = async (id) => {
 	}
 };
 
-const insertProduct = async (product) => {
+const insertProduct = async (
+	name,
+	description,
+	price,
+	unit,
+	brandId,
+	strainId,
+	categoryId
+) => {
 	try {
-		await pool.query(`
-			INSERT INTO products (name, description, price, unit)
-
-			`);
+		await pool.query(
+			`INSERT INTO products (name, description, price, unit, brand_id, strain_id, category_id)
+			VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+			[name, description, price, unit, brandId, strainId, categoryId]
+		);
 	} catch (error) {
 		throw error;
 	}
@@ -78,6 +87,12 @@ const insertProduct = async (product) => {
 // Brand Queries
 const getAllBrands = async () => {
 	const { rows } = await pool.query('SELECT * FROM brands');
+	return rows;
+};
+
+// Strain Queries
+const getAllStrains = async () => {
+	const { rows } = await pool.query('SELECT * FROM strains');
 	return rows;
 };
 
@@ -90,5 +105,7 @@ module.exports = {
 	getAllProductsDB,
 	getProductDB,
 	getAllBrands,
+	getAllStrains,
 	getAllCategories,
+	insertProduct,
 };

@@ -25,23 +25,32 @@ const getProduct = async (req, res) => {
 const createProductForm = async (req, res) => {
 	try {
 		const brands = await db.getAllBrands();
-		// console.log(brands);
+		const strains = await db.getAllStrains();
+		const categories = await db.getAllCategories();
 
-		if (!brands) {
+		if (!brands || !strains || !categories) {
 			res.status(404).json({ error: 'No Brands Found' });
 		}
 
-		res.render('createProductForm', { brands });
+		res.render('createProductForm', { brands, strains, categories });
 	} catch (error) {
 		console.error(error);
 	}
 };
 
 const insertProduct = async (req, res) => {
-	console.log(req);
-	res.json({ message: req.body });
-	// const { name, description, price, unit, brand } = req.body;
-	// await db.insertProduct(name, description, price, unit, brand);
+	const { name, description, price, unit, brandId, strainId, categoryId } =
+		req.body;
+	const row = await db.insertProduct(
+		name,
+		description,
+		price,
+		unit,
+		brandId,
+		strainId,
+		categoryId
+	);
+	res.redirect('/products');
 };
 const updateProduct = async (req, res) => {};
 const deleteProduct = async (req, res) => {};

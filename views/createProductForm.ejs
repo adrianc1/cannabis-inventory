@@ -24,14 +24,28 @@
 			<label for="unit">Unit</label>
 			<input type="text" id="unit" name="unit" value="g" />
 
-			<!-- <label for="pet-select">Choose a Brand:</label>
+			<label for="pet-select">Choose a Brand:</label>
 
-			<select name="brand" id="brand-select">
-				<option value="">--Please select a brand--</option>
+			<select name="brandId" id="brandId">
+				<option value="">--Please select a Brand--</option>
 				<% brands.forEach((brand) => { %>
 				<option value="<%= brand.id %>"><%= brand.name %></option>
 				<% }) %>
-			</select> -->
+			</select>
+
+			<select name="strainId" id="strainId">
+				<option value="">--Please select a Strain--</option>
+				<% strains.forEach((strain) => { %>
+				<option value="<%= strain.id %>"><%= strain.name %></option>
+				<% }) %>
+			</select>
+
+			<select name="categoryId" id="categoryId">
+				<option value="">--Please select a Category--</option>
+				<% categories.forEach((category) => { %>
+				<option value="<%= category.id %>"><%= category.name %></option>
+				<% }) %>
+			</select>
 
 			<button type="submit">Create New Product</button>
 		</form>

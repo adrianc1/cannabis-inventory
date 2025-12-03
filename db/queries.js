@@ -64,12 +64,12 @@ const getProductDB = async (id) => {
 	}
 };
 
-const insertProduct = async (name, description, price, unit) => {
+const insertProduct = async (name, description, price, unit, brandId) => {
 	try {
 		await pool.query(
-			`INSERT INTO products (name, description, price, unit)
-			VALUES ($1, $2, $3, $4) RETURNING *`,
-			[name, description, price, unit]
+			`INSERT INTO products (name, description, price, unit, brand_id)
+			VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+			[name, description, price, unit, brandId]
 		);
 	} catch (error) {
 		throw error;

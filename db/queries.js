@@ -28,7 +28,6 @@ const getAllProductsDB = async () => {
 			category_name,
 			strain_name
 			`);
-		console.log(rows);
 		return rows;
 	} catch (error) {
 		console.error('Database error', error);
@@ -53,11 +52,10 @@ const getProductDB = async (id) => {
 			LEFT JOIN brands ON p.brand_id = brands.id
 			LEFT JOIN categories ON p.category_id = categories.id
 			LEFT JOIN strains ON p.strain_id = strains.id
-			RIGHT JOIN inventory ON p.id = inventory.product_id
+			LEFT JOIN inventory ON p.id = inventory.product_id
 			WHERE p.id = $1`,
 			[id]
 		);
-		console.log(rows[0]);
 		return rows[0];
 	} catch (error) {
 		throw error;
@@ -74,11 +72,12 @@ const insertProduct = async (
 	categoryId
 ) => {
 	try {
-		await pool.query(
+		const result = await pool.query(
 			`INSERT INTO products (name, description, price, unit, brand_id, strain_id, category_id)
 			VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
 			[name, description, price, unit, brandId, strainId, categoryId]
 		);
+		return result.rows[0];
 	} catch (error) {
 		throw error;
 	}

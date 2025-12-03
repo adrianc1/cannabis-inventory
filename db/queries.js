@@ -64,12 +64,13 @@ const getProductDB = async (id) => {
 	}
 };
 
-const insertProduct = async (product) => {
+const insertProduct = async (name, description, price, unit) => {
 	try {
-		await pool.query(`
-			INSERT INTO products (name, description, price, unit)
-
-			`);
+		await pool.query(
+			`INSERT INTO products (name, description, price, unit)
+			VALUES ($1, $2, $3, $4) RETURNING *`,
+			[name, description, price, unit]
+		);
 	} catch (error) {
 		throw error;
 	}
@@ -91,4 +92,5 @@ module.exports = {
 	getProductDB,
 	getAllBrands,
 	getAllCategories,
+	insertProduct,
 };

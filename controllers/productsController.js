@@ -22,10 +22,10 @@ const getProduct = async (req, res) => {
 		res.status(500).json({ error: 'Database error retreiving single product' });
 	}
 };
-const createProduct = async (req, res) => {
+const createProductForm = async (req, res) => {
 	try {
 		const brands = await db.getAllBrands();
-		console.log(brands);
+		// console.log(brands);
 
 		if (!brands) {
 			res.status(404).json({ error: 'No Brands Found' });
@@ -36,13 +36,21 @@ const createProduct = async (req, res) => {
 		console.error(error);
 	}
 };
+
+const insertProduct = async (req, res) => {
+	console.log(req);
+	res.json({ message: req.body });
+	// const { name, description, price, unit, brand } = req.body;
+	// await db.insertProduct(name, description, price, unit, brand);
+};
 const updateProduct = async (req, res) => {};
 const deleteProduct = async (req, res) => {};
 
 module.exports = {
 	getAllProducts,
 	getProduct,
-	createProduct,
+	createProductForm,
 	updateProduct,
 	deleteProduct,
+	insertProduct,
 };

@@ -54,8 +54,13 @@ const insertProduct = async (req, res) => {
 	);
 	res.redirect(`/products/${product.id}`);
 };
+
+const deleteProduct = async (req, res) => {
+	await db.deleteProduct(req.params.id);
+	res.status(200).json({ success: true });
+};
+
 const updateProduct = async (req, res) => {};
-const deleteProduct = async (req, res) => {};
 
 module.exports = {
 	getAllProducts,

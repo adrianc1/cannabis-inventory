@@ -54,8 +54,34 @@ const insertProduct = async (req, res) => {
 	);
 	res.redirect(`/products/${product.id}`);
 };
+
+const deleteProduct = async (req, res) => {
+	await db.deleteProduct(req.params.id);
+	res.status(200).json({ success: true });
+};
+
+const editProductForm = async (req, res) => {
+	try {
+		const brands = await db.getAllBrands();
+		const strains = await db.getAllStrains();
+		const categories = await db.getAllCategories();
+		const product = await db.getProductDB(req.params.id);
+
+		if (!product) {
+			res.status(404).json({ error: 'Product not found' });
+			return;
+		}
+		if (!brands || !strains || !categories) {
+			res.status(404).json({ error: 'No Brands Found' });
+		}
+
+		res.render('editProductForm', { product, brands, strains, categories });
+	} catch (error) {
+		console.error(error);
+	}
+};
+
 const updateProduct = async (req, res) => {};
-const deleteProduct = async (req, res) => {};
 
 module.exports = {
 	getAllProducts,
@@ -64,4 +90,5 @@ module.exports = {
 	updateProduct,
 	deleteProduct,
 	insertProduct,
+	editProductForm,
 };

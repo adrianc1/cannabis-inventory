@@ -83,6 +83,19 @@ const insertProduct = async (
 	}
 };
 
+// Update Product
+const updateProduct = async () => {
+	const product = await pool.query('UPDATE ');
+};
+
+// Delete Product
+const deleteProduct = async (productId) => {
+	const product = await pool.query('DELETE FROM products WHERE id = $1', [
+		productId,
+	]);
+	return product;
+};
+
 // Brand Queries
 const getAllBrands = async () => {
 	const { rows } = await pool.query('SELECT * FROM brands');
@@ -107,4 +120,5 @@ module.exports = {
 	getAllStrains,
 	getAllCategories,
 	insertProduct,
+	deleteProduct,
 };

@@ -3,14 +3,20 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Product <%= product %></title>
+		<title>Product - <%= product.name %></title>
 	</head>
 	<body>
 		<p><a href="/products">back to products</a></p>
+
+		<button id="delete-btn" data-id="<%= product.id %>">Delete Product</button>
+		<a href="/products/<%= product.id %>/edit">Edit Product</a>
+
 		<h1><%=product.name %></h1>
 		<p>Price: <%= product.price %></p>
 		<p>Brand: <%= product.brand_name%></p>
 		<p>Strain: <%= product.strain_name%></p>
 		<p>Category: <%= product.category_name%></p>
+
+		<script src="/js/updateProduct.js"></script>
 	</body>
 </html>

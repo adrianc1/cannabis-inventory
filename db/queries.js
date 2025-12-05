@@ -83,7 +83,10 @@ const insertProduct = async (
 	}
 };
 
-// Update
+// Update Product
+const updateProduct = async () => {
+	const product = await pool.query('UPDATE ');
+};
 
 // Delete Product
 const deleteProduct = async (productId) => {

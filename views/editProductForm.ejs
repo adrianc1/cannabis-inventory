@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Edit <%= product.name %></title>
+	</head>
+	<body>
+		<form method="POST" action="/products/<%= product.id %>">
+			<label for="name">Name:</label>
+			<input type="text" id="name" name="name" value="<%= product.name %>" />
+
+			<label for="description">Description:</label>
+			<input
+				type="text"
+				id="description"
+				name="description"
+				value="<%= product.description %>"
+			/>
+
+			<label for="price">Price: $</label>
+			<input
+				type="number"
+				id="price"
+				name="price"
+				value="<%= product.price %>"
+			/>
+
+			<label for="unit">Unit</label>
+			<input type="text" id="unit" name="unit" value="g" />
+
+			<label for="pet-select">Choose a Brand:</label>
+
+			<select name="brandId" id="brandId">
+				<option value="<%= product.brand_id %>">
+					--Please select a Brand--
+				</option>
+				<% brands.forEach((brand) => { %>
+				<option value="<%= brand.id %>"><%= brand.name %></option>
+				<% }) %>
+			</select>
+
+			<select name="strainId" id="strainId">
+				<option value="">--Please select a Strain--</option>
+				<% strains.forEach((strain) => { %>
+				<option value="<%= strain.id %>"><%= strain.name %></option>
+				<% }) %>
+			</select>
+
+			<select name="categoryId" id="categoryId">
+				<option value="">--Please select a Category--</option>
+				<% categories.forEach((category) => { %>
+				<option value="<%= category.id %>"><%= category.name %></option>
+				<% }) %>
+			</select>
+
+			<button type="submit">Create New Product</button>
+		</form>
+	</body>
+</html>

@@ -3,12 +3,13 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Product <%= product %></title>
+		<title>Product - <%= product.name %></title>
 	</head>
 	<body>
 		<p><a href="/products">back to products</a></p>
 
 		<button id="delete-btn" data-id="<%= product.id %>">Delete Product</button>
+		<button id="edit-btn" data-id="<%= product.id %>">Edit Product</button>
 
 		<h1><%=product.name %></h1>
 		<p>Price: <%= product.price %></p>

@@ -60,6 +60,8 @@ const deleteProduct = async (req, res) => {
 	res.status(200).json({ success: true });
 };
 
+const editProductForm = async () => {};
+
 const updateProduct = async (req, res) => {};
 
 module.exports = {
@@ -69,4 +71,5 @@ module.exports = {
 	updateProduct,
 	deleteProduct,
 	insertProduct,
+	editProductForm,
 };

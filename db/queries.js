@@ -83,6 +83,8 @@ const insertProduct = async (
 	}
 };
 
+// Update
+
 // Delete Product
 const deleteProduct = async (productId) => {
 	const product = await pool.query('DELETE FROM products WHERE id = $1', [

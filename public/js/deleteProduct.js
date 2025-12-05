@@ -4,8 +4,16 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (!deleteBtn) return;
 
 	deleteBtn.addEventListener('click', async () => {
-		console.log('eh');
+		const confirmed = confirm(
+			'Are you sure you want to delete this product? This action cannot be undone.'
+		);
+
+		if (!confirmed) return;
+
 		const productId = deleteBtn.dataset.id;
+
+		deleteBtn.disabled = true;
+		deleteBtn.textContent = 'Deleting...';
 		const res = await fetch(`/products/${productId}`, {
 			method: 'DELETE',
 		});

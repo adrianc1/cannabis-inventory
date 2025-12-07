@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/style.css" />
+		<title>Products Page</title>
+	</head>
+	<body>
+		<h1>Categories Page</h1>
+		<button>
+			<a href="/categories/create-category">Create New Category</a>
+		</button>
+		<table class="categories">
+			<tr class="categories">
+				<th class="table-header">Name</th>
+			</tr>
+			<% categories.map((category) => { %>
+			<tr class="category">
+				<td><a href="/categories/<%=category.id%>"><%= category.name %></a></td>
+			</tr>
+			<% }) %>
+		</table>
+	</body>
+</html>

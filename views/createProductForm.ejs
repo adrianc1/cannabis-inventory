@@ -8,18 +8,25 @@
 	<body>
 		<form method="POST" action="/products/create-product">
 			<label for="name">Name:</label>
-			<input type="text" id="name" name="name" value="fake" />
+			<input
+				type="text"
+				id="name"
+				name="name"
+				value=""
+				placeholder="Cold Fire 1g"
+			/>
 
 			<label for="description">Description:</label>
 			<input
 				type="text"
 				id="description"
 				name="description"
-				value="cool stuff"
+				value=""
+				placeholder="Flavorful full-spectrum vape pen"
 			/>
 
 			<label for="price">Price: $</label>
-			<input type="number" id="price" name="price" value="32.22" />
+			<input type="number" id="price" name="price" value="0" />
 
 			<label for="unit">Unit</label>
 			<input type="text" id="unit" name="unit" value="g" />

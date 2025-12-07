@@ -84,8 +84,41 @@ const insertProduct = async (
 };
 
 // Update Product
-const updateProduct = async () => {
-	const product = await pool.query('UPDATE ');
+const updateProduct = async (
+	name,
+	description,
+	price,
+	unit,
+	brandId,
+	strainId,
+	categoryId,
+	id
+) => {
+	console.log('starting product update...');
+	console.log(
+		name,
+		description,
+		price,
+		unit,
+		brandId,
+		strainId,
+		categoryId,
+		id
+	);
+	const product = await pool.query(
+		`UPDATE products 
+   SET name = $1, 
+       description = $2, 
+       price = $3, 
+       unit = $4, 
+       brand_id = $5, 
+       strain_id = $6, 
+       category_id = $7
+   WHERE id = $8`,
+		[name, description, price, unit, brandId, strainId, categoryId, id]
+	);
+
+	return product;
 };
 
 // Delete Product
@@ -121,4 +154,5 @@ module.exports = {
 	getAllCategories,
 	insertProduct,
 	deleteProduct,
+	updateProduct,
 };

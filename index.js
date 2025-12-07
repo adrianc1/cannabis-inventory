@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const path = require('node:path');
 const brandsRouter = require('./routes/brandsRouter');
 const categoryRouter = require('./routes/categoryRouter');
@@ -6,6 +7,8 @@ const productsRouter = require('./routes/productsRouter');
 
 const app = express();
 const PORT = 3000;
+
+app.use(cors());
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

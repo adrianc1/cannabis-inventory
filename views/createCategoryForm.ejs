@@ -6,15 +6,20 @@
 		<title>Document</title>
 	</head>
 	<body>
-		<button><a href="/categories/">Back to all categories</a></button>
+		<button><a href="/categories/1">Back to all categories</a></button>
 
 		<h1>This is the create category form!!</h1>
-		<form action="/categories/" method="POST">
+		<form action="/categories/create-category" method="POST">
 			<label for="category-name">Category Name: </label>
-			<input type="text" id="category-name" />
-
+			<input type="text" id="category-name" name="name" value="" />
 			<label for="category-name">Category Description: </label>
-			<input type="text" id="category-description" />
+			<input
+				type="text"
+				id="category-description"
+				name="description"
+				value=""
+			/>
+			<button type="submit">Create New Category</button>
 		</form>
 	</body>
 </html>

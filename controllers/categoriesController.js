@@ -33,8 +33,19 @@ const createCategoryForm = async (req, res) => {
 	}
 };
 
+const insertCategory = async (req, res) => {
+	try {
+		const { name, description } = req.body;
+
+		console.log(req.body);
+		const result = await db.insertCategory(name, description);
+		res.redirect(`/categories/${result.id}`);
+	} catch (error) {}
+};
+
 module.exports = {
 	getAllCategories,
 	createCategoryForm,
 	getCategory,
+	insertCategory,
 };

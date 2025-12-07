@@ -167,6 +167,19 @@ const getCategory = async (id) => {
 		throw error;
 	}
 };
+
+const insertCategory = async (name, description) => {
+	try {
+		const result = await pool.query(
+			`INSERT INTO categories (name, description)
+			VALUES ($1, $2) RETURNING *`,
+			[name, description]
+		);
+		return result.rows[0];
+	} catch (error) {
+		throw error;
+	}
+};
 module.exports = {
 	getAllProductsDB,
 	getProductDB,
@@ -177,4 +190,5 @@ module.exports = {
 	deleteProduct,
 	updateProduct,
 	getCategory,
+	insertCategory,
 };

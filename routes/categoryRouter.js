@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.get('/', categoriesController.getAllCategories);
 router.get('/create-category', categoriesController.createCategoryForm);
-// router.post('/create-category', categoriesController.insertProduct);
+router.post('/create-category', categoriesController.insertCategory);
 // router.get('/:id/edit', categoriesController.editProductForm);
 // router.put('/:id', categoriesController.updateProduct);
 // router.delete('/:id', categoriesController.deleteProduct);

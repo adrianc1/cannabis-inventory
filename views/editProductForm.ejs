@@ -37,25 +37,27 @@
 			<label for="pet-select">Choose a Brand:</label>
 
 			<select name="brandId" id="brandId">
-				<option value="<%= product.brand_id %>">
+				<option value="">
 					--Please select a Brand--
 				</option>
+
 				<% brands.forEach((brand) => { %>
-				<option value="<%= brand.id %>"><%= brand.name %></option>
+				<option value="<%= brand.id %>" <%= Number(brand.id) === Number(product.brand_id) ? "selected" : '' %>><%= brand.name %>
+				</option>
 				<% }) %>
 			</select>
 
 			<select name="strainId" id="strainId">
 				<option value="">--Please select a Strain--</option>
 				<% strains.forEach((strain) => { %>
-				<option value="<%= strain.id %>"><%= strain.name %></option>
+				<option value="<%= strain.id %>" <%= Number(strain.id) === Number(product.strain_id) ? "selected" : '' %>><%= strain.name %></option>
 				<% }) %>
 			</select>
 
 			<select name="categoryId" id="categoryId">
 				<option value="">--Please select a Category--</option>
 				<% categories.forEach((category) => { %>
-				<option value="<%= category.id %>"><%= category.name %></option>
+				<option value="<%= category.id %>" <%= Number(category.id) === Number(product.category_id) ? "selected" : '' %>><%= category.name %></option>
 				<% }) %>
 			</select>
 

@@ -44,6 +44,9 @@ const getProductDB = async (id) => {
 			p.description,
 			p.price,
 			p.unit,
+			p.brand_id,
+			p.category_id,
+			p.strain_id,
 			brands.name AS brand_name,
 			categories.name AS category_name,
 			strains.name AS strain_name,
@@ -95,16 +98,6 @@ const updateProduct = async (
 	id
 ) => {
 	console.log('starting product update...');
-	console.log(
-		name,
-		description,
-		price,
-		unit,
-		brandId,
-		strainId,
-		categoryId,
-		id
-	);
 	const product = await pool.query(
 		`UPDATE products 
    SET name = $1, 

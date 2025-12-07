@@ -9,15 +9,32 @@ const getAllCategories = async (req, res) => {
 	}
 };
 
+const getCategory = async (req, res) => {
+	try {
+		console.log('Fetching category...');
+
+		const category = await db.getCategory(req.params.id);
+
+		if (!category) {
+			res.status(404).json({ error: 'Category not foud' });
+			return;
+		}
+
+		console.log(category);
+		res.render('categoryProducts', { category });
+	} catch (error) {}
+};
+
 const createCategoryForm = async (req, res) => {
 	try {
 		res.render('createCategoryForm');
 	} catch (error) {
-		console.error(error);
+		res.status(500).json({ error: 'Database Error' });
 	}
 };
 
 module.exports = {
 	getAllCategories,
 	createCategoryForm,
+	getCategory,
 };

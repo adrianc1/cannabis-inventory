@@ -139,6 +139,34 @@ const getAllCategories = async () => {
 	const { rows } = await pool.query('SELECT * FROM categories');
 	return rows;
 };
+
+const getCategory = async (id) => {
+	try {
+		const { rows } = await pool.query(
+			`SELECT 
+			p.name,
+			p.description,
+			p.price,
+			p.unit,
+			p.category_id,
+			brands.name AS brand_name,
+			categories.name AS category_name,
+			strains.name AS strain_name,
+			inventory.quantity
+			FROM products AS p
+			LEFT JOIN brands ON p.brand_id = brands.id
+			LEFT JOIN categories ON p.category_id = categories.id
+			LEFT JOIN strains ON p.strain_id = strains.id
+			LEFT JOIN inventory ON p.id = inventory.product_id
+			WHERE p.category_id = $1
+			ORDER BY p.name`,
+			[id]
+		);
+		return rows;
+	} catch (error) {
+		throw error;
+	}
+};
 module.exports = {
 	getAllProductsDB,
 	getProductDB,
@@ -148,4 +176,5 @@ module.exports = {
 	insertProduct,
 	deleteProduct,
 	updateProduct,
+	getCategory,
 };

@@ -8,6 +8,6 @@ router.get('/create-category', categoriesController.createCategoryForm);
 // router.get('/:id/edit', categoriesController.editProductForm);
 // router.put('/:id', categoriesController.updateProduct);
 // router.delete('/:id', categoriesController.deleteProduct);
-// router.get('/:id', categoriesController.getProduct);
+router.get('/:id', categoriesController.getCategory);
 
 module.exports = router;

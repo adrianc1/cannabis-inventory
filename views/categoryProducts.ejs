@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/style.css" />
+		<title><%= category[0].category_name%></title>
+	</head>
+	<body>
+		<button><a href="/categories/">Back to all categories</a></button>
+		<table class="category-table">
+			<tr class="category-table-headers">
+				<th class="table-header">Name</th>
+				<th class="table-header">Strain</th>
+				<th class="table-header">Brand</th>
+				<th class="table-header">Category</th>
+				<th class="table-header">Quantity</th>
+			</tr>
+			<% category.map((c) => { %>
+			<tr class="category-row">
+				<td><a href="/categories/<%=c.id%>"><%= c.name %></a></td>
+				<td><%=c.strain_name ? c.strain_name : 'N/A' %></td>
+				<td><%=c.brand_name%></td>
+				<td><%=c.category_name%></td>
+				<td><%=c.quantity%></td>
+			</tr>
+			<% }) %>
+		</table>
+	</body>
+</html>

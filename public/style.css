@@ -4,17 +4,20 @@
 	box-sizing: border-box;
 }
 
-.product-row {
+.product-row,
+.category-row {
 	width: 100%;
 	border: 2px solid yellow;
 }
 
-.product-row a {
+.product-row a,
+.category-row a {
 	margin: 0;
 	padding: 0;
 	width: auto;
 }
-.products-table {
+.products-table,
+.category-table {
 	height: auto;
 	width: 100%;
 }

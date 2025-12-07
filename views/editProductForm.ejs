@@ -6,7 +6,12 @@
 		<title>Edit <%= product.name %></title>
 	</head>
 	<body>
-		<form method="POST" action="/products/<%= product.id %>">
+		<form
+			data-id="<%= product.id %>"
+			id="edit-form"
+			method="POST"
+			action="/products/<%= product.id %>"
+		>
 			<label for="name">Name:</label>
 			<input type="text" id="name" name="name" value="<%= product.name %>" />
 
@@ -54,7 +59,8 @@
 				<% }) %>
 			</select>
 
-			<button type="submit">Create New Product</button>
+			<button id="'edit-btn" type="submit">Update Product</button>
 		</form>
+		<script src="/js/updateProduct.js"></script>
 	</body>
 </html>

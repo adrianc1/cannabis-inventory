@@ -81,7 +81,23 @@ const editProductForm = async (req, res) => {
 	}
 };
 
-const updateProduct = async (req, res) => {};
+const updateProduct = async (req, res) => {
+	console.log(req.params.id, 'ITS THE ID!');
+	const id = req.params.id;
+	const { name, description, price, unit, brandId, strainId, categoryId } =
+		req.body;
+	await db.updateProduct(
+		name,
+		description,
+		price,
+		unit,
+		brandId,
+		strainId,
+		categoryId,
+		id
+	);
+	res.status(200).json({ success: true });
+};
 
 module.exports = {
 	getAllProducts,

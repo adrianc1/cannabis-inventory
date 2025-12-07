@@ -1,21 +1,44 @@
-// document.addEventListener('DOMContentLoaded', () => {
-// 	const editBtn = document.getElementById('edit-btn');
+const formEl = document.getElementById('edit-form');
 
-// 	if (!editBtn) return;
+document.addEventListener('DOMContentLoaded', () => {
+	const updateProductFunction = async () => {
+		const productId = formEl.dataset.id;
+		console.log('product id ', productId);
 
-// 	editBtn.addEventListener('click', async () => {
-// 		const productId = editBtn.dataset.id;
-// 		const res = await fetch(`/products/${productId}`, {
-// 			method: 'PUT',
-// 		});
+		const formData = new FormData(formEl);
+		const data = {
+			name: formData.get('name'),
+			description: formData.get('description'),
+			price: formData.get('price'),
+			unit: formData.get('unit'),
+			brandId: formData.get('brandId'),
+			strainId: formData.get('strainId'),
+			categoryId: formData.get('categoryId'),
+		};
 
-// 		console.log(res.ok);
+		console.log('Data to send:', data);
 
-// 		if (res.ok) {
-// 			window.location.href = `/products/${productId}`;
-// 			return;
-// 		} else {
-// 			alert('failed to delete product');
-// 		}
-// 	});
-// });
+		const res = await fetch(`/products/${productId}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(data),
+		});
+
+		console.log(res.body);
+
+		if (res.ok) {
+			window.location.href = `/products/${productId}`;
+			return;
+		} else {
+			alert('failed to update product');
+		}
+	};
+	const handleSubmit = (event) => {
+		event.preventDefault();
+		updateProductFunction();
+	};
+
+	formEl.addEventListener('submit', handleSubmit);
+});

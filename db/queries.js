@@ -135,6 +135,17 @@ const getAllStrains = async () => {
 	return rows;
 };
 
+const getStrain = async (id) => {
+	try {
+		const { rows } = await pool.query(`SELECT * FROM strains WHERE id=$1`, [
+			id,
+		]);
+		return rows[0];
+	} catch (error) {
+		throw error;
+	}
+};
+
 const insertStrain = async (name, description, type) => {
 	try {
 		const result = await pool.query(
@@ -214,4 +225,5 @@ module.exports = {
 	insertCategory,
 	deleteCategory,
 	insertStrain,
+	getStrain,
 };

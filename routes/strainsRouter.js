@@ -8,6 +8,6 @@ router.post('/create-strain', strainsController.insertStrain);
 // router.get('/:id/edit', strainsController.editProductForm);
 // router.put('/:id', strainsController.updateProduct);
 // router.delete('/:id', strainsController.deleteStrain);
-// router.get('/:id', strainsController.getProduct);
+router.get('/:id', strainsController.getStrain);
 
 module.exports = router;

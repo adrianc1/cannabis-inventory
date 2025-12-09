@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Product - <%= strain.name %></title>
+	</head>
+	<body>
+		<p><a href="/strains">back to strains</a></p>
+
+		<button id="delete-btn" data-id="<%= strain.id %>">Delete Product</button>
+		<a href="/products/<%= strain.id %>/edit">Edit Product</a>
+
+		<h1>Name: <%=strain.name %></h1>
+		<p>Description: <%= strain.description %></p>
+		<p>Type: <%= strain.type%></p>
+
+		<!-- <script src="/js/deleteStrain.js"></script> -->
+	</body>
+</html>

@@ -18,7 +18,7 @@
 			</tr>
 			<% strains.map((strain) => { %>
 			<tr class="product-row">
-				<td><%=strain.name ? strain.name : 'N/A' %></td>
+				<td><a href="/strains/<%=strain.id%>"><%=strain.name %></a></td>
 				<td><%= strain.description %></td>
 				<td><%=strain.type%></td>
 			</tr>

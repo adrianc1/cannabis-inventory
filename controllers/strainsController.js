@@ -9,6 +9,23 @@ const getAllStrains = async (req, res) => {
 	}
 };
 
+const getStrain = async (req, res) => {
+	try {
+		console.log('Fetching strain with id:', req.params.id);
+
+		const strain = await db.getStrain(req.params.id);
+		console.log(strain, 'the strain!');
+
+		if (!strain) {
+			res.status(404).json({ error: 'Strain not found' });
+			return;
+		}
+		res.render('strainPage', { strain });
+	} catch (error) {
+		res.status(500).json({ error: 'Database error retreiving single product' });
+	}
+};
+
 const createStrainForm = async (req, res) => {
 	try {
 		res.render('createStrainForm');
@@ -29,6 +46,7 @@ const insertStrain = async (req, res) => {
 
 module.exports = {
 	getAllStrains,
+	getStrain,
 	createStrainForm,
 	insertStrain,
 };

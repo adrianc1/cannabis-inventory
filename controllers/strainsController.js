@@ -44,9 +44,20 @@ const insertStrain = async (req, res) => {
 	}
 };
 
+const deleteStrain = async (req, res) => {
+	try {
+		console.log('finna delete', req.params.id);
+		await db.deleteStrain(req.params.id);
+		res.status(200).json({ success: true });
+	} catch (error) {
+		res.json({ error: 'there is an error.' });
+	}
+};
+
 module.exports = {
 	getAllStrains,
 	getStrain,
 	createStrainForm,
 	insertStrain,
+	deleteStrain,
 };

@@ -159,6 +159,11 @@ const insertStrain = async (name, description, type) => {
 	}
 };
 
+const deleteStrain = async (id) => {
+	const strain = await pool.query('DELETE FROM strains WHERE id = $1', [id]);
+	return strain;
+};
+
 // Category Queries
 const getAllCategories = async () => {
 	const { rows } = await pool.query('SELECT * FROM categories');
@@ -226,4 +231,5 @@ module.exports = {
 	deleteCategory,
 	insertStrain,
 	getStrain,
+	deleteStrain,
 };

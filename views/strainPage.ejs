@@ -8,13 +8,13 @@
 	<body>
 		<p><a href="/strains">back to strains</a></p>
 
-		<button id="delete-btn" data-id="<%= strain.id %>">Delete Product</button>
-		<a href="/products/<%= strain.id %>/edit">Edit Product</a>
+		<button id="delete-btn" data-id="<%= strain.id%>">Delete Strain</button>
+		<a href="/strains/<%= strain.id %>/edit">Edit Strain</a>
 
 		<h1>Name: <%=strain.name %></h1>
 		<p>Description: <%= strain.description %></p>
 		<p>Type: <%= strain.type%></p>
 
-		<!-- <script src="/js/deleteStrain.js"></script> -->
+		<script src="/js/deleteStrain.js"></script>
 	</body>
 </html>

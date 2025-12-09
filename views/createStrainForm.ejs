@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<button><a href="/products/">Back to all products</a></button>
+
+		<h1>This is the create strain form!</h1>
+		<form action="/strains/create-strain" method="POST">
+			<label for="strain-name">Strain Name: </label>
+			<input type="text" id="strain-name" name="name" value="" />
+			<label for="strain-description">Strain Description: </label>
+			<input type="text" id="strain-description" name="description" value="" />
+			<label for="strain-type-select">Type: </label>
+			<select name="type" id="strain-type-select">
+				<option value="sativa">Sativa</option>
+				<option value="indica">Indica</option>
+				<option value="hybrid">Hybrid</option>
+			</select>
+			<button type="submit">Create New Category</button>
+		</form>
+	</body>
+</html>

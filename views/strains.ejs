@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/style.css" />
+		<title>Strains Page</title>
+	</head>
+	<body>
+		<h1><%= message %></h1>
+		<button><a href="/strains/create-strain">Create New Strain</a></button>
+		<button><a href="/strains/">See Strains</a></button>
+		<table class="products-table">
+			<tr class="products-table-headers">
+				<th class="table-header">Name</th>
+				<th class="table-header">Description</th>
+				<th class="table-header">Type</th>
+			</tr>
+			<% strains.map((strain) => { %>
+			<tr class="product-row">
+				<td><%=strain.name ? strain.name : 'N/A' %></td>
+				<td><%= strain.description %></td>
+				<td><%=strain.type%></td>
+			</tr>
+			<% }) %>
+		</table>
+	</body>
+</html>

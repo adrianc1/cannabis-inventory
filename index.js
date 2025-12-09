@@ -4,6 +4,7 @@ const path = require('node:path');
 const brandsRouter = require('./routes/brandsRouter');
 const categoryRouter = require('./routes/categoryRouter');
 const productsRouter = require('./routes/productsRouter');
+const strainsRouter = require('./routes/strainsRouter');
 
 const app = express();
 const PORT = 3000;
@@ -22,6 +23,7 @@ app.get('/', (req, res) => {
 
 app.use('/products', productsRouter);
 app.use('/categories', categoryRouter);
+app.use('/strains', strainsRouter);
 app.use('/brands', brandsRouter);
 
 app.listen(PORT, () => {

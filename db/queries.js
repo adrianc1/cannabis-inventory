@@ -135,6 +135,19 @@ const getAllStrains = async () => {
 	return rows;
 };
 
+const insertStrain = async (name, description, type) => {
+	try {
+		const result = await pool.query(
+			`INSERT INTO strains (name, description, type)
+			VALUES ($1, $2, $3) RETURNING *`,
+			[name, description, type]
+		);
+		return result.rows[0];
+	} catch (error) {
+		throw error;
+	}
+};
+
 // Category Queries
 const getAllCategories = async () => {
 	const { rows } = await pool.query('SELECT * FROM categories');
@@ -200,4 +213,5 @@ module.exports = {
 	getCategory,
 	insertCategory,
 	deleteCategory,
+	insertStrain,
 };

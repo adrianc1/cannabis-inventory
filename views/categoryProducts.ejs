@@ -7,9 +7,15 @@
 		<title>Category</title>
 	</head>
 	<body>
+		<p><%= category %> this is it!</p>
 		<button><a href="/categories/">Back to all categories</a></button>
+		<button id="delete-cat-btn" data-id="<%= categoryId %>">
+			Delete Product!!
+		</button>
+
 		<table class="category-table">
 			<tr class="category-table-headers">
+				<th class="table-header">ID</th>
 				<th class="table-header">Name</th>
 				<th class="table-header">Strain</th>
 				<th class="table-header">Brand</th>
@@ -17,7 +23,8 @@
 				<th class="table-header">Quantity</th>
 			</tr>
 			<% category.map((c) => { %>
-			<tr class="category-row">
+			<tr class="category-row" data-id="<%= c.category_id %>">
+				<td><%= c.category_id %></td>
 				<td><a href="/categories/<%=c.id%>"><%= c.name %></a></td>
 				<td><%=c.strain_name ? c.strain_name : 'N/A' %></td>
 				<td><%=c.brand_name%></td>
@@ -26,5 +33,6 @@
 			</tr>
 			<% }) %>
 		</table>
+		<script src="/js/deleteCategory.js"></script>
 	</body>
 </html>

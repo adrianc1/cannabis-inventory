@@ -22,7 +22,11 @@
 				<td><a href="/products/<%=product.id%>"><%= product.name %></a></td>
 				<td><%=product.strain_name ? product.strain_name : 'N/A' %></td>
 				<td><%=product.brand_name%></td>
-				<td><%=product.category_name%></td>
+				<td>
+					<a href="/categories/<%=product.category_id%>"
+						><%=product.category_name%></a
+					>
+				</td>
 				<td><%=product.product_qty%></td>
 			</tr>
 			<% }) %>

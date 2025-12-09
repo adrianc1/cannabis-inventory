@@ -10,6 +10,7 @@ const getAllProductsDB = async () => {
 			p.description,
 			p.price,
 			p.unit,
+			p.category_id,
 			brands.name AS brand_name,
 			categories.name AS category_name,
 			strains.name AS strain_name,
@@ -180,6 +181,13 @@ const insertCategory = async (name, description) => {
 		throw error;
 	}
 };
+
+const deleteCategory = async (categoryId) => {
+	const category = await pool.query('DELETE FROM categories WHERE id = $1', [
+		categoryId,
+	]);
+	return category;
+};
 module.exports = {
 	getAllProductsDB,
 	getProductDB,
@@ -191,4 +199,5 @@ module.exports = {
 	updateProduct,
 	getCategory,
 	insertCategory,
+	deleteCategory,
 };

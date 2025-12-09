@@ -13,6 +13,7 @@ const getCategory = async (req, res) => {
 	try {
 		console.log('Fetching category...');
 
+		const categoryId = req.params.id;
 		const category = await db.getCategory(req.params.id);
 
 		if (!category) {
@@ -21,7 +22,7 @@ const getCategory = async (req, res) => {
 		}
 
 		console.log(category);
-		res.render('categoryProducts', { category });
+		res.render('categoryProducts', { category, categoryId });
 	} catch (error) {}
 };
 
@@ -43,9 +44,20 @@ const insertCategory = async (req, res) => {
 	} catch (error) {}
 };
 
+const deleteCategory = async (req, res) => {
+	try {
+		console.log('finna delete', req.params);
+		await db.deleteCategory(req.params.id);
+		res.render();
+	} catch (error) {
+		res.json({ error: 'there is an error.' });
+	}
+};
+
 module.exports = {
 	getAllCategories,
 	createCategoryForm,
 	getCategory,
 	insertCategory,
+	deleteCategory,
 };

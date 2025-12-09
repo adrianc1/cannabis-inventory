@@ -7,7 +7,7 @@ router.get('/create-category', categoriesController.createCategoryForm);
 router.post('/create-category', categoriesController.insertCategory);
 // router.get('/:id/edit', categoriesController.editProductForm);
 // router.put('/:id', categoriesController.updateProduct);
-// router.delete('/:id', categoriesController.deleteProduct);
+router.delete('/:id', categoriesController.deleteCategory);
 router.get('/:id', categoriesController.getCategory);
 
 module.exports = router;

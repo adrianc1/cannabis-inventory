@@ -3,7 +3,7 @@ const db = require('../db/queries');
 const getAllProducts = async (req, res) => {
 	try {
 		const products = await db.getAllProductsDB();
-		res.render('products', { message: 'All Products', products });
+		res.render('products/products', { message: 'All Products', products });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
 	}
@@ -19,7 +19,7 @@ const getProduct = async (req, res) => {
 			res.status(404).json({ error: 'Product not found' });
 			return;
 		}
-		res.render('product', { product });
+		res.render('products/product', { product });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error retreiving single product' });
 	}
@@ -34,7 +34,7 @@ const createProductForm = async (req, res) => {
 			res.status(404).json({ error: 'No Brands Found' });
 		}
 
-		res.render('createProductForm', { brands, strains, categories });
+		res.render('products/createProductForm', { brands, strains, categories });
 	} catch (error) {
 		console.error(error);
 	}
@@ -75,7 +75,12 @@ const editProductForm = async (req, res) => {
 			res.status(404).json({ error: 'No Brands Found' });
 		}
 
-		res.render('editProductForm', { product, brands, strains, categories });
+		res.render('products/editProductForm', {
+			product,
+			brands,
+			strains,
+			categories,
+		});
 	} catch (error) {
 		console.error(error);
 	}

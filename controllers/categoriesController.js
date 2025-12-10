@@ -35,9 +35,14 @@ const createCategoryForm = async (req, res) => {
 };
 
 const editCategoryForm = async (req, res) => {
-	let cat = await db.getCategory(req.params.id);
-	const category = cat[0];
-	console.log(category);
+	let category = await db.getSingleCategory(req.params.id);
+
+	if (!category) {
+		res.status(404).json({ error: 'Category not found' });
+		return;
+	}
+
+	console.log(category, 'the category');
 
 	res.render('categories/editCategoryForm', { category });
 };

@@ -8,7 +8,7 @@
 	<body>
 		<button><a href="/categories/">Back to all categories</a></button>
 
-		<h1>This is the edit category form!!</h1>
+		<h1>This is the edit category form!</h1>
 		<form
 			action="/categories/<%= category.id %>"
 			method="POST"
@@ -29,7 +29,7 @@
 				name="description"
 				value="<%= category.description %>"
 			/>
-			<button type="submit">Create New Category</button>
+			<button type="submit">Update Category</button>
 		</form>
 		<script src="/js/updateCategory.js"></script>
 	</body>

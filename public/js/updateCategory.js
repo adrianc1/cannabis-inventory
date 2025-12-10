@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			window.location.href = `/categories/${categoryId}`;
 			return;
 		} else {
-			alert('failed to update product');
+			alert('failed to update category');
 		}
 	};
 	const handleSubmit = (event) => {

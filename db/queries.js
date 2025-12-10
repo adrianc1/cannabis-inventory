@@ -219,6 +219,20 @@ const getCategory = async (id) => {
 	}
 };
 
+const getSingleCategory = async (id) => {
+	try {
+		const { rows } = await pool.query(
+			`
+			SELECT id, name, description FROM categories WHERE id=$1
+			`,
+			[id]
+		);
+		return rows[0];
+	} catch (error) {
+		console.error(error);
+	}
+};
+
 const insertCategory = async (name, description) => {
 	try {
 		const result = await pool.query(
@@ -264,5 +278,6 @@ module.exports = {
 	getStrain,
 	deleteStrain,
 	getBrand,
+	getSingleCategory,
 	updateCategory,
 };

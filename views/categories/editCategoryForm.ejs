@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Edit Category</title>
+	</head>
+	<body>
+		<button><a href="/categories/">Back to all categories</a></button>
+
+		<h1>This is the edit category form!!</h1>
+		<form
+			action="/categories/<%= category.id %>"
+			method="POST"
+			id="edit-cat-form"
+			data-id="<%=category.id%>"
+		>
+			<label for="category-name">Category Name: </label>
+			<input
+				type="text"
+				id="category-name"
+				name="name"
+				value="<%= category.name %>"
+			/>
+			<label for="category-name">Category Description: </label>
+			<input
+				type="text"
+				id="category-description"
+				name="description"
+				value="<%= category.description %>"
+			/>
+			<button type="submit">Create New Category</button>
+		</form>
+		<script src="/js/updateCategory.js"></script>
+	</body>
+</html>

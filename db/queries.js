@@ -232,6 +232,16 @@ const insertCategory = async (name, description) => {
 	}
 };
 
+const updateCategory = async (name, description, id) => {
+	const category = await pool.query(
+		`UPDATE categories 
+   SET name = $1, 
+       description = $2,
+   WHERE id = $3`,
+		[name, description, id]
+	);
+};
+
 const deleteCategory = async (categoryId) => {
 	const category = await pool.query('DELETE FROM categories WHERE id = $1', [
 		categoryId,
@@ -254,4 +264,5 @@ module.exports = {
 	getStrain,
 	deleteStrain,
 	getBrand,
+	updateCategory,
 };

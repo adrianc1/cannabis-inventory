@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Edit Strain</title>
+	</head>
+	<body>
+		<button><a href="/strains/">Back to all strains</a></button>
+
+		<h1>This is the edit strain form!</h1>
+		<form
+			action="/categories/<%= strain.id %>"
+			method="POST"
+			id="edit-cat-form"
+			data-id="<%=strain.id%>"
+		>
+			<label for="strain-name">strain Name: </label>
+			<input
+				type="text"
+				id="strain-name"
+				name="name"
+				value="<%= strain.name %>"
+			/>
+			<label for="strain-name">strain Description: </label>
+			<input
+				type="text"
+				id="strain-description"
+				name="description"
+				value="<%= strain.description %>"
+			/>
+			<button type="submit">Update strain</button>
+		</form>
+		<script src="/js/updateStrain.js"></script>
+	</body>
+</html>

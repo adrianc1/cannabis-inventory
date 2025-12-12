@@ -54,6 +54,13 @@ const editStrainForm = async (req, res) => {
 	res.render('strains/editStrainForm', { strain });
 };
 
+const updateStrain = async (req, res) => {
+	const id = req.params.id;
+	const { name, description } = req.body;
+	await db.updateStrain(name, description, id);
+	res.status(200).json({ success: true });
+};
+
 const deleteStrain = async (req, res) => {
 	try {
 		console.log('deleting', req.params.id);
@@ -71,4 +78,5 @@ module.exports = {
 	insertStrain,
 	deleteStrain,
 	editStrainForm,
+	updateStrain,
 };

@@ -3,14 +3,20 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" href="/style.css" />
+
+		<link href="/tailwind.css" rel="stylesheet" />
+
 		<title>Products Page</title>
 	</head>
 	<body>
-		<h1><%= message %></h1>
-		<button><a href="/products/create-product">Create New Product</a></button>
-		<button><a href="/categories/">See Categories</a></button>
-		<button><a href="/strains/">See Strains</a></button>
+		<h1 class="text-3xl font-bold text-gray-800 mb-6"><%= message %></h1>
+		<a href="/products/create-product" class="btn-primary"
+			>Create New Product</a
+		>
+
+		<a href="/categories/" class="btn-primary">See Categories</a>
+
+		<a href="/strains/" class="btn-primary">See Strains</a>
 
 		<table class="products-table">
 			<tr class="products-table-headers">

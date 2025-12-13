@@ -3,13 +3,19 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="/tailwind.css" rel="stylesheet" />
+
 		<title>Product - <%= product.name %></title>
 	</head>
 	<body>
-		<p><a href="/products">back to products</a></p>
+		<p><a href="/products"> <- Back to products</a></p>
 
-		<button id="delete-btn" data-id="<%= product.id %>">Delete Product</button>
-		<a href="/products/<%= product.id %>/edit">Edit Product</a>
+		<button id="delete-btn" class="btn-danger" data-id="<%= product.id %>">
+			Delete Product
+		</button>
+		<a href="/products/<%= product.id %>/edit" class="btn-secondary"
+			>Edit Product</a
+		>
 
 		<h1><%=product.name %></h1>
 		<p>Price: <%= product.price %></p>

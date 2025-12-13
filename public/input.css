@@ -1,0 +1,159 @@
+@import 'tailwindcss';
+
+@theme {
+	--color-primary-green: rgb(22 163 74);
+	--color-secondary-brown: rgb(161 98 7);
+	--color-tertiary-sage: rgb(132 204 22);
+}
+
+/* Primary Button - Green */
+.btn-primary {
+	display: inline-block;
+	padding: 0.625rem 1.5rem;
+	background-color: white;
+	color: rgb(22 163 74);
+	border: 2px solid rgb(22 163 74);
+	border-radius: 0.5rem;
+	font-weight: 500;
+	text-decoration: none;
+	transition: all 0.2s;
+}
+
+.btn-primary:hover {
+	background-color: rgb(22 163 74);
+	color: white;
+}
+
+/* Secondary Button - Brown */
+.btn-secondary {
+	display: inline-block;
+	padding: 0.625rem 1.5rem;
+	background-color: white;
+	color: rgb(161 98 7);
+	border: 2px solid rgb(161 98 7);
+	border-radius: 0.5rem;
+	font-weight: 500;
+	text-decoration: none;
+	transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+	background-color: rgb(161 98 7);
+	color: white;
+}
+
+/* Danger Button - Red */
+.btn-danger {
+	display: inline-block;
+	padding: 0.625rem 1.5rem;
+	background-color: white;
+	color: rgb(220 38 38);
+	border: 2px solid rgb(220 38 38);
+	border-radius: 0.5rem;
+	font-weight: 500;
+	text-decoration: none;
+	transition: all 0.2s;
+}
+
+.btn-danger:hover {
+	background-color: rgb(220 38 38);
+	color: white;
+}
+
+/* Danger Badge */
+.badge-danger {
+	display: inline-block;
+	padding: 0.25rem 0.75rem;
+	background-color: rgb(254 226 226);
+	color: rgb(153 27 27);
+	border-radius: 9999px;
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+
+/*  info badge - light green */
+.badge-info {
+	display: inline-block;
+	padding: 0.25rem 0.75rem;
+	background-color: rgb(236 252 203);
+	color: rgb(77 124 15);
+	border-radius: 9999px;
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+
+/* warning badge  */
+.badge-warning {
+	display: inline-block;
+	padding: 0.25rem 0.75rem;
+	background-color: rgb(254 243 199);
+	color: rgb(146 64 14);
+	border-radius: 9999px;
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+
+/* success Badge  */
+.badge-success {
+	display: inline-block;
+	padding: 0.25rem 0.75rem;
+	background-color: rgb(220 252 231);
+	color: rgb(21 128 61);
+	border-radius: 9999px;
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+
+/* Table Styles */
+.products-table {
+	width: 100%;
+	background-color: white;
+	border-radius: 0.5rem;
+	overflow: hidden;
+	box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+.products-table-headers {
+	background-color: rgb(22 163 74);
+	color: white;
+}
+
+.table-header {
+	padding: 0.75rem 1rem;
+	text-align: left;
+	font-weight: 600;
+	font-size: 0.875rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.product-row {
+	border-bottom: 1px solid rgb(229 231 235);
+	transition: background-color 0.15s;
+}
+
+.product-row:hover {
+	background-color: rgb(249 250 251);
+}
+
+.product-row:last-child {
+	border-bottom: none;
+}
+
+.product-row td {
+	padding: 1rem;
+	font-size: 0.875rem;
+	color: rgb(55 65 81);
+}
+
+.product-row a {
+	color: rgb(22 163 74);
+	text-decoration: none;
+	font-weight: 500;
+	transition: color 0.15s;
+}
+
+.product-row a:hover {
+	color: rgb(21 128 61);
+	text-decoration: underline;
+}

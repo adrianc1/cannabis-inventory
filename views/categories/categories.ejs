@@ -3,23 +3,42 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" href="/style.css" />
+		<link href="/tailwind.css" rel="stylesheet" />
 		<title>Products Page</title>
 	</head>
 	<body>
-		<h1>Categories Page</h1>
-		<button>
-			<a href="/categories/create-category">Create New Category</a>
-		</button>
-		<button>
-			<a href="/products/">Back to Products</a>
-		</button>
-		<table class="categories">
-			<tr class="categories">
+		<div class="mb-8 mt-4 relative">
+			<a href="/">
+				<img
+					src="/greenventory-logo.png"
+					alt="Greenventory Logo"
+					class="h-16 ml-8"
+				/>
+			</a>
+			<h1
+				class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-3xl font-bold text-gray-800"
+			>
+				Categories Page
+			</h1>
+		</div>
+		<p
+			class="inline-flex items-center text-green-600 hover:text-green-700 font-medium mb-6 transition-colors"
+		>
+			<a href="/products/"><- Back to Products</a>
+		</p>
+
+		<div class="main-buttons">
+			<button class="btn-primary">
+				<a href="/categories/create-category">Create New Category</a>
+			</button>
+		</div>
+
+		<table class="products-table">
+			<tr class="products-table-headers">
 				<th class="table-header">Name</th>
 			</tr>
 			<% categories.map((category) => { %>
-			<tr class="category">
+			<tr class="product-row">
 				<td><a href="/categories/<%=category.id%>"><%= category.name %></a></td>
 			</tr>
 			<% }) %>

@@ -3,34 +3,68 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="/tailwind.css" rel="stylesheet" />
+
 		<title>Edit Category</title>
 	</head>
-	<body>
-		<button><a href="/categories/">Back to all categories</a></button>
+	<body class="bg-gray-50 min-h-screen">
+		<div class="max-w-2xl mx-auto px-6 py-8">
+			<a
+				href="/categories/"
+				class="inline-flex items-center text-green-600 hover:text-green-700 font-medium mb-6 transition-colors"
+				>← Back to all categories</a
+			>
+			<h1 class="text-3xl font-bold text-gray-800 mb-2">Edit Category</h1>
 
-		<h1>This is the edit category form!</h1>
-		<form
-			action="/categories/<%= category.id %>"
-			method="POST"
-			id="edit-cat-form"
-			data-id="<%=category.id%>"
-		>
-			<label for="category-name">Category Name: </label>
-			<input
-				type="text"
-				id="category-name"
-				name="name"
-				value="<%= category.name %>"
-			/>
-			<label for="category-name">Category Description: </label>
-			<input
-				type="text"
-				id="category-description"
-				name="description"
-				value="<%= category.description %>"
-			/>
-			<button type="submit">Update Category</button>
-		</form>
+			<div class="bg-white rounded-lg shadow-md p-8">
+				<div class="text-green-700 text-3xl font-bold">
+					<%= category.name %>
+				</div>
+				<form
+					action="/categories/<%= category.id %>"
+					method="POST"
+					id="edit-cat-form"
+					data-id="<%=category.id%>"
+					class="space-y-6"
+				>
+					<label
+						for="category-name"
+						class="block text-sm font-semibold text-gray-700 mb-2"
+						>Category Name:
+					</label>
+					<input
+						type="text"
+						id="category-name"
+						name="name"
+						value="<%= category.name %>"
+						class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors"
+					/>
+					<label
+						for="category-name"
+						class="block text-sm font-semibold text-gray-700 mb-2"
+						>Category Description:
+					</label>
+					<input
+						type="text"
+						id="category-description"
+						name="description"
+						value="<%= category.description %>"
+						class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors"
+					/>
+					<div class="flex gap-3 pt-4">
+						<button type="submit" class="btn-primary flex-1">
+							Update Category
+						</button>
+						<a
+							href="/categories/<%= category.id %>"
+							class="btn-danger flex-1 text-center"
+						>
+							Cancel
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
 		<script src="/js/updateCategory.js"></script>
 	</body>
 </html>

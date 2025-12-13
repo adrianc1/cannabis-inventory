@@ -10,6 +10,10 @@ body {
 	font-family: system-ui, -apple-system, sans-serif;
 }
 
+.bg-gradient-radial {
+	background: radial-gradient(ellipse at top, rgb(240 253 244), white 70%);
+}
+
 /* Primary Button - Green */
 .btn-primary {
 	display: inline-block;

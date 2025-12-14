@@ -3,19 +3,42 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" href="/style.css" />
+		<link href="/tailwind.css" rel="stylesheet" />
 		<title>Category</title>
 	</head>
 	<body>
-		<button><a href="/categories/">Back to all categories</a></button>
-		<button id="delete-cat-btn" data-id="<%= categoryId %>">
-			Delete Category!
+		<div class="mb-8 mt-4 relative">
+			<a href="/">
+				<img
+					src="/greenventory-logo.png"
+					alt="Greenventory Logo"
+					class="h-16 ml-8"
+				/>
+			</a>
+			<h1
+				class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-3xl font-bold text-gray-800"
+			>
+				*category name*
+			</h1>
+		</div>
+		<button
+			class="inline-flex items-center text-green-600 hover:text-green-700 font-medium mb-6 transition-colors"
+		>
+			<a href="/categories/"><- Back to all categories</a>
 		</button>
-		<a href="/categories/<%= categoryId %>/edit">Edit Category</a>
 
-		<table class="category-table">
-			<tr class="category-table-headers">
-				<th class="table-header">ID</th>
+		<div class="view-buttons mb-8">
+			<button class="btn-danger" data-id="<%= categoryId %>">
+				Delete Category!
+			</button>
+			<button class="btn-secondary">
+				<a href="/categories/<%= categoryId %>/edit">Edit Category</a>
+			</button>
+		</div>
+
+		<table class="products-table">
+			<tr class="products-table-headers">
+				<!-- <th class="table-header">ID</th> -->
 				<th class="table-header">Name</th>
 				<th class="table-header">Strain</th>
 				<th class="table-header">Brand</th>
@@ -23,8 +46,8 @@
 				<th class="table-header">Quantity</th>
 			</tr>
 			<% category.map((c) => { %>
-			<tr class="category-row" data-id="<%= c.category_id %>">
-				<td><%= c.category_id %></td>
+			<tr class="product-row" data-id="<%= c.category_id %>">
+				<!-- <td><%= c.category_id %></td> -->
 				<td><a href="/categories/<%=c.id%>"><%= c.name %></a></td>
 				<td><%=c.strain_name ? c.strain_name : 'N/A' %></td>
 				<td><%=c.brand_name%></td>

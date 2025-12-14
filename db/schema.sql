@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS brands (
 
 CREATE TABLE IF NOT EXISTS categories (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    name TEXT,
+    name TEXT UNIQUE NOT NULL,
     description TEXT
 );
 
@@ -43,4 +43,11 @@ CREATE TABLE IF NOT EXISTS inventory (
     last_updated TIMESTAMP DEFAULT NOW()
 );
 
-
+CREATE TABLE IF NOT EXISTS inventory_movements (
+    id SERIAL PRIMARY KEY,
+    inventory_id INTEGER NOT NULL REFERENCES inventory(id) ON DELETE CASCADE,
+    movement_type VARCHAR(50) NOT NULL, -- 'restock', 'sale', 'adjustment', 'waste'
+    quantity INTEGER NOT NULL,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);

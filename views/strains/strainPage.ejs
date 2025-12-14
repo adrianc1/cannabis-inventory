@@ -3,17 +3,34 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="/tailwind.css" rel="stylesheet" />
 		<title>Product - <%= strain.name %></title>
 	</head>
-	<body>
-		<p><a href="/strains">back to strains</a></p>
+	<body class="bg-gray-50 min-h-screen">
+		<p
+			class="inline-flex items-center text-green-600 hover:text-green-700 font-medium mb-6 transition-colors"
+		>
+			<a href="/strains"> <- Back to strains</a>
+		</p>
 
-		<button id="delete-btn" data-id="<%= strain.id%>">Delete Strain</button>
-		<a href="/strains/<%= strain.id %>/edit">Edit Strain</a>
+		<div class="bg-white rounded-lg shadow-md p-8 mb-6 max-w-4xl mx-auto">
+			<div class="border-b border-gray-200 pb-4 mb-6">
+				<h1 class="text-3xl font-bold text-gray-800 mb-2"><%=strain.name %></h1>
+				<p class="text-lg font-semibold text-green-800">
+					<%= strain.description %>
+				</p>
+				<p class="text-lg text-gray-800">Type: <%= strain.type%></p>
+			</div>
 
-		<h1>Name: <%=strain.name %></h1>
-		<p>Description: <%= strain.description %></p>
-		<p>Type: <%= strain.type%></p>
+			<div class="flex gap-3">
+				<button id="delete-btn" class="btn-danger" data-id="<%= strain.id %>">
+					Delete Strain
+				</button>
+				<a href="/strains/<%= strain.id %>/edit" class="btn-secondary"
+					>Edit Strain</a
+				>
+			</div>
+		</div>
 
 		<script src="/js/deleteStrain.js"></script>
 	</body>

@@ -3,14 +3,38 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" href="/style.css" />
+		<link href="/tailwind.css" rel="stylesheet" />
 		<title>Strains Page</title>
 	</head>
 	<body>
-		<h1><%= message %></h1>
-		<button><a href="/strains/create-strain">Create New Strain</a></button>
-		<button><a href="/strains/">See Strains</a></button>
-		<button><a href="/products/">See Products</a></button>
+		<div class="mb-8 mt-4 relative">
+			<a href="/">
+				<img
+					src="/greenventory-logo.png"
+					alt="Greenventory Logo"
+					class="h-16 ml-8"
+				/>
+			</a>
+			<h1
+				class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-3xl font-bold text-gray-800"
+			>
+				<%= message %>
+			</h1>
+		</div>
+
+		<div class="main-buttons">
+			<button class="btn-primary">
+				<a href="/strains/create-strain">Create New Strain</a>
+			</button>
+
+			<div class="view-buttons">
+				<button class="btn-primary"><a href="/strains/">See Strains</a></button>
+				<button class="btn-primary">
+					<a href="/products/">See Products</a>
+				</button>
+			</div>
+		</div>
+
 		<table class="products-table">
 			<tr class="products-table-headers">
 				<th class="table-header">Name</th>

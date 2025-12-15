@@ -3,19 +3,55 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="/tailwind.css" rel="stylesheet" />
+
 		<title>Product - <%= product.name %></title>
 	</head>
-	<body>
-		<p><a href="/products">back to products</a></p>
+	<body class="bg-gray-50 min-h-screen">
+		<p
+			class="inline-flex items-center text-green-600 hover:text-green-700 font-medium mb-6 transition-colors"
+		>
+			<a href="/products"> <- Back to products</a>
+		</p>
+		<div class="max-w-4xl mx-auto px-6 py-8">
+			
 
-		<button id="delete-btn" data-id="<%= product.id %>">Delete Product</button>
-		<a href="/products/<%= product.id %>/edit">Edit Product</a>
+			<div class="bg-white rounded-lg shadow-md p-8 mb-6">
+				<div class="border-b border-gray-200 pb-4 mb-6">
+					<h1 class="text-3xl font-bold text-gray-800 mb-2"><%=product.name %></h1>
+					<p class="text-2xl font-semibold text-green-600">Price: <%= product.price %></p>
+				</div>
 
-		<h1><%=product.name %></h1>
-		<p>Price: <%= product.price %></p>
-		<p>Brand: <%= product.brand_name%></p>
-		<p>Strain: <%= product.strain_name%></p>
-		<p>Category: <%= product.category_name%></p>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div class="">
+						<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Brand:</h3>
+						<p class="text-lg text-gray-800"> <%= product.brand_name%></p>
+					</div>
+						
+				<div>
+					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Strain</h3>
+					<p class="text-lg text-gray-800"><%= product.strain_name%></p>
+				</div>
+
+				<div>
+					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Category</h3>
+					<p class="text-lg text-gray-800"><%= product.category_name%></p>
+				</div>
+
+				<div>
+					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Quantity</h3>
+					<p class="text-lg text-gray-800"><%= product.product_qty || 'N/A' %></p>
+						</div>
+				</div>
+
+			<div class="flex gap-3">
+				<button id="delete-btn" class="btn-danger" data-id="<%= product.id %>">
+					Delete Product
+				</button>
+				<a href="/products/<%= product.id %>/edit" class="btn-secondary">Edit Product</a>
+			</div>
+				
+			</div>
 
 		<script src="/js/deleteProduct.js"></script>
 	</body>

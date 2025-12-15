@@ -3,9 +3,366 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Document</title>
+		<link href="/tailwind.css" rel="stylesheet" />
+		<title>Greenventory - Cannabis Inventory</title>
 	</head>
-	<body>
-		<h2><a href="/products">See all products</a></h2>
+	<body class="bg-gray-50">
+		<!-- Navigation -->
+		<nav class="bg-white shadow-sm">
+			<div class="max-w-7xl mx-auto px-6 py-4">
+				<div class="flex items-center justify-between">
+					<div class="flex items-center space-x-3">
+						<img
+							src="/greenventory-logo.png"
+							alt="Greenventory Logo"
+							class="h-16"
+						/>
+					</div>
+					<div class="hidden md:flex space-x-8">
+						<a
+							href="#features"
+							class="text-gray-600 hover:text-green-600 transition-colors"
+							>Features</a
+						>
+						<a
+							href="#about"
+							class="text-gray-600 hover:text-green-600 transition-colors"
+							>About</a
+						>
+						<a
+							href="#contact"
+							class="text-gray-600 hover:text-green-600 transition-colors"
+							>Contact</a
+						>
+					</div>
+					<a
+						href="/products"
+						class="px-6 py-2.5 bg-white text-green-600 border-2 border-green-600 rounded-lg font-medium hover:bg-green-600 hover:text-white transition-colors duration-200"
+					>
+						Get Started
+					</a>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Hero Section -->
+		<section
+  class="relative py-20 px-6"
+  style="
+    background: radial-gradient(
+      ellipse 100% 80% at center,
+      rgb(225, 255, 234),
+      white 70%
+    );
+  "
+>
+  <div class="absolute inset-x-0 bottom-0 h-16 bg-linear-to-b from-transparent"></div>
+				<div class="text-center max-w-3xl mx-auto">
+					<h1 class="text-5xl md:text-6xl font-bold text-gray-800 mb-6">
+						Manage Your Cannabis Inventory with
+						<span class="text-green-600">Ease</span>
+					</h1>
+					<p class="text-xl text-gray-600 mb-8">
+						A simple, powerful inventory management system designed specifically
+						for cannabis businesses. Track products, strains, categories, and
+						more.
+					</p>
+					<div class="flex flex-col sm:flex-row gap-4 justify-center">
+						<a
+							href="/products"
+							class="px-8 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+						>
+							View Products
+						</a>
+						<a
+							href="#features"
+							class="px-8 py-3 bg-white text-green-600 border-2 border-green-600 rounded-lg font-semibold hover:bg-green-600 hover:text-white transition-colors duration-200"
+						>
+							Learn More
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Features Section -->
+		<section id="features" class="py-20 px-6 bg-white">
+			<div class="max-w-7xl mx-auto">
+				<div class="text-center mb-16">
+					<h2 class="text-4xl font-bold text-gray-800 mb-4">
+						Everything You Need
+					</h2>
+					<p class="text-xl text-gray-600">
+						Powerful features built for cannabis inventory management
+					</p>
+				</div>
+
+				<div class="grid md:grid-cols-3 gap-8">
+					<!-- Feature 1 -->
+					<div
+						class="bg-gray-50 rounded-lg p-8 hover:shadow-lg transition-shadow"
+					>
+						<div
+							class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4"
+						>
+							<svg
+								class="w-6 h-6 text-green-600"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+								/>
+							</svg>
+						</div>
+						<h3 class="text-xl font-bold text-gray-800 mb-3">
+							Product Management
+						</h3>
+						<p class="text-gray-600">
+							Easily track all your cannabis products, including flower,
+							concentrates, edibles, and more. Add, edit, and manage inventory
+							in real-time.
+						</p>
+					</div>
+
+					<!-- Feature 2 -->
+					<div
+						class="bg-gray-50 rounded-lg p-8 hover:shadow-lg transition-shadow"
+					>
+						<div
+							class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4"
+						>
+							<svg
+								class="w-6 h-6 text-green-600"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+								/>
+							</svg>
+						</div>
+						<h3 class="text-xl font-bold text-gray-800 mb-3">
+							Strain Database
+						</h3>
+						<p class="text-gray-600">
+							Organize products by strain type. Keep detailed records of Indica,
+							Sativa, and Hybrid varieties with all their unique properties.
+						</p>
+					</div>
+
+					<!-- Feature 3 -->
+					<div
+						class="bg-gray-50 rounded-lg p-8 hover:shadow-lg transition-shadow"
+					>
+						<div
+							class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4"
+						>
+							<svg
+								class="w-6 h-6 text-green-600"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+								/>
+							</svg>
+						</div>
+						<h3 class="text-xl font-bold text-gray-800 mb-3">
+							Category Organization
+						</h3>
+						<p class="text-gray-600">
+							Sort inventory by categories like Flower, Concentrates, Edibles,
+							Vapes, and more. Keep everything organized and easy to find.
+						</p>
+					</div>
+
+					<!-- Feature 4 -->
+					<div
+						class="bg-gray-50 rounded-lg p-8 hover:shadow-lg transition-shadow"
+					>
+						<div
+							class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4"
+						>
+							<svg
+								class="w-6 h-6 text-amber-700"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+								/>
+							</svg>
+						</div>
+						<h3 class="text-xl font-bold text-gray-800 mb-3">Brand Tracking</h3>
+						<p class="text-gray-600">
+							Keep track of all your brands and suppliers. Quickly filter
+							products by brand to see what's selling and what needs restocking.
+						</p>
+					</div>
+
+					<!-- Feature 5 -->
+					<div
+						class="bg-gray-50 rounded-lg p-8 hover:shadow-lg transition-shadow"
+					>
+						<div
+							class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4"
+						>
+							<svg
+								class="w-6 h-6 text-amber-700"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
+								/>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
+								/>
+							</svg>
+						</div>
+						<h3 class="text-xl font-bold text-gray-800 mb-3">
+							Quantity Monitoring
+						</h3>
+						<p class="text-gray-600">
+							Track stock levels in real-time. Never run out of your
+							best-selling products with automatic quantity updates.
+						</p>
+					</div>
+
+					<!-- Feature 6 -->
+					<div
+						class="bg-gray-50 rounded-lg p-8 hover:shadow-lg transition-shadow"
+					>
+						<div
+							class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4"
+						>
+							<svg
+								class="w-6 h-6 text-amber-700"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+								/>
+							</svg>
+						</div>
+						<h3 class="text-xl font-bold text-gray-800 mb-3">
+							Price Management
+						</h3>
+						<p class="text-gray-600">
+							Set and update prices for all products. Track pricing by unit
+							(gram, ounce, etc.) for accurate inventory valuation.
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- CTA Section -->
+		<section class="py-20 px-6 bg-gradient-to-br from-green-600 to-green-700">
+			<div class="max-w-4xl mx-auto text-center">
+				<h2 class="text-4xl font-bold text-white mb-6">
+					Ready to streamline your cannabis inventory?
+				</h2>
+				<p class="text-xl text-green-100 mb-8">
+					Start managing your products, strains, and categories today.
+				</p>
+				<a
+					href="/products"
+					class="inline-block px-8 py-3 bg-white text-green-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200 shadow-lg"
+				>
+					Get Started Now
+				</a>
+			</div>
+		</section>
+
+		<!-- Footer -->
+		<footer class="bg-gray-800 text-gray-300 py-12 px-6">
+			<div class="max-w-7xl mx-auto">
+				<div class="grid md:grid-cols-3 gap-8 mb-8">
+					<div>
+						<div class="flex items-center space-x-3 mb-4">
+							<img
+								src="/greenventory-logo.png"
+								alt="Greenventory Logo"
+								class="h-16"
+							/>
+						</div>
+						<p class="text-gray-400">
+							Simple, powerful cannabis inventory management for modern
+							dispensaries.
+						</p>
+					</div>
+
+					<div>
+						<h4 class="text-white font-semibold mb-4">Quick Links</h4>
+						<ul class="space-y-2">
+							<li>
+								<a
+									href="/products"
+									class="hover:text-green-400 transition-colors"
+									>Products</a
+								>
+							</li>
+							<li>
+								<a
+									href="/categories"
+									class="hover:text-green-400 transition-colors"
+									>Categories</a
+								>
+							</li>
+							<li>
+								<a
+									href="/strains"
+									class="hover:text-green-400 transition-colors"
+									>Strains</a
+								>
+							</li>
+						</ul>
+					</div>
+
+					<div>
+						<h4 class="text-white font-semibold mb-4">Contact</h4>
+						<p class="text-gray-400">
+							Questions? Reach out to us and we'll help you get started.
+						</p>
+					</div>
+				</div>
+
+				<div class="border-t border-gray-700 pt-8 text-center text-gray-400">
+					<p>
+						&copy; 2025 Greenventory. Built for cannabis inventory management.
+					</p>
+				</div>
+			</div>
+		</footer>
 	</body>
 </html>

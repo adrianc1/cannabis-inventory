@@ -180,6 +180,16 @@ const insertStrain = async (name, description, type) => {
 	}
 };
 
+const updateStrain = async (name, description, id) => {
+	const strain = await pool.query(
+		`UPDATE strains
+		SET name = $1,
+    	description = $2
+		WHERE id = $3`,
+		[name, description, id]
+	);
+};
+
 const deleteStrain = async (id) => {
 	const strain = await pool.query('DELETE FROM strains WHERE id = $1', [id]);
 	return strain;
@@ -280,4 +290,5 @@ module.exports = {
 	getBrand,
 	getSingleCategory,
 	updateCategory,
+	updateStrain,
 };

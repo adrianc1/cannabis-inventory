@@ -3,66 +3,151 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="/tailwind.css" rel="stylesheet" />
 		<title>Edit <%= product.name %></title>
 	</head>
-	<body>
-		<form
-			data-id="<%= product.id %>"
-			id="edit-form"
-			method="POST"
-			action="/products/<%= product.id %>"
-		>
-			<label for="name">Name:</label>
-			<input type="text" id="name" name="name" value="<%= product.name %>" />
+		<body class="bg-gray-50 min-h-screen">
+		<div class="max-w-2xl mx-auto px-6 py-8">
+			<a href="/products/<%= product.id %>" class="inline-flex items-center text-green-600 hover:text-green-700 font-medium mb-6 transition-colors">
+				← Back to product
+			</a>
 
-			<label for="description">Description:</label>
-			<input
-				type="text"
-				id="description"
-				name="description"
-				value="<%= product.description %>"
-			/>
+			<div class="bg-white rounded-lg shadow-md p-8">
+				<h1 class="text-3xl font-bold text-gray-800 mb-2">Edit Product</h1>
+				<p class="text-gray-600 mb-6"><%= product.name %></p>
 
-			<label for="price">Price: $</label>
-			<input
-				type="number"
-				id="price"
-				name="price"
-				value="<%= product.price %>"
-			/>
+				<form
+					data-id="<%= product.id %>"
+					id="edit-form"
+					method="POST"
+					action="/products/<%= product.id %>"
+					class="space-y-6"
+				>
+					<div>
+						<label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
+							Product Name
+						</label>
+						<input
+							type="text"
+							id="name"
+							name="name"
+							value="<%= product.name %>"
+							required
+							class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors"
+						/>
+					</div>
 
-			<label for="unit">Unit</label>
-			<input type="text" id="unit" name="unit" value="g" />
+					<div>
+						<label for="description" class="block text-sm font-semibold text-gray-700 mb-2">
+							Description
+						</label>
+						<textarea
+							id="description"
+							name="description"
+							rows="3"
+							class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors resize-none"
+						><%= product.description %></textarea>
+					</div>
 
-			<label for="brandId">Choose a Brand:</label>
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label for="price" class="block text-sm font-semibold text-gray-700 mb-2">
+								Price ($)
+							</label>
+							<input
+								type="number"
+								id="price"
+								name="price"
+								value="<%= product.price %>"
+								step="0.01"
+								min="0"
+								required
+								class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors"
+							/>
+						</div>
 
-			<select name="brandId" id="brandId">
-				<option value="">
-					--Please select a Brand--
-				</option>
+						<div>
+							<label for="unit" class="block text-sm font-semibold text-gray-700 mb-2">
+								Unit
+							</label>
+							<input
+								type="text"
+								id="unit"
+								name="unit"
+								value="<%= product.unit || 'g' %>"
+								placeholder="g, oz, ml"
+								class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors"
+							/>
+						</div>
+					</div>
 
-				<% brands.forEach((brand) => { %>
-				<option value="<%= brand.id %>" <%= Number(brand.id) === Number(product.brand_id) ? "selected" : '' %>><%= brand.name %>
-				</option>
-				<% }) %>
-			</select>
+					<div>
+						<label for="brandId" class="block text-sm font-semibold text-gray-700 mb-2">
+							Brand
+						</label>
+						<select
+							name="brandId"
+							id="brandId"
+							required
+							class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
+						>
+							<option value="">-- Select a Brand --</option>
+							<% brands.forEach((brand) => { %>
+							<option value="<%= brand.id %>" <%= Number(brand.id) === Number(product.brand_id) ? "selected" : '' %>>
+								<%= brand.name %>
+							</option>
+							<% }) %>
+						</select>
+					</div>
 
-			<select name="strainId" id="strainId">
-				<option value="">--Please select a Strain--</option>
-				<% strains.forEach((strain) => { %>
-				<option value="<%= strain.id %>" <%= Number(strain.id) === Number(product.strain_id) ? "selected" : '' %>><%= strain.name %></option>
-				<% }) %>
-			</select>
+					<div>
+						<label for="strainId" class="block text-sm font-semibold text-gray-700 mb-2">
+							Strain
+						</label>
+						<select
+							name="strainId"
+							id="strainId"
+							class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
+						>
+							<option value="">-- Select a Strain (Optional) --</option>
+							<% strains.forEach((strain) => { %>
+							<option value="<%= strain.id %>" <%= Number(strain.id) === Number(product.strain_id) ? "selected" : '' %>>
+								<%= strain.name %>
+							</option>
+							<% }) %>
+						</select>
+					</div>
 
-			<select name="categoryId" id="categoryId">
-				<option value="">--Please select a Category--</option>
-				<% categories.forEach((category) => { %>
-				<option value="<%= category.id %>" <%= Number(category.id) === Number(product.category_id) ? "selected" : '' %>><%= category.name %></option>
-				<% }) %>
-			</select>
+					<div>
+						<label for="categoryId" class="block text-sm font-semibold text-gray-700 mb-2">
+							Category
+						</label>
+						<select
+							name="categoryId"
+							id="categoryId"
+							required
+							class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
+						>
+							<option value="">-- Select a Category --</option>
+							<% categories.forEach((category) => { %>
+							<option value="<%= category.id %>" <%= Number(category.id) === Number(product.category_id) ? "selected" : '' %>>
+								<%= category.name %>
+							</option>
+							<% }) %>
+						</select>
+					</div>
 
-			<button id="'edit-btn" type="submit">Update Product</button>
-		</form>
+					<div class="flex gap-3 pt-4">
+						<button type="submit" id="edit-btn" class="btn-primary flex-1">
+							Update Product
+						</button>
+						<a href="/products/<%= product.id %>" class="btn-secondary flex-1 text-center">
+							Cancel
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
 		<script src="/js/updateProduct.js"></script>
 	</body>
 </html>

@@ -9,14 +9,45 @@
 		<title>Products Page</title>
 	</head>
 	<body>
+		<div class="max-w-7xl mx-auto py-4">
+			<div class="flex items-center justify-between">
+				<div class="flex w-full justify-between items-center space-x-3">
+					<div class="">
+						<img
+							src="/greenventory-logo.png"
+							alt="Greenventory Logo"
+							class="h-16"
+						/>
+					</div>
+					<div class="hidden md:flex space-x-8">
+						<a
+							href="/categories"
+							class="text-gray-600 hover:text-green-600 transition-colors"
+							>Categories</a
+						>
+						<a
+							href="/strains"
+							class="text-gray-600 hover:text-green-600 transition-colors"
+							>Strains</a
+						>
+						<a
+							href="/brands"
+							class="text-gray-600 hover:text-green-600 transition-colors"
+							>Brands</a
+						>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div class="mb-8 mt-4 relative">
-			<a href="/">
+			<!-- <a href="/">
 				<img
 					src="/greenventory-logo.png"
 					alt="Greenventory Logo"
 					class="h-16 ml-8"
 				/>
-			</a>
+			</a> -->
 
 			<h1
 				class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-3xl font-bold text-gray-800"
@@ -26,10 +57,10 @@
 		</div>
 		<div class="main-buttons">
 			<a href="/products/create-product" class="btn-primary">Add New Product</a>
-			<div class="view-buttons">
+			<!-- <div class="view-buttons">
 				<a href="/categories/" class="btn-primary">See Categories</a>
 				<a href="/strains/" class="btn-primary">See Strains</a>
-			</div>
+			</div> -->
 		</div>
 
 		<table class="products-table">

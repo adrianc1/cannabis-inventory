@@ -272,6 +272,10 @@ const deleteCategory = async (categoryId) => {
 	]);
 	return category;
 };
+
+const createProductInventory = async (id) => {
+	const insert = await pool.query('INSERT INTO inventory, backroom, 0, ');
+};
 module.exports = {
 	getAllProductsDB,
 	getProductDB,

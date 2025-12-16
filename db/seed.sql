@@ -36,13 +36,13 @@ ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description;
 -- =========================
 -- PRODUCTS
 -- =========================
-INSERT INTO products (name, description, price, unit, brand_id, strain_id, category_id) VALUES
-('Blue Dream 7g', 'Hybrid flower', 49.99, 'g', 1, 1, 1),
-('Sour Diesel 3.5g', 'Sativa flower', 29.99, 'g', 2, 2, 1),
-('Northern Lights 14g', 'Indica flower', 89.99, 'g', 3, 3, 1),
-('Korova Diamonds', 'High-potency concentrate', 59.99, 'g', 1, 1, 2),
-('Ember Valley Wax', 'Extracted cannabis wax', 39.99, 'g', 2, 2, 2),
-('Mary''s Gummies 100mg', 'THC-infused gummies', 19.99, 'pack', 3, NULL, 3);
+INSERT INTO products (name, description, unit, brand_id, strain_id, category_id) VALUES
+('Blue Dream 7g', 'Hybrid flower', 'g', 1, 1, 1),
+('Sour Diesel 3.5g', 'Sativa flower', 'g', 2, 2, 1),
+('Northern Lights 14g', 'Indica flower', 'g', 3, 3, 1),
+('Korova Diamonds', 'High-potency concentrate', 'g', 1, 1, 2),
+('Ember Valley Wax', 'Extracted cannabis wax', 'g', 2, 2, 2),
+('Mary''s Gummies 100mg', 'THC-infused gummies', 'pack', 3, NULL, 3);
 
 -- =========================
 -- INVENTORY

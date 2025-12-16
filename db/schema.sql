@@ -24,7 +24,6 @@ CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(255),
     description TEXT,
-    price DECIMAL(10,2) NOT NULL,
     unit VARCHAR(50),
     brand_id INTEGER NOT NULL REFERENCES brands(id) ON DELETE RESTRICT,
     strain_id INTEGER REFERENCES strains(id) ON DELETE RESTRICT,
@@ -37,7 +36,7 @@ CREATE TABLE IF NOT EXISTS inventory (
     id SERIAL PRIMARY KEY,
     product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     location VARCHAR(255) DEFAULT 'backroom',
-    quantity INTEGER NOT NULL DEFAULT 0,
+    quantity DECIMAL(10,3) NOT NULL DEFAULT 0,
     cost_price DECIMAL(10,2),
     supplier_name VARCHAR(255),
     last_updated TIMESTAMP DEFAULT NOW()
@@ -47,7 +46,7 @@ CREATE TABLE IF NOT EXISTS inventory_movements (
     id SERIAL PRIMARY KEY,
     inventory_id INTEGER NOT NULL REFERENCES inventory(id) ON DELETE CASCADE,
     movement_type VARCHAR(50) NOT NULL, -- 'restock', 'sale', 'adjustment', 'waste'
-    quantity INTEGER NOT NULL,
+    quantity DECIMAL(10,3) NOT NULL,
     notes TEXT,
     created_at TIMESTAMP DEFAULT NOW()
 );

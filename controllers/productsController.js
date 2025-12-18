@@ -47,12 +47,10 @@ const createProductForm = async (req, res) => {
 };
 
 const insertProduct = async (req, res) => {
-	const { name, description, price, unit, brandId, strainId, categoryId } =
-		req.body;
+	const { name, description, unit, brandId, strainId, categoryId } = req.body;
 	const product = await db.insertProduct(
 		name,
 		description,
-		price,
 		unit,
 		brandId,
 		strainId,
@@ -67,6 +65,8 @@ const deleteProduct = async (req, res) => {
 };
 
 const editProductForm = async (req, res) => {
+	const units = ['g', 'mg', 'oz', 'each'];
+
 	try {
 		const brands = await db.getAllBrands();
 		const strains = await db.getAllStrains();
@@ -86,6 +86,7 @@ const editProductForm = async (req, res) => {
 			brands,
 			strains,
 			categories,
+			units,
 		});
 	} catch (error) {
 		console.error(error);
@@ -95,12 +96,10 @@ const editProductForm = async (req, res) => {
 const updateProduct = async (req, res) => {
 	console.log(req.params.id, 'ITS THE ID!');
 	const id = req.params.id;
-	const { name, description, price, unit, brandId, strainId, categoryId } =
-		req.body;
+	const { name, description, unit, brandId, strainId, categoryId } = req.body;
 	await db.updateProduct(
 		name,
 		description,
-		price,
 		unit,
 		brandId,
 		strainId,

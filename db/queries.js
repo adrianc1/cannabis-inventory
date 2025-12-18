@@ -66,7 +66,6 @@ const getProductDB = async (id) => {
 const insertProduct = async (
 	name,
 	description,
-	price,
 	unit,
 	brandId,
 	strainId,
@@ -74,9 +73,9 @@ const insertProduct = async (
 ) => {
 	try {
 		const result = await pool.query(
-			`INSERT INTO products (name, description, price, unit, brand_id, strain_id, category_id)
-			VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-			[name, description, price, unit, brandId, strainId, categoryId]
+			`INSERT INTO products (name, description, unit, brand_id, strain_id, category_id)
+			VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+			[name, description, unit, brandId, strainId, categoryId]
 		);
 		return result.rows[0];
 	} catch (error) {
@@ -88,7 +87,6 @@ const insertProduct = async (
 const updateProduct = async (
 	name,
 	description,
-	price,
 	unit,
 	brandId,
 	strainId,
@@ -100,13 +98,12 @@ const updateProduct = async (
 		`UPDATE products 
    SET name = $1, 
        description = $2, 
-       price = $3, 
-       unit = $4, 
-       brand_id = $5, 
-       strain_id = $6, 
-       category_id = $7
-   WHERE id = $8`,
-		[name, description, price, unit, brandId, strainId, categoryId, id]
+       unit = $3, 
+       brand_id = $4, 
+       strain_id = $5, 
+       category_id = $6
+   WHERE id = $7`,
+		[name, description, unit, brandId, strainId, categoryId, id]
 	);
 
 	return product;
@@ -132,7 +129,6 @@ const getBrand = async (brandId) => {
 		p.id,
 			p.name,
 			p.description,
-			p.price,
 			p.unit,
 			p.category_id,
 			categories.name AS category_name,
@@ -204,7 +200,6 @@ const getCategory = async (id) => {
 			`SELECT 
 			p.name,
 			p.description,
-			p.price,
 			p.unit,
 			p.category_id,
 			brands.name AS brand_name,

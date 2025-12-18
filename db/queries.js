@@ -8,7 +8,6 @@ const getAllProductsDB = async () => {
 			p.id,
 			p.name,
 			p.description,
-			p.price,
 			p.unit,
 			p.category_id,
 			brands.name AS brand_name,
@@ -23,7 +22,6 @@ const getAllProductsDB = async () => {
 			GROUP BY p.id,
 			p.name,
 			p.description,
-			p.price,
 			p.unit,
 			brand_name,
 			category_name,
@@ -43,7 +41,6 @@ const getProductDB = async (id) => {
 			p.id,
 			p.name,
 			p.description,
-			p.price,
 			p.unit,
 			p.brand_id,
 			p.category_id,
@@ -273,8 +270,28 @@ const deleteCategory = async (categoryId) => {
 	return category;
 };
 
-const createProductInventory = async (id) => {
-	const insert = await pool.query('INSERT INTO inventory, backroom, 0, ');
+const createProductInventory = async (
+	inventory_id,
+	movement_type,
+	quantity,
+	notes
+) => {
+	const insert = await pool.query(
+		'INSERT INTO inventory (product_id, location, quantity, cost_price, supplier_name) VALUES $1, $2, $3, $4, $5',
+		[product_id, location, quantity, cost_price, supplier_name]
+	);
+};
+
+const adjustProductInventory = async (
+	inventory_id,
+	movement_type,
+	quantity,
+	notes
+) => {
+	const adjust = await pool.querty(
+		'INSERT INTO inventory_movements (inventory_id, movement_type, quantity, notes) VALUES $1, $2, $3, $4',
+		[inventory_id, movement_type, quantity, notes]
+	);
 };
 module.exports = {
 	getAllProductsDB,
@@ -295,4 +312,5 @@ module.exports = {
 	getSingleCategory,
 	updateCategory,
 	updateStrain,
+	createProductInventory,
 };

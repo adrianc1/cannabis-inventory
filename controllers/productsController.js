@@ -25,6 +25,7 @@ const getProduct = async (req, res) => {
 	}
 };
 const createProductForm = async (req, res) => {
+	const units = ['g', 'mg', 'oz', 'each'];
 	try {
 		const brands = await db.getAllBrands();
 		const strains = await db.getAllStrains();
@@ -34,7 +35,12 @@ const createProductForm = async (req, res) => {
 			res.status(404).json({ error: 'No Brands Found' });
 		}
 
-		res.render('products/createProductForm', { brands, strains, categories });
+		res.render('products/createProductForm', {
+			brands,
+			strains,
+			categories,
+			units,
+		});
 	} catch (error) {
 		console.error(error);
 	}

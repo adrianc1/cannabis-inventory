@@ -21,7 +21,29 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // sessions
-app.use(session({ secret: 'cats', resave: false, saveUninitialized: false }));
+require('./config/passport')(passport);
+require('dotenv').config();
+
+app.use(
+	session({
+		// dev env
+		secret: process.env.COOKIE_SECRET,
+		resave: false,
+		saveUninitialized: false,
+		cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 },
+	}),
+	// session({
+	// 	store: new pgSession({
+	// 		pool: pool,
+	// 		tableName: 'session',
+	// 	}),
+	// 	secret: process.env.COOKIE_SECRET,
+	// 	resave: false,
+	// 	saveUninitialized: false,
+	// 	cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
+	// }),
+);
+app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/', (req, res) => {

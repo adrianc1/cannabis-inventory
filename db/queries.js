@@ -70,16 +70,29 @@ const insertProduct = async (
 	brandId,
 	strainId,
 	categoryId,
+	quanity = 0,
 ) => {
+	const client = await pool.connect();
+
 	try {
-		const result = await pool.query(
+		await client.query('BEGIN');
+		const result = await client.query(
 			`INSERT INTO products (name, description, unit, brand_id, strain_id, category_id)
 			VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
 			[name, description, unit, brandId, strainId, categoryId],
 		);
-		return result.rows[0];
+		const product = result.rows[0];
+
+		await client.query(
+			`INSERT INTO inventory (product_id, quantity) VALUES ($1, $2)`,
+			[product.id, quanity],
+		);
+		await client.query('COMMIT');
+		return product;
 	} catch (error) {
 		throw error;
+	} finally {
+		client.release();
 	}
 };
 
@@ -92,7 +105,7 @@ const updateProduct = async (
 	strainId,
 	categoryId,
 	id,
-	quantity,
+	quantity = 0,
 ) => {
 	const client = await pool.connect();
 

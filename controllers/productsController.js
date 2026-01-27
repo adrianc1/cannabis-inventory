@@ -25,6 +25,7 @@ const getProduct = async (req, res) => {
 		res.status(500).json({ error: 'Database error retreiving single product' });
 	}
 };
+
 const createProductForm = async (req, res) => {
 	const units = ['g', 'mg', 'oz', 'each'];
 	try {

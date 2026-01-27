@@ -17,9 +17,12 @@
 		"cors": "^2.8.5",
 		"dotenv": "^17.2.3",
 		"ejs": "^3.1.10",
-		"express": "^5.1.0",
+		"express": "^5.2.1",
+		"express-session": "^1.19.0",
 		"jest": "^29.7.0",
-		"pg": "^8.16.3"
+		"passport": "^0.7.0",
+		"passport-local": "^1.0.0",
+		"pg": "^8.17.2"
 	},
 	"devDependencies": {
 		"tailwindcss": "^4.1.18"

@@ -1,5 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 const path = require('node:path');
 const brandsRouter = require('./routes/brandsRouter');
 const categoryRouter = require('./routes/categoryRouter');
@@ -16,6 +19,10 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// sessions
+app.use(session({ secret: 'cats', resave: false, saveUninitialized: false }));
+app.use(passport.session());
 
 app.get('/', (req, res) => {
 	res.render('index', { message: 'EJS rocks!' });

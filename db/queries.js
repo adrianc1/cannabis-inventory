@@ -322,6 +322,12 @@ const adjustProductInventory = async (
 		[inventory_id, movement_type, quantity, notes],
 	);
 };
+
+const insertUser = async (req, res) => {
+	await pool.query(`
+		INSERT INTO companies (name, license_number )
+		`);
+};
 module.exports = {
 	getAllProductsDB,
 	getProductDB,

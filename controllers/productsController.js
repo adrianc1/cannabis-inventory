@@ -95,9 +95,10 @@ const editProductForm = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-	console.log(req.params.id, 'ITS THE ID!');
+	console.log(req.params.id, 'ITS THE ID!', req.body);
 	const id = req.params.id;
-	const { name, description, unit, brandId, strainId, categoryId } = req.body;
+	const { name, description, unit, brandId, strainId, categoryId, quantity } =
+		req.body;
 	await db.updateProduct(
 		name,
 		description,
@@ -106,6 +107,7 @@ const updateProduct = async (req, res) => {
 		strainId,
 		categoryId,
 		id,
+		quantity,
 	);
 	res.status(200).json({ success: true });
 };

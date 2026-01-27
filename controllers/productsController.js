@@ -19,6 +19,7 @@ const getProduct = async (req, res) => {
 			res.status(404).json({ error: 'Product not found' });
 			return;
 		}
+		console.log('the product you want=====', product);
 		res.render('products/product', { product });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error retreiving single product' });
@@ -80,8 +81,6 @@ const editProductForm = async (req, res) => {
 		if (!brands || !strains || !categories) {
 			res.status(404).json({ error: 'No Brands Found' });
 		}
-
-		console.log('find the qty====', product.quantity);
 
 		res.render('products/editProductForm', {
 			product,

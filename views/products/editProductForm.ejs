@@ -74,9 +74,9 @@
 								id="unit"
 								class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
 							>
-								<option >-- Select Unit --</option>
+								<option ><%= product.unit %></option>
 								<% units.forEach((unit, index) => { %>
-								<option value="<%= index %>"><%= unit %></option>
+								<option value="<%= unit %>"><%= unit %></option>
 								<% }) %>
 							</select>
 						</div>

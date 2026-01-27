@@ -50,3 +50,8 @@ CREATE TABLE IF NOT EXISTS inventory_movements (
     notes TEXT,
     created_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Organizations
+
+
+

@@ -8,6 +8,7 @@ const brandsRouter = require('./routes/brandsRouter');
 const categoryRouter = require('./routes/categoryRouter');
 const productsRouter = require('./routes/productsRouter');
 const strainsRouter = require('./routes/strainsRouter');
+const signupRouter = require('./routes/signupRouter');
 
 const app = express();
 const PORT = 3000;
@@ -21,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // sessions
-require('./config/passport')(passport);
+require('./auth/passport')(passport);
 require('dotenv').config();
 
 app.use(
@@ -46,9 +47,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/', (req, res) => {
-	res.render('index', { message: 'EJS rocks!' });
-});
+app.use('/', signupRouter);
 
 app.use('/products', productsRouter);
 app.use('/categories', categoryRouter);

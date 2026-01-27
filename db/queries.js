@@ -55,7 +55,7 @@ const getProductDB = async (id) => {
 			LEFT JOIN strains ON p.strain_id = strains.id
 			LEFT JOIN inventory ON p.id = inventory.product_id
 			WHERE p.id = $1`,
-			[id]
+			[id],
 		);
 		return rows[0];
 	} catch (error) {
@@ -69,13 +69,13 @@ const insertProduct = async (
 	unit,
 	brandId,
 	strainId,
-	categoryId
+	categoryId,
 ) => {
 	try {
 		const result = await pool.query(
 			`INSERT INTO products (name, description, unit, brand_id, strain_id, category_id)
 			VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-			[name, description, unit, brandId, strainId, categoryId]
+			[name, description, unit, brandId, strainId, categoryId],
 		);
 		return result.rows[0];
 	} catch (error) {
@@ -91,11 +91,17 @@ const updateProduct = async (
 	brandId,
 	strainId,
 	categoryId,
-	id
+	id,
+	quantity,
 ) => {
+	const client = await pool.connect();
+
 	console.log('starting product update...');
-	const product = await pool.query(
-		`UPDATE products 
+
+	try {
+		await client.query('BEGIN');
+		const product = await client.query(
+			`UPDATE products 
    SET name = $1, 
        description = $2, 
        unit = $3, 
@@ -103,10 +109,25 @@ const updateProduct = async (
        strain_id = $5, 
        category_id = $6
    WHERE id = $7`,
-		[name, description, unit, brandId, strainId, categoryId, id]
-	);
+			[name, description, unit, brandId, strainId, categoryId, id],
+		);
 
-	return product;
+		await client.query(
+			`UPDATE inventory 
+            SET quantity = $1 
+			WHERE product_id = $2
+`,
+			[quantity, id],
+		);
+
+		await client.query('COMMIT');
+		return product;
+	} catch (error) {
+		await client.query('ROLLBACK');
+		throw error;
+	} finally {
+		client.release();
+	}
 };
 
 // Delete Product
@@ -139,7 +160,7 @@ const getBrand = async (brandId) => {
 			WHERE p.brand_id = $1
 		
 		`,
-		[brandId]
+		[brandId],
 	);
 };
 
@@ -165,7 +186,7 @@ const insertStrain = async (name, description, type) => {
 		const result = await pool.query(
 			`INSERT INTO strains (name, description, type)
 			VALUES ($1, $2, $3) RETURNING *`,
-			[name, description, type]
+			[name, description, type],
 		);
 		return result.rows[0];
 	} catch (error) {
@@ -179,7 +200,7 @@ const updateStrain = async (name, description, id) => {
 		SET name = $1,
     	description = $2
 		WHERE id = $3`,
-		[name, description, id]
+		[name, description, id],
 	);
 };
 
@@ -213,7 +234,7 @@ const getCategory = async (id) => {
 			LEFT JOIN inventory ON p.id = inventory.product_id
 			WHERE p.category_id = $1
 			ORDER BY p.name`,
-			[id]
+			[id],
 		);
 		return rows;
 	} catch (error) {
@@ -227,7 +248,7 @@ const getSingleCategory = async (id) => {
 			`
 			SELECT id, name, description FROM categories WHERE id=$1
 			`,
-			[id]
+			[id],
 		);
 		return rows[0];
 	} catch (error) {
@@ -240,7 +261,7 @@ const insertCategory = async (name, description) => {
 		const result = await pool.query(
 			`INSERT INTO categories (name, description)
 			VALUES ($1, $2) RETURNING *`,
-			[name, description]
+			[name, description],
 		);
 		return result.rows[0];
 	} catch (error) {
@@ -254,7 +275,7 @@ const updateCategory = async (name, description, id) => {
 		SET name = $1,
     	description = $2
 		WHERE id = $3`,
-		[name, description, id]
+		[name, description, id],
 	);
 };
 
@@ -269,11 +290,11 @@ const createProductInventory = async (
 	inventory_id,
 	movement_type,
 	quantity,
-	notes
+	notes,
 ) => {
 	const insert = await pool.query(
 		'INSERT INTO inventory (product_id, location, quantity, cost_price, supplier_name) VALUES $1, $2, $3, $4, $5',
-		[product_id, location, quantity, cost_price, supplier_name]
+		[product_id, location, quantity, cost_price, supplier_name],
 	);
 };
 
@@ -281,11 +302,11 @@ const adjustProductInventory = async (
 	inventory_id,
 	movement_type,
 	quantity,
-	notes
+	notes,
 ) => {
 	const adjust = await pool.querty(
 		'INSERT INTO inventory_movements (inventory_id, movement_type, quantity, notes) VALUES $1, $2, $3, $4',
-		[inventory_id, movement_type, quantity, notes]
+		[inventory_id, movement_type, quantity, notes],
 	);
 };
 module.exports = {

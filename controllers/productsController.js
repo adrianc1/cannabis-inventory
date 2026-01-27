@@ -54,7 +54,7 @@ const insertProduct = async (req, res) => {
 		unit,
 		brandId,
 		strainId,
-		categoryId
+		categoryId,
 	);
 	res.redirect(`/products/${product.id}`);
 };
@@ -81,6 +81,8 @@ const editProductForm = async (req, res) => {
 			res.status(404).json({ error: 'No Brands Found' });
 		}
 
+		console.log('find the qty====', product.quantity);
+
 		res.render('products/editProductForm', {
 			product,
 			brands,
@@ -104,7 +106,7 @@ const updateProduct = async (req, res) => {
 		brandId,
 		strainId,
 		categoryId,
-		id
+		id,
 	);
 	res.status(200).json({ success: true });
 };

@@ -1,4 +1,15 @@
--- Independent Tables
+-- CLEAN SLATE
+DROP TABLE IF EXISTS inventory_movements CASCADE;
+DROP TABLE IF EXISTS inventory CASCADE;
+DROP TABLE IF EXISTS products CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS companies CASCADE;
+DROP TABLE IF EXISTS brands CASCADE;
+DROP TABLE IF EXISTS strains CASCADE;
+DROP TABLE IF EXISTS categories CASCADE;
+DROP TYPE IF EXISTS user_role CASCADE;
+
+-- CREATE LEVEL 1 (Independent Tables)
 CREATE TABLE companies (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(255) NOT NULL,
@@ -25,7 +36,7 @@ CREATE TABLE categories (
     description TEXT
 );
 
--- Depends on Companies
+-- CREATE LEVEL 2 (Depends on Companies)
 CREATE TYPE user_role AS ENUM ('admin', 'manager', 'staff');
 
 CREATE TABLE users (
@@ -39,7 +50,7 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Depends on Companies + Metadata
+-- CREATE LEVEL 3 (Depends on Companies + Metadata)
 CREATE TABLE products (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
@@ -52,7 +63,7 @@ CREATE TABLE products (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Depends on Products + Companies
+-- CREATE LEVEL 4 (Depends on Products + Companies)
 CREATE TABLE inventory (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
@@ -64,7 +75,7 @@ CREATE TABLE inventory (
     last_updated TIMESTAMP DEFAULT NOW()
 );
 
--- Audit Trail
+-- CREATE LEVEL 5 (Audit Trail)
 CREATE TABLE inventory_movements (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     inventory_id INTEGER NOT NULL REFERENCES inventory(id) ON DELETE CASCADE,
@@ -74,5 +85,3 @@ CREATE TABLE inventory_movements (
     notes TEXT,
     created_at TIMESTAMP DEFAULT NOW()
 );
-
-

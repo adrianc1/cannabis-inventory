@@ -317,17 +317,68 @@ const adjustProductInventory = async (
 	quantity,
 	notes,
 ) => {
-	const adjust = await pool.querty(
+	const adjust = await pool.query(
 		'INSERT INTO inventory_movements (inventory_id, movement_type, quantity, notes) VALUES $1, $2, $3, $4',
 		[inventory_id, movement_type, quantity, notes],
 	);
 };
 
-const insertUser = async (req, res) => {
-	await pool.query(`
-		INSERT INTO companies (name, license_number )
-		`);
+const createCompany = async (companyName, licenseNumber) => {
+	const { rows } = await pool.query(
+		`INSERT INTO companies(name, license_number) VALUES ($1, $2) `,
+		[companyName, licenseNumber],
+	);
+
+	return rows[0];
 };
+
+const insertUser = async (firstName, lastName, email, password_hash) => {
+	const { rows } = await pool.query(
+		`
+		INSERT INTO companies (first_name, last_name, email, password_hash ) VALUES $1, $2, $3, $4 
+		`,
+		[firstName, lastName, email, password_hash],
+	);
+	return rows[0];
+};
+
+const signupAdmin = async (
+	firstName,
+	lastName,
+	email,
+	password_hash,
+	companyName,
+	licenseNumber,
+	role = 'admin',
+) => {
+	const client = await pool.connect();
+
+	try {
+		await client.query('BEGIN');
+
+		const companyResult = await client.query(
+			`INSERT INTO companies(name, license_number) VALUES ($1, $2) RETURNING id `,
+			[companyName, licenseNumber],
+		);
+
+		const companyId = companyResult.rows[0].id;
+
+		const { rows } = await client.query(
+			`
+		INSERT INTO users (first_name, last_name, email, password_hash, company_id, role) VALUES ($1, $2, $3, $4, $5, $6) 
+		`,
+			[firstName, lastName, email, password_hash, companyId, role],
+		);
+
+		await client.query('COMMIT');
+		return rows[0];
+	} catch (error) {
+		throw error;
+	} finally {
+		client.release();
+	}
+};
+
 module.exports = {
 	getAllProductsDB,
 	getProductDB,
@@ -348,4 +399,5 @@ module.exports = {
 	updateCategory,
 	updateStrain,
 	createProductInventory,
+	signupAdmin,
 };

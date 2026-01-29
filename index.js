@@ -8,7 +8,7 @@ const brandsRouter = require('./routes/brandsRouter');
 const categoryRouter = require('./routes/categoryRouter');
 const productsRouter = require('./routes/productsRouter');
 const strainsRouter = require('./routes/strainsRouter');
-const signupRouter = require('./routes/signupRouter');
+const signupRouter = require('./routes/auth/signupRouter');
 
 const app = express();
 const PORT = 3000;

@@ -1,11 +1,21 @@
 const db = require('../db/queries');
+
 const getSignUpForm = async (req, res) => {
 	res.render('auth/signup.ejs');
 };
+
 const postSignUpForm = async (req, res) => {
-	const { firstName, lastName, email, company } = req.body;
+	const { firstName, lastName, email, password_hash, company, license } =
+		req.body;
 	const products = await db.getAllProductsDB();
-	// await db.insertUser(firstName, lastName, email, company);
+	await db.signupAdmin(
+		firstName,
+		lastName,
+		email,
+		password_hash,
+		company,
+		license,
+	);
 	res.render('products/products', {
 		message: `Welcome ${firstName}!`,
 		products,

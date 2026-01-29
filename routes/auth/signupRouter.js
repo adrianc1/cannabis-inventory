@@ -7,6 +7,10 @@ router.get('/', (req, res) => {
 });
 
 router.get('/signup/create-account', authController.getSignUpForm);
-router.post('/signup/create-account', authController.postSignUpForm);
+router.post(
+	'/signup/create-account',
+	authController.validateUser,
+	authController.postSignUpForm,
+);
 
 module.exports = router;

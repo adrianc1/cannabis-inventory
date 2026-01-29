@@ -24,7 +24,12 @@ const postSignUpForm = async (req, res) => {
 	});
 };
 
+const getLoginForm = async (req, res) => {
+	res.render('auth/login.ejs');
+};
+
 module.exports = {
 	getSignUpForm,
 	postSignUpForm,
+	getLoginForm,
 };

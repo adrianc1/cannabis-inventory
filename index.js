@@ -9,6 +9,7 @@ const categoryRouter = require('./routes/categoryRouter');
 const productsRouter = require('./routes/productsRouter');
 const strainsRouter = require('./routes/strainsRouter');
 const signupRouter = require('./routes/auth/signupRouter');
+const loginRouter = require('./routes/auth/loginRouter');
 
 const app = express();
 const PORT = 3000;
@@ -48,6 +49,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/', signupRouter);
+app.use('/login', loginRouter);
 
 app.use('/products', productsRouter);
 app.use('/categories', categoryRouter);

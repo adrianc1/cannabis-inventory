@@ -44,7 +44,7 @@
 					/>
 				</div>
 
-				<div class="flex flex-col gap-2">
+				<div class="flex flex-col gap-2 md:col-span-2">
 					<label for="email" class="text-sm font-semibold text-gray-600"
 						>Email Address</label
 					>
@@ -56,19 +56,6 @@
 						class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
 					/>
 				</div>
-
-				<div class="flex flex-col gap-2">
-					<label for="company" class="text-sm font-semibold text-gray-600"
-						>Company</label
-					>
-					<input
-						type="text"
-						id="company"
-						name="company"
-						class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-					/>
-				</div>
-
 				<div class="flex flex-col gap-2">
 					<label for="password" class="text-sm font-semibold text-gray-600"
 						>Password</label
@@ -94,14 +81,44 @@
 						class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
 					/>
 				</div>
+				<div class="md:col-span-2 border-t pt-4 mt-2">
+					<h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider">
+						Business Information
+					</h3>
+				</div>
+
+				<div class="flex flex-col gap-2">
+					<label for="company" class="text-sm font-semibold text-gray-600"
+						>Company</label
+					>
+					<input
+						type="text"
+						id="company"
+						name="company"
+						class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+					/>
+				</div>
+				<div class="flex flex-col gap-2">
+					<label for="license" class="text-sm font-semibold text-gray-600"
+						>License Number</label
+					>
+					<input
+						type="text"
+						id="license"
+						name="license"
+						class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+					/>
+				</div>
 			</div>
 
-			<button
-				type="submit"
-				class="w-full md:w-auto md:px-10 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer mt-4"
-			>
-				Create Account
-			</button>
+			<div class="flex justify-center mt-6">
+				<button
+					type="submit"
+					class="w-full md:w-64 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer"
+				>
+					Create Account
+				</button>
+			</div>
 		</form>
 	</body>
 </html>

@@ -2,5 +2,5 @@ CREATE TABLE IF NOT EXISTS companies (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(255),
     license_number VARCHAR(255),
-    location TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
 )

@@ -2,18 +2,20 @@ const db = require('../db/queries');
 const bcrypt = require('bcryptjs');
 const { body, validationResult, matchedData } = require('express-validator');
 
+const alphaErr = 'must contain only letters';
+const lengthErr = 'must be at least 2 characters';
 const validateUser = [
 	body('firstName')
 		.trim()
 		.isAlpha()
 		.withMessage(`First name ${alphaErr}`)
-		.isLength({ min: 2, max: 10 })
+		.isLength({ min: 2 })
 		.withMessage(`First name ${lengthErr}`),
 	body('lastName')
 		.trim()
 		.isAlpha()
 		.withMessage(`Last name ${alphaErr}`)
-		.isLength({ min: 2, max: 10 })
+		.isLength({ min: 2 })
 		.withMessage(`Last name ${lengthErr}`),
 	body('email')
 		.trim()
@@ -40,11 +42,15 @@ const getSignUpForm = async (req, res) => {
 };
 
 const postSignUpForm = async (req, res) => {
-	const error = validationResult(req);
-	const { firstName, lastName, email, company, license } = matchedData(
-		req.body,
-	);
-	console.log('the body!!!====', req.body);
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(400).render('auth/signup', {
+			errors: errors.array(),
+			formData: req.body,
+		});
+	}
+	const { firstName, lastName, email, company, license } = matchedData(req);
+
 	const password_hash = await bcrypt.hash(req.body.password, 10);
 	const products = await db.getAllProductsDB();
 	await db.signupAdmin(

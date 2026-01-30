@@ -1,8 +1,9 @@
 const express = require('express');
 const brandsController = require('../controllers/brandsController');
 const router = express.Router();
+const { ensureAuthenticated } = require('../middleware/authMiddleware');
 
-router.get('/', brandsController.getAllBrands);
+router.get('/', ensureAuthenticated, brandsController.getAllBrands);
 // router.get('/create-brand', brandsController.createBrandForm);
 // router.post('/create-brand', brandsController.insertBrand);
 // router.get('/:id/edit', brandsController.editBrandForm);

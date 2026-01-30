@@ -1,9 +1,10 @@
 const pool = require('./pool');
 
 // Product Queries
-const getAllProductsDB = async () => {
+const getAllProductsDB = async (user_id) => {
 	try {
-		const { rows } = await pool.query(`
+		const { rows } = await pool.query(
+			`
 			SELECT 
 			p.id,
 			p.name,
@@ -19,6 +20,7 @@ const getAllProductsDB = async () => {
 			LEFT JOIN categories ON p.category_id = categories.id
 			LEFT JOIN strains ON p.strain_id = strains.id
 			LEFT JOIN inventory AS i ON p.id = i.product_id
+			WHERE p.company_id=$1
 			GROUP BY p.id,
 			p.name,
 			p.description,
@@ -26,7 +28,9 @@ const getAllProductsDB = async () => {
 			brand_name,
 			category_name,
 			strain_name
-			`);
+			`,
+			[user_id],
+		);
 		return rows;
 	} catch (error) {
 		console.error('Database error', error);

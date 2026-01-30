@@ -379,6 +379,13 @@ const signupAdmin = async (
 	}
 };
 
+const getUserByEmail = async (email) => {
+	const { rows } = await pool.query(`SELECT * FROM users WHERE email=$1`, [
+		email,
+	]);
+	return rows[0];
+};
+
 module.exports = {
 	getAllProductsDB,
 	getProductDB,
@@ -400,4 +407,5 @@ module.exports = {
 	updateStrain,
 	createProductInventory,
 	signupAdmin,
+	getUserByEmail,
 };

@@ -5,26 +5,29 @@ const pool = require('../db/pool');
 
 module.exports = function (passport) {
 	passport.use(
-		new LocalStrategy(async (username, password, done) => {
-			try {
-				const user = await db.getUserByUsername(username);
+		new LocalStrategy(
+			{ usernameField: 'email' },
+			async (email, password, done) => {
+				try {
+					const user = await db.getUserByEmail(email);
 
-				if (!user) {
-					return done(null, false, { message: 'Incorrect username' });
+					if (!user) {
+						return done(null, false, { message: 'Incorrect email' });
+					}
+					const match = await bcrypt.compare(password, user.password_hash);
+
+					if (!match) {
+						console.log('it failed');
+						return done(null, false, { message: 'Incorrect password' });
+					}
+					console.log('it worked!!');
+
+					return done(null, user);
+				} catch (err) {
+					return done(err);
 				}
-				const match = await bcrypt.compare(password, user.password_hash);
-
-				if (!match) {
-					console.log('it failed');
-					return done(null, false, { message: 'Incorrect password' });
-				}
-				console.log('it worked!!');
-
-				return done(null, user);
-			} catch (err) {
-				return done(err);
-			}
-		}),
+			},
+		),
 	);
 
 	passport.serializeUser((user, done) => {

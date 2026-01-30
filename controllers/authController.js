@@ -21,11 +21,11 @@ const validateUser = [
 		.trim()
 		.isEmail()
 		.withMessage(`Must enter a valid email`)
-		.isLength({ min: 1 })
-		.withMessage(`Email must at least contain 1 character `),
+		.isLength({ min: 2 })
+		.withMessage(`Email must at least contain 2 characters`),
 	body('company')
-		.isLength({ min: 1 })
-		.withMessage(`company must at least contain 1 character `),
+		.isLength({ min: 2 })
+		.withMessage(`company must at least contain 2 characters`),
 	,
 	body('password')
 		.isLength({ min: 4 })
@@ -68,7 +68,12 @@ const postSignUpForm = async (req, res) => {
 };
 
 const getLoginForm = async (req, res) => {
-	res.render('auth/login.ejs');
+	res.render('auth/login');
+};
+
+const postLoginForm = async (req, res) => {
+	const { email, password } = req.body;
+	await db.authLogin();
 };
 
 module.exports = {
@@ -76,4 +81,5 @@ module.exports = {
 	postSignUpForm,
 	getLoginForm,
 	validateUser,
+	postLoginForm,
 };

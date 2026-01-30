@@ -7,6 +7,12 @@ router.get('/', (req, res) => {
 });
 
 router.get('/signup/create-account', authController.getSignUpForm);
+router.get('/logout', (req, res) => {
+	req.logout((err) => {
+		if (err) console.error(err);
+		res.redirect('/login');
+	});
+});
 router.post(
 	'/signup/create-account',
 	authController.validateUser,

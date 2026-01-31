@@ -309,10 +309,39 @@ const adjustProductInventory = async (
 	quantity,
 	notes,
 ) => {
-	const adjust = await pool.query(
-		'INSERT INTO inventory_movements (inventory_id, movement_type, quantity, notes) VALUES $1, $2, $3, $4',
-		[inventory_id, movement_type, quantity, notes],
+	const client = await pool.connect();
+
+	try {
+		await client.query('BEGIN');
+
+		await client.query(
+			`INSERT INTO inventory_movements (inventory_id, movement_type, quantity, notes) 
+             VALUES ($1, $2, $3, $4)`,
+			[inventory_id, movement_type, quantity, notes],
+		);
+
+		await client.query(
+			`UPDATE inventory 
+             SET quantity = quantity + $1 
+             WHERE id = $2`,
+			[quantity, inventory_id],
+		);
+
+		await client.query('COMMIT');
+	} catch (e) {
+		await client.query('ROLLBACK');
+		throw e;
+	} finally {
+		client.release();
+	}
+};
+
+const getInventoryId = async (productId) => {
+	const { rows } = await pool.query(
+		`SELECT * FROM inventory WHERE product_id=$1`,
+		[productId],
 	);
+	return rows[0];
 };
 
 const createCompany = async (companyName, licenseNumber) => {
@@ -400,4 +429,6 @@ module.exports = {
 	createProductInventory,
 	signupAdmin,
 	getUserByEmail,
+	adjustProductInventory,
+	getInventoryId,
 };

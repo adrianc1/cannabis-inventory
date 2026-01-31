@@ -99,7 +99,6 @@ const editProductForm = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-	console.log(req.params.id, 'ITS THE ID!', req.body);
 	const id = req.params.id;
 	const { name, description, unit, brandId, strainId, categoryId } = req.body;
 	await db.updateProduct(
@@ -160,7 +159,16 @@ const adjustInventoryGet = async (req, res) => {
 	}
 };
 
-const updateInventory = async (req, res) => {};
+const updateInventory = async (req, res) => {
+	console.log(req.body, 'check this!!');
+	const id = req.params.id;
+	const product = await db.getInventoryId(id);
+	const inventory_id = product.id;
+
+	const { quantity, reason, notes } = req.body;
+	await db.adjustProductInventory(inventory_id, reason, quantity, notes);
+	res.status(200).json({ success: true });
+};
 
 module.exports = {
 	getAllProducts,

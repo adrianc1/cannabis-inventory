@@ -161,6 +161,7 @@ const updateInventory = async (req, res) => {
 	console.log('current user!! ====', req.user);
 	const id = req.params.id;
 	const companyId = req.user.company_id;
+	const userId = req.user.id;
 	const product = await db.getInventoryId(id);
 	const inventory_id = product.id;
 
@@ -171,6 +172,7 @@ const updateInventory = async (req, res) => {
 		quantity,
 		notes,
 		companyId,
+		userId,
 	);
 	res.status(200).json({ success: true });
 };

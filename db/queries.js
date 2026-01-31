@@ -163,23 +163,10 @@ const getAllBrands = async () => {
 };
 
 const getBrand = async (brandId) => {
-	const { rows } = await pool.query(
-		`SELECT 
-		p.id,
-			p.name,
-			p.description,
-			p.unit,
-			p.category_id,
-			categories.name AS category_name,
-			strains.name AS strain_name
-			FROM products AS p
-			LEFT JOIN strains ON p.strain_id = strains.id
-			LEFT JOIN categories ON p.category_id = categories.id
-			WHERE p.brand_id = $1
-		
-		`,
-		[brandId],
-	);
+	const { rows } = await pool.query(`SELECT * FROM brands WHERE id=$1 `, [
+		brandId,
+	]);
+	return rows[0];
 };
 
 // Strain Queries
@@ -321,11 +308,41 @@ const adjustProductInventory = async (
 	movement_type,
 	quantity,
 	notes,
+	companyId,
 ) => {
-	const adjust = await pool.query(
-		'INSERT INTO inventory_movements (inventory_id, movement_type, quantity, notes) VALUES $1, $2, $3, $4',
-		[inventory_id, movement_type, quantity, notes],
+	const client = await pool.connect();
+
+	try {
+		await client.query('BEGIN');
+
+		await client.query(
+			`INSERT INTO inventory_movements (inventory_id, movement_type, quantity, notes, company_id) 
+             VALUES ($1, $2, $3, $4, $5)`,
+			[inventory_id, movement_type, quantity, notes, companyId],
+		);
+
+		await client.query(
+			`UPDATE inventory 
+             SET quantity = quantity + $1 
+             WHERE id = $2`,
+			[quantity, inventory_id],
+		);
+
+		await client.query('COMMIT');
+	} catch (e) {
+		await client.query('ROLLBACK');
+		throw e;
+	} finally {
+		client.release();
+	}
+};
+
+const getInventoryId = async (productId) => {
+	const { rows } = await pool.query(
+		`SELECT * FROM inventory WHERE product_id=$1`,
+		[productId],
 	);
+	return rows[0];
 };
 
 const createCompany = async (companyName, licenseNumber) => {
@@ -413,4 +430,6 @@ module.exports = {
 	createProductInventory,
 	signupAdmin,
 	getUserByEmail,
+	adjustProductInventory,
+	getInventoryId,
 };

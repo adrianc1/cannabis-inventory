@@ -1,22 +1,21 @@
-const formEl = document.getElementById('edit-form');
+const formEl = document.getElementById('adjust-form');
 
 document.addEventListener('DOMContentLoaded', () => {
-	const updateProductFunction = async () => {
+	console.log('ehehe');
+	const adjustInventoryFunction = async () => {
 		const productId = formEl.dataset.id;
 
 		const formData = new FormData(formEl);
 		const data = {
-			name: formData.get('name'),
-			description: formData.get('description'),
+			quantity: formData.get('quantity'),
 			unit: formData.get('unit'),
-			brandId: formData.get('brandId'),
-			strainId: formData.get('strainId'),
-			categoryId: formData.get('categoryId'),
+			reason: formData.get('movement_type'),
+			notes: formData.get('notes'),
 		};
 
 		console.log('Data to send:', data);
 
-		const res = await fetch(`/products/${productId}`, {
+		const res = await fetch(`/products/${productId}/adjust`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -33,9 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
 			alert('failed to update product');
 		}
 	};
+
 	const handleSubmit = (event) => {
 		event.preventDefault();
-		updateProductFunction();
+		adjustInventoryFunction();
 	};
 
 	formEl.addEventListener('submit', handleSubmit);

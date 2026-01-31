@@ -15,7 +15,17 @@ router.get(
 	ensureAuthenticated,
 	productsController.editProductForm,
 );
+
+router.get(
+	'/:id/adjust',
+	ensureAuthenticated,
+	productsController.adjustInventoryGet,
+);
+
+router.put('/:id/adjust', productsController.updateInventory);
+
 router.put('/:id', productsController.updateProduct);
+
 router.delete('/:id', productsController.deleteProduct);
 router.get('/:id', ensureAuthenticated, productsController.getProduct);
 

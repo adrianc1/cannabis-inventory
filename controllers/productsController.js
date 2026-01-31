@@ -99,10 +99,8 @@ const editProductForm = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-	console.log(req.params.id, 'ITS THE ID!', req.body);
 	const id = req.params.id;
-	const { name, description, unit, brandId, strainId, categoryId, quantity } =
-		req.body;
+	const { name, description, unit, brandId, strainId, categoryId } = req.body;
 	await db.updateProduct(
 		name,
 		description,
@@ -111,7 +109,68 @@ const updateProduct = async (req, res) => {
 		strainId,
 		categoryId,
 		id,
+	);
+	res.status(200).json({ success: true });
+};
+
+const adjustInventoryGet = async (req, res) => {
+	const units = ['g', 'mg', 'oz', 'each'];
+
+	try {
+		const product = await db.getProductDB(req.params.id);
+		const brand = await db.getBrand(product.brand_id);
+		const strain = await db.getStrain(product.strain_id);
+		const category = await db.getSingleCategory(product.category_id);
+		const adjustmentReasons = [
+			'Audit/Cycle Count',
+			'Drying/Moisture Loss',
+			'Laboratory Testing',
+			'Damaged Goods',
+			'Expired Product',
+			'Waste/Spoilage',
+			'Internal Quality Control',
+			'Theft/Loss',
+			'Data Entry Error',
+			'Promotional/Sample',
+			'Return to Vendor',
+			'Seizure/Legal Compliance',
+		];
+
+		if (!product) {
+			res.status(404).json({ error: 'Product not found' });
+			return;
+		}
+		if (!brand || !strain || !category) {
+			res.status(404).json({ error: 'No Brands, Strain, or Category Found' });
+		}
+
+		res.render('products/adjustInventory', {
+			product,
+			brand,
+			strain,
+			category,
+			units,
+			adjustmentReasons,
+		});
+	} catch (error) {
+		console.error(error);
+	}
+};
+
+const updateInventory = async (req, res) => {
+	console.log('current user!! ====', req.user);
+	const id = req.params.id;
+	const companyId = req.user.company_id;
+	const product = await db.getInventoryId(id);
+	const inventory_id = product.id;
+
+	const { quantity, reason, notes } = req.body;
+	await db.adjustProductInventory(
+		inventory_id,
+		reason,
 		quantity,
+		notes,
+		companyId,
 	);
 	res.status(200).json({ success: true });
 };
@@ -124,4 +183,6 @@ module.exports = {
 	deleteProduct,
 	insertProduct,
 	editProductForm,
+	adjustInventoryGet,
+	updateInventory,
 };

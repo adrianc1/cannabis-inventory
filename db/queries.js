@@ -323,7 +323,7 @@ const adjustProductInventory = async (
 
 		await client.query(
 			`UPDATE inventory 
-             SET quantity = quantity + $1 
+             SET quantity = $1 
              WHERE id = $2`,
 			[quantity, inventory_id],
 		);

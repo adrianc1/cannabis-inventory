@@ -21,6 +21,8 @@ router.get(
 	ensureAuthenticated,
 	productsController.adjustInventoryGet,
 );
+
+router.put('/:id/adjust', productsController.updateInventory);
 router.put('/:id', productsController.updateProduct);
 
 router.delete('/:id', productsController.deleteProduct);

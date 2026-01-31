@@ -1,18 +1,14 @@
 const formEl = document.getElementById('edit-form');
 
 document.addEventListener('DOMContentLoaded', () => {
-	const updateProductFunction = async () => {
+	const adjustInventoryFunction = async () => {
 		const productId = formEl.dataset.id;
 
 		const formData = new FormData(formEl);
 		const data = {
 			name: formData.get('name'),
 			description: formData.get('description'),
-			// quantity: formData.get('quantity'),
-			unit: formData.get('unit'),
-			brandId: formData.get('brandId'),
-			strainId: formData.get('strainId'),
-			categoryId: formData.get('categoryId'),
+			quantity: formData.get('quantity'),
 		};
 
 		console.log('Data to send:', data);

@@ -122,6 +122,20 @@ const adjustInventoryGet = async (req, res) => {
 		const brand = await db.getBrand(product.brand_id);
 		const strain = await db.getStrain(product.strain_id);
 		const category = await db.getSingleCategory(product.category_id);
+		const adjustmentReasons = [
+			'Audit/Cycle Count',
+			'Drying/Moisture Loss',
+			'Laboratory Testing',
+			'Damaged Goods',
+			'Expired Product',
+			'Waste/Spoilage',
+			'Internal Quality Control',
+			'Theft/Loss',
+			'Data Entry Error',
+			'Promotional/Sample',
+			'Return to Vendor',
+			'Seizure/Legal Compliance',
+		];
 
 		console.log('current selected product==', brand);
 
@@ -139,11 +153,14 @@ const adjustInventoryGet = async (req, res) => {
 			strain,
 			category,
 			units,
+			adjustmentReasons,
 		});
 	} catch (error) {
 		console.error(error);
 	}
 };
+
+const updateInventory = async (req, res) => {};
 
 module.exports = {
 	getAllProducts,
@@ -154,4 +171,5 @@ module.exports = {
 	insertProduct,
 	editProductForm,
 	adjustInventoryGet,
+	updateInventory,
 };

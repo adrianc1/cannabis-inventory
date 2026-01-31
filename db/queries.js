@@ -308,6 +308,7 @@ const adjustProductInventory = async (
 	movement_type,
 	quantity,
 	notes,
+	companyId,
 ) => {
 	const client = await pool.connect();
 
@@ -315,9 +316,9 @@ const adjustProductInventory = async (
 		await client.query('BEGIN');
 
 		await client.query(
-			`INSERT INTO inventory_movements (inventory_id, movement_type, quantity, notes) 
-             VALUES ($1, $2, $3, $4)`,
-			[inventory_id, movement_type, quantity, notes],
+			`INSERT INTO inventory_movements (inventory_id, movement_type, quantity, notes, company_id) 
+             VALUES ($1, $2, $3, $4, $5)`,
+			[inventory_id, movement_type, quantity, notes, companyId],
 		);
 
 		await client.query(

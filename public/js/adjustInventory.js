@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		console.log(res.body);
 
 		if (res.ok) {
-			window.location.href = `/products/${productId}/adjust`;
+			window.location.href = `/products/${productId}`;
 			return;
 		} else {
 			alert('failed to update product');

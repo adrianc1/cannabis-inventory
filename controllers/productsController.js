@@ -136,8 +136,6 @@ const adjustInventoryGet = async (req, res) => {
 			'Seizure/Legal Compliance',
 		];
 
-		console.log('current selected product==', brand);
-
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
 			return;
@@ -160,13 +158,20 @@ const adjustInventoryGet = async (req, res) => {
 };
 
 const updateInventory = async (req, res) => {
-	console.log(req.body, 'check this!!');
+	console.log('current user!! ====', req.user);
 	const id = req.params.id;
+	const companyId = req.user.company_id;
 	const product = await db.getInventoryId(id);
 	const inventory_id = product.id;
 
 	const { quantity, reason, notes } = req.body;
-	await db.adjustProductInventory(inventory_id, reason, quantity, notes);
+	await db.adjustProductInventory(
+		inventory_id,
+		reason,
+		quantity,
+		notes,
+		companyId,
+	);
 	res.status(200).json({ success: true });
 };
 

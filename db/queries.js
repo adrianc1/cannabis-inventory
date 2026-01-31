@@ -163,23 +163,10 @@ const getAllBrands = async () => {
 };
 
 const getBrand = async (brandId) => {
-	const { rows } = await pool.query(
-		`SELECT 
-		p.id,
-			p.name,
-			p.description,
-			p.unit,
-			p.category_id,
-			categories.name AS category_name,
-			strains.name AS strain_name
-			FROM products AS p
-			LEFT JOIN strains ON p.strain_id = strains.id
-			LEFT JOIN categories ON p.category_id = categories.id
-			WHERE p.brand_id = $1
-		
-		`,
-		[brandId],
-	);
+	const { rows } = await pool.query(`SELECT * FROM brands WHERE id=$1 `, [
+		brandId,
+	]);
+	return rows[0];
 };
 
 // Strain Queries

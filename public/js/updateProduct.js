@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const data = {
 			name: formData.get('name'),
 			description: formData.get('description'),
-			quantity: formData.get('quantity'),
+			// quantity: formData.get('quantity'),
 			unit: formData.get('unit'),
 			brandId: formData.get('brandId'),
 			strainId: formData.get('strainId'),

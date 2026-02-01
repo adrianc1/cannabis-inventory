@@ -7,12 +7,18 @@
 		<title>Adjust Quantity</title>
 	</head>
 	<body class="bg-gray-50 min-h-screen">
-            <form
+
+            <a href="/products" class="inline-flex items-center px-4 py-2 mt-4 bg-stone-100 border border-stone-200 text-stone-700 rounded-md hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-800 transition-all shadow-sm">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Back to products
+            </a>      
+
+                <form
 					data-id="<%= product.id %>"
 					id="adjust-form"
 					method="POST"
 					action="/products/<%= product.id %>/adjust"
-					class="space-y-6 px-8"
+					class="space-y-6 px-8 mt-8"
 				>
 					
                         <div class="flex items-center gap-2">

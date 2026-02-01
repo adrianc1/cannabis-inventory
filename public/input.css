@@ -7,7 +7,10 @@
 }
 
 body {
-	font-family: system-ui, -apple-system, sans-serif;
+	font-family:
+		system-ui,
+		-apple-system,
+		sans-serif;
 }
 
 .bg-gradient-radial {
@@ -49,6 +52,25 @@ body {
 
 .btn-secondary:hover {
 	background-color: rgb(161 98 7);
+	color: white;
+}
+
+/* Accent Buttons */
+.btn-tertiary {
+	display: inline-block;
+	padding: 0.625rem 1.5rem;
+	background-color: white;
+	color: rgb(0, 118, 14);
+	border: 2px solid rgb(0, 118, 14);
+	border-radius: 0.5rem;
+	font-weight: 500;
+	text-decoration: none;
+	transition: all 0.2s;
+	cursor: pointer;
+}
+
+.btn-tertiary:hover {
+	background-color: rgb(0, 118, 14);
 	color: white;
 }
 

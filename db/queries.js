@@ -368,9 +368,12 @@ const adjustProductInventory = async (
 const receiveInventory = async (
 	inventory_id,
 	quantity,
+	batch,
 	unit_price,
+	vendor,
 	reason = 'Receive',
 	notes,
+	userId,
 ) => {
 	const client = await pool.connect();
 
@@ -391,23 +394,22 @@ const receiveInventory = async (
 		}
 
 		const currentQty = current.rows[0].quantity;
-		const sum = quantity + currentQty;
+		const sum = Number(quantity) + Number(currentQty);
 
 		await client.query(
-			`INSERT INTO inventory_movements (inventory_id, movement_type, quantity, cost_per_unit, notes, company_id, user_id) 
+			`INSERT INTO inventory_movements (inventory_id, movement_type, quantity, cost_per_unit, notes, user_id) 
              VALUES ($1, $2, $3, $4, $5, $6)`,
-			[inventory_id, reason, delta, sum, companyId, userId],
+			[inventory_id, reason, sum, unit_price, notes, userId],
 		);
 
 		await client.query(
 			`UPDATE inventory 
-             SET quantity = sum,
-			 price_per_unit = $1,
-			 supplier_name =$2,
-			 lot_number = $3,
-			 notes = $4,
-             WHERE id = $5`,
-			[unit_price, vendor, batch, notes, inventory_id],
+     SET quantity = $1,
+         cost_price = $2,
+         supplier_name = $3,
+         lot_number = $4
+     WHERE id = $5`,
+			[sum, unit_price, vendor, batch, inventory_id],
 		);
 
 		await client.query('COMMIT');
@@ -514,4 +516,5 @@ module.exports = {
 	getUserByEmail,
 	adjustProductInventory,
 	getInventoryId,
+	receiveInventory,
 };

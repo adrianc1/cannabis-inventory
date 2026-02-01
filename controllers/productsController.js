@@ -117,9 +117,23 @@ const updateProduct = async (req, res) => {
 };
 
 const receiveInventoryPut = async (req, res) => {
+	console.log('hey its running!!!!', req.body);
 	const id = req.params.id;
+	const userId = req.user.id;
+	const inventoryData = await db.getInventoryId(id);
+	const inventory_id = inventoryData.id;
 	const { quantity, unit, unit_price, reason, notes, vendor, batch } = req.body;
-	await db.receiveInventory();
+	await db.receiveInventory(
+		inventory_id,
+		quantity,
+		batch,
+		unit_price,
+		vendor,
+		reason,
+		notes,
+		userId,
+	);
+	res.status(200).json({ success: true });
 };
 
 const adjustInventoryGet = async (req, res) => {
@@ -166,6 +180,7 @@ const adjustInventoryGet = async (req, res) => {
 	}
 };
 
+// update this back to the old coe
 const updateInventory = async (req, res) => {
 	const id = req.params.id;
 	const companyId = req.user.company_id;
@@ -185,6 +200,8 @@ const updateInventory = async (req, res) => {
 	res.status(200).json({ success: true });
 };
 
+// update this back to the old coe
+
 const receiveInventoryGet = async (req, res) => {
 	const units = ['g', 'mg', 'oz', 'each'];
 
@@ -194,7 +211,6 @@ const receiveInventoryGet = async (req, res) => {
 		const brand = await db.getBrand(product.brand_id);
 		const strain = await db.getStrain(product.strain_id);
 		const category = await db.getSingleCategory(product.category_id);
-		const inventory_id = await db.getInventoryId(id);
 		const adjustmentReason = 'Receive';
 		console.log();
 		res.render('products/receiveInventory', {
@@ -204,7 +220,6 @@ const receiveInventoryGet = async (req, res) => {
 			category,
 			units,
 			adjustmentReason,
-			inventory_id,
 		});
 	} catch (error) {
 		console.error(error);

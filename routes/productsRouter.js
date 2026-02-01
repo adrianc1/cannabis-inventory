@@ -26,6 +26,7 @@ router.get(
 
 router.put('/:id/adjust', productsController.updateInventory);
 router.put('/:id/receive', productsController.receiveInventoryPut);
+
 router.put('/:id', productsController.updateProduct);
 
 router.delete('/:id', productsController.deleteProduct);

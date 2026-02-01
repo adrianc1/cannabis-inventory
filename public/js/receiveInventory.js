@@ -1,4 +1,4 @@
-const formEl = document.getElementById('adjust-form');
+const formEl = document.getElementById('receive-form');
 
 document.addEventListener('DOMContentLoaded', () => {
 	const receiveInventoryFunction = async () => {
@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		const data = {
 			quantity: formData.get('quantity'),
 			unit: formData.get('unit'),
-			unit_price: formData('unit_price'),
-			reason: formData.get('movement_type'),
+			unit_price: formData.get('unit_price'),
+			reason: formData.get('reason'),
 			vender: formData.get('vendor'),
 			batch: formData.get('batch'),
 			notes: formData.get('notes'),

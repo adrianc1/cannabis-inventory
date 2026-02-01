@@ -60,7 +60,9 @@ CREATE TABLE products (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     unit VARCHAR(50),
-    created_at TIMESTAMP DEFAULT NOW()
+    sku VARCHAR(100),
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (company_id, sku)
 );
 
 -- CREATE LEVEL 4 (Depends on Products + Companies)
@@ -72,7 +74,9 @@ CREATE TABLE inventory (
     quantity DECIMAL(10,3) NOT NULL DEFAULT 0,
     cost_price DECIMAL(10,2),
     supplier_name VARCHAR(255),
-    last_updated TIMESTAMP DEFAULT NOW()
+    lot_number VARCHAR(100),
+    last_updated TIMESTAMP DEFAULT NOW(),
+    UNIQUE (product_id, location, lot_number)
 );
 
 -- CREATE LEVEL 5 (Audit Trail)
@@ -82,6 +86,7 @@ CREATE TABLE inventory_movements (
     user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     movement_type VARCHAR(50) NOT NULL,
     quantity DECIMAL(10,3) NOT NULL,
+    cost_per_unit DECIMAL(10,2),
     notes TEXT,
     created_at TIMESTAMP DEFAULT NOW()
 );

@@ -49,6 +49,7 @@ CREATE TABLE products (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     unit VARCHAR(50),
+    sku VARCHAR(100) UNIQUE,
     created_at TIMESTAMP DEFAULT NOW()
 );
 

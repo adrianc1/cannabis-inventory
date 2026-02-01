@@ -1,8 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
+const pg = require('pg');
+const pool = require('./db/pool.js');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+const pgSession = require('connect-pg-simple')(session);
 const path = require('node:path');
 const brandsRouter = require('./routes/brandsRouter');
 const categoryRouter = require('./routes/categoryRouter');
@@ -27,23 +30,23 @@ require('./auth/passport')(passport);
 require('dotenv').config();
 
 app.use(
-	session({
-		// dev env
-		secret: process.env.COOKIE_SECRET,
-		resave: false,
-		saveUninitialized: false,
-		cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 },
-	}),
 	// session({
-	// 	store: new pgSession({
-	// 		pool: pool,
-	// 		tableName: 'session',
-	// 	}),
+	// dev env
 	// 	secret: process.env.COOKIE_SECRET,
 	// 	resave: false,
 	// 	saveUninitialized: false,
-	// 	cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
+	// 	cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 },
 	// }),
+	session({
+		store: new pgSession({
+			pool: pool,
+			tableName: 'session',
+		}),
+		secret: process.env.COOKIE_SECRET,
+		resave: false,
+		saveUninitialized: false,
+		cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
+	}),
 );
 app.use(passport.initialize());
 app.use(passport.session());

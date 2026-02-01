@@ -316,10 +316,26 @@ const adjustProductInventory = async (
 	try {
 		await client.query('BEGIN');
 
+		const current = await client.query(
+			`SELECT quantity FROM inventory WHERE id=$1`,
+			[inventory_id],
+		);
+
+		if (current.rows.length === 0) {
+			throw new Error('Inventory record not found');
+		}
+
+		if (quantity < 0) {
+			throw new Error('Inventory cannot be negative');
+		}
+
+		const currentQty = current.rows[0].quantity;
+		const delta = quantity - currentQty;
+
 		await client.query(
 			`INSERT INTO inventory_movements (inventory_id, movement_type, quantity, notes, company_id, user_id) 
              VALUES ($1, $2, $3, $4, $5, $6)`,
-			[inventory_id, movement_type, quantity, notes, companyId, userId],
+			[inventory_id, movement_type, delta, notes, companyId, userId],
 		);
 
 		await client.query(

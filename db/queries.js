@@ -45,6 +45,7 @@ const getProductDB = async (id) => {
 			p.id,
 			p.name,
 			p.description,
+			p.sku,
 			p.unit,
 			p.brand_id,
 			p.category_id,
@@ -75,6 +76,7 @@ const insertProduct = async (
 	strainId,
 	categoryId,
 	userCompanyId,
+	sku,
 	quanity = 0,
 ) => {
 	const client = await pool.connect();
@@ -82,9 +84,18 @@ const insertProduct = async (
 	try {
 		await client.query('BEGIN');
 		const result = await client.query(
-			`INSERT INTO products (name, description, unit, brand_id, strain_id, category_id, company_id)
-			VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-			[name, description, unit, brandId, strainId, categoryId, userCompanyId],
+			`INSERT INTO products (name, description, unit, brand_id, strain_id, category_id, company_id, sku)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+			[
+				name,
+				description,
+				unit,
+				brandId,
+				strainId,
+				categoryId,
+				userCompanyId,
+				sku,
+			],
 		);
 		const product = result.rows[0];
 

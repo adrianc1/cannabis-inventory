@@ -1,58 +1,21 @@
--- Clear existing data in correct order
+-- 1. Insert a Company (Needed for User and Product FKs)
+INSERT INTO companies (name, license_number) 
+VALUES ('Green Relief Co', 'C-12345-LIC');
 
-TRUNCATE inventory_movements, inventory, products, users, companies, strains, brands, categories RESTART IDENTITY CASCADE;
-
-
--- COMPANIES
-INSERT INTO companies (name, license_number) VALUES
-('Green Relief Dispensary', 'C10-0000123-LIC'),
-('High Times Warehouse', 'C11-0000456-LIC');
-
-
--- USERS (Password is 'password123' hashed)
-INSERT INTO users (first_name, last_name, email, password_hash, company_id, role) VALUES
-('Alice', 'Owner', 'alice@greenrelief.com', '$2b$10$YourHashedPasswordHere', 1, 'admin'),
-('Bob', 'Staff', 'bob@hightimes.com', '$2b$10$YourHashedPasswordHere', 2, 'staff');
+-- 2. Insert Metadata (Brands, Strains, Categories)
+INSERT INTO brands (name, description) VALUES ('Humboldt Farms', 'Organic outdoor flower');
+INSERT INTO strains (name, type) VALUES ('OG Kush', 'Hybrid');
+INSERT INTO categories (name) VALUES ('Flower');
 
 
--- BRANDS / STRAINS / CATEGORIES (Global)
-INSERT INTO brands (name, description) VALUES
-('Korova', 'Premium cannabis brand known for quality concentrates'),
-('Ember Valley', 'High-quality flower and extract products'),
-('Mary''s Medicinal', 'Organic, small-batch cannabis products')
-ON CONFLICT (name) DO NOTHING;
+-- 3. Insert a Product
+INSERT INTO products (company_id, brand_id, strain_id, category_id, name, sku, unit)
+VALUES (1, 1, 1, 1, 'OG Kush 3.5g Pre-pack', 'OGK-35-FLW', 'grams');
 
+-- 4. Set Initial Inventory
+INSERT INTO inventory (product_id, company_id, location, quantity, cost_price, lot_number)
+VALUES (1, 1, 'Vault A', 500.000, 15.00, 'LOT-999-ABC');
 
-INSERT INTO strains (name, type, description) VALUES
-('Blue Dream', 'Hybrid', 'Sweet citrus flavor, relaxing body effect, energizing mental effect'),
-('Sour Diesel', 'Sativa', 'Pungent aroma, energizing and uplifting effects'),
-('Northern Lights', 'Indica', 'Earthy aroma, deeply relaxing, great for sleep')
-ON CONFLICT (name) DO NOTHING;
-
-
-INSERT INTO categories (name, description) VALUES
-('Flower', 'Cannabis flower products'),
-('Concentrates', 'Extracted cannabis products like wax and diamonds'),
-('Edibles', 'Cannabis-infused edibles like gummies and chocolates')
-ON CONFLICT (name) DO UPDATE SET description = EXCLUDED.description;
-
-
--- PRODUCTS
-
-INSERT INTO products (company_id, brand_id, strain_id, category_id, name, unit) VALUES
-(1, 1, 1, 1, 'Blue Dream 7g', 'g'),
-(1, 1, 1, 2, 'Korova Diamonds', 'g'),
-(2, 2, 2, 1, 'Sour Diesel 3.5g', 'g');
-
--- Inventory Items
-INSERT INTO inventory (product_id, company_id, quantity, cost_price, location) VALUES
-(1, 1, 20.000, 25.00, 'backroom'),
-(2, 1, 5.000, 35.00, 'vault'),
-(3, 2, 15.000, 15.00, 'backroom');
-
-
--- INVENTORY MOVEMENTS 
-
-INSERT INTO inventory_movements (inventory_id, user_id, movement_type, quantity, notes) VALUES
-(1, 1, 'restock', 20.000, 'Initial delivery'),
-(3, 2, 'restock', 15.000, 'Initial delivery');
+-- 5. Log the Initial Movement (Audit Trail)
+INSERT INTO inventory_movements (inventory_id, user_id, movement_type, quantity, notes)
+VALUES (1, 1, 'INVENTORY_START', 500.000, 'Initial stock entry');

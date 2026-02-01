@@ -32,6 +32,10 @@
 					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Strain</h3>
 					<p class="text-lg text-gray-800"><%= product.strain_name%></p>
 				</div>
+				<div>
+					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">SKU</h3>
+					<p class="text-lg text-gray-800"><%= product.sku%></p>
+				</div>
 
 				<div>
 					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Category</h3>
@@ -41,11 +45,14 @@
 				<div>
 					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Quantity</h3>
 					<p class="text-lg text-gray-800"><%= product.quantity || 'N/A' %></p>
-					<p><%= product.unit %></p>
-						</div>
+				</div>
+				<div>
+					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Unit</h3>
+					<p class="text-lg text-gray-800"><%= product.unit%></p>
+				</div>
 				</div>
 
-			<div class="flex gap-3">
+			<div class="flex gap-3 mt-4">
 				<button id="delete-btn" class="btn-danger" data-id="<%= product.id %>">
 					Delete Product
 				</button>

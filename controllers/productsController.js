@@ -51,7 +51,9 @@ const createProductForm = async (req, res) => {
 
 const insertProduct = async (req, res) => {
 	const userCompanyId = req.user.company_id;
-	const { name, description, unit, brandId, strainId, categoryId } = req.body;
+	const { name, description, unit, brandId, strainId, categoryId, sku } =
+		req.body;
+	console.log(req.body);
 	const product = await db.insertProduct(
 		name,
 		description,
@@ -60,6 +62,7 @@ const insertProduct = async (req, res) => {
 		strainId,
 		categoryId,
 		userCompanyId,
+		sku,
 	);
 	res.redirect(`/products/${product.id}`);
 };

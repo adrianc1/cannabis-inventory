@@ -116,6 +116,12 @@ const updateProduct = async (req, res) => {
 	res.status(200).json({ success: true });
 };
 
+const receiveInventoryPut = async (req, res) => {
+	const id = req.params.id;
+	const { quantity, unit, unit_price, reason, notes, vendor, batch } = req.body;
+	await db.receiveInventory();
+};
+
 const adjustInventoryGet = async (req, res) => {
 	const units = ['g', 'mg', 'oz', 'each'];
 
@@ -161,21 +167,20 @@ const adjustInventoryGet = async (req, res) => {
 };
 
 const updateInventory = async (req, res) => {
-	console.log('current user!! ====', req.user);
 	const id = req.params.id;
 	const companyId = req.user.company_id;
 	const userId = req.user.id;
 	const product = await db.getInventoryId(id);
 	const inventory_id = product.id;
 
-	const { quantity, reason, notes } = req.body;
+	const { quantity, unit_price, movement_type, vendor, batch, notes } =
+		req.body;
 	await db.adjustProductInventory(
 		inventory_id,
-		reason,
 		quantity,
+		unit_price,
+		reason,
 		notes,
-		companyId,
-		userId,
 	);
 	res.status(200).json({ success: true });
 };
@@ -184,11 +189,14 @@ const receiveInventoryGet = async (req, res) => {
 	const units = ['g', 'mg', 'oz', 'each'];
 
 	try {
+		const id = req.params.id;
 		const product = await db.getProductDB(req.params.id);
 		const brand = await db.getBrand(product.brand_id);
 		const strain = await db.getStrain(product.strain_id);
 		const category = await db.getSingleCategory(product.category_id);
+		const inventory_id = await db.getInventoryId(id);
 		const adjustmentReason = 'Receive';
+		console.log();
 		res.render('products/receiveInventory', {
 			product,
 			brand,
@@ -196,6 +204,7 @@ const receiveInventoryGet = async (req, res) => {
 			category,
 			units,
 			adjustmentReason,
+			inventory_id,
 		});
 	} catch (error) {
 		console.error(error);
@@ -213,4 +222,5 @@ module.exports = {
 	adjustInventoryGet,
 	updateInventory,
 	receiveInventoryGet,
+	receiveInventoryPut,
 };

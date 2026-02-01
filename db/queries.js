@@ -365,6 +365,60 @@ const adjustProductInventory = async (
 	}
 };
 
+const receiveInventory = async (
+	inventory_id,
+	quantity,
+	unit_price,
+	reason = 'Receive',
+	notes,
+) => {
+	const client = await pool.connect();
+
+	try {
+		await client.query('BEGIN');
+
+		const current = await client.query(
+			`SELECT quantity FROM inventory WHERE id=$1`,
+			[inventory_id],
+		);
+
+		if (current.rows.length === 0) {
+			throw new Error('Inventory record not found');
+		}
+
+		if (quantity < 0) {
+			throw new Error('Inventory cannot be negative');
+		}
+
+		const currentQty = current.rows[0].quantity;
+		const sum = quantity + currentQty;
+
+		await client.query(
+			`INSERT INTO inventory_movements (inventory_id, movement_type, quantity, cost_per_unit, notes, company_id, user_id) 
+             VALUES ($1, $2, $3, $4, $5, $6)`,
+			[inventory_id, reason, delta, sum, companyId, userId],
+		);
+
+		await client.query(
+			`UPDATE inventory 
+             SET quantity = sum,
+			 price_per_unit = $1,
+			 supplier_name =$2,
+			 lot_number = $3,
+			 notes = $4,
+             WHERE id = $5`,
+			[unit_price, vendor, batch, notes, inventory_id],
+		);
+
+		await client.query('COMMIT');
+	} catch (e) {
+		await client.query('ROLLBACK');
+		throw e;
+	} finally {
+		client.release();
+	}
+};
+
 const getInventoryId = async (productId) => {
 	const { rows } = await pool.query(
 		`SELECT * FROM inventory WHERE product_id=$1`,

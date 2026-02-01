@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			unit: formData.get('unit'),
 			unit_price: formData('unit_price'),
 			reason: formData.get('movement_type'),
+			vender: formData.get('vendor'),
+			batch: formData.get('batch'),
 			notes: formData.get('notes'),
 		};
 

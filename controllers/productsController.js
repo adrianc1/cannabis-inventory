@@ -188,15 +188,16 @@ const updateInventory = async (req, res) => {
 	const product = await db.getInventoryId(id);
 	const inventory_id = product.id;
 
-	const { quantity, unit_price, movement_type, vendor, batch, notes } =
-		req.body;
-	await db.adjustProductInventory(
+	const { quantity, movement_type, notes } = req.body;
+	const delta = await db.adjustProductInventory(
 		inventory_id,
+		movement_type,
 		quantity,
-		unit_price,
-		reason,
 		notes,
+		companyId,
+		userId,
 	);
+	console.log('the change in ventory:', delta);
 	res.status(200).json({ success: true });
 };
 

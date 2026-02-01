@@ -356,6 +356,8 @@ const adjustProductInventory = async (
 			[quantity, inventory_id],
 		);
 
+		return delta;
+
 		await client.query('COMMIT');
 	} catch (e) {
 		await client.query('ROLLBACK');

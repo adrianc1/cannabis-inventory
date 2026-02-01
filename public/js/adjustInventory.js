@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const data = {
 			quantity: formData.get('quantity'),
 			unit: formData.get('unit'),
-			reason: formData.get('movement_type'),
+			movement_type: formData.get('movement_type'),
 			notes: formData.get('notes'),
 		};
 

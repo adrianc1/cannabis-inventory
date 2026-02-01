@@ -20,7 +20,6 @@ const getProduct = async (req, res) => {
 			res.status(404).json({ error: 'Product not found' });
 			return;
 		}
-		console.log('the product you want=====', product);
 		res.render('products/product', { product });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error retreiving single product' });
@@ -53,7 +52,6 @@ const insertProduct = async (req, res) => {
 	const userCompanyId = req.user.company_id;
 	const { name, description, unit, brandId, strainId, categoryId, sku } =
 		req.body;
-	console.log(req.body);
 	const product = await db.insertProduct(
 		name,
 		description,
@@ -117,7 +115,6 @@ const updateProduct = async (req, res) => {
 };
 
 const receiveInventoryPut = async (req, res) => {
-	console.log('hey its running!!!!', req.body);
 	const id = req.params.id;
 	const userId = req.user.id;
 	const inventoryData = await db.getInventoryId(id);
@@ -180,13 +177,13 @@ const adjustInventoryGet = async (req, res) => {
 	}
 };
 
-// update this back to the old coe
 const updateInventory = async (req, res) => {
 	const id = req.params.id;
-	const companyId = req.user.company_id;
 	const userId = req.user.id;
 	const product = await db.getInventoryId(id);
 	const inventory_id = product.id;
+
+	console.log('the for adjustment body===', req.body);
 
 	const { quantity, movement_type, notes } = req.body;
 	const delta = await db.adjustProductInventory(
@@ -194,7 +191,6 @@ const updateInventory = async (req, res) => {
 		movement_type,
 		quantity,
 		notes,
-		companyId,
 		userId,
 	);
 	console.log('the change in ventory:', delta);

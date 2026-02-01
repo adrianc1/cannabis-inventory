@@ -1,20 +1,21 @@
 const formEl = document.getElementById('adjust-form');
 
 document.addEventListener('DOMContentLoaded', () => {
-	const adjustInventoryFunction = async () => {
+	const receiveInventoryFunction = async () => {
 		const productId = formEl.dataset.id;
 
 		const formData = new FormData(formEl);
 		const data = {
 			quantity: formData.get('quantity'),
 			unit: formData.get('unit'),
+			unit_price: formData('unit_price'),
 			reason: formData.get('movement_type'),
 			notes: formData.get('notes'),
 		};
 
 		console.log('Data to send:', data);
 
-		const res = await fetch(`/products/${productId}/adjust`, {
+		const res = await fetch(`/products/${productId}/receive`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -34,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
-		adjustInventoryFunction();
+		receiveInventoryFunction();
 	};
 
 	formEl.addEventListener('submit', handleSubmit);

@@ -10,6 +10,8 @@ router.get(
 	productsController.createProductForm,
 );
 router.post('/create-product', productsController.insertProduct);
+
+router.get('/:id/receive', productsController.receiveInventoryGet);
 router.get(
 	'/:id/edit',
 	ensureAuthenticated,

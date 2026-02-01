@@ -180,6 +180,28 @@ const updateInventory = async (req, res) => {
 	res.status(200).json({ success: true });
 };
 
+const receiveInventoryGet = async (req, res) => {
+	const units = ['g', 'mg', 'oz', 'each'];
+
+	try {
+		const product = await db.getProductDB(req.params.id);
+		const brand = await db.getBrand(product.brand_id);
+		const strain = await db.getStrain(product.strain_id);
+		const category = await db.getSingleCategory(product.category_id);
+		const adjustmentReason = 'Receive';
+		res.render('products/receiveInventory', {
+			product,
+			brand,
+			strain,
+			category,
+			units,
+			adjustmentReason,
+		});
+	} catch (error) {
+		console.error(error);
+	}
+};
+
 module.exports = {
 	getAllProducts,
 	getProduct,
@@ -190,4 +212,5 @@ module.exports = {
 	editProductForm,
 	adjustInventoryGet,
 	updateInventory,
+	receiveInventoryGet,
 };

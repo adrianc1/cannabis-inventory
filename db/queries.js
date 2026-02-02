@@ -336,19 +336,19 @@ const adjustProductInventory = async (
 		}
 
 		if (quantity < 0) {
-			throw new Error('Inventory cannot be negative');
+			throw new Error('New quantity cannot be negative');
 		}
 
 		const currentQty = current.rows[0].quantity;
 		const delta = quantity - currentQty;
 
-		await client.query(
+		const movementUpdate = await client.query(
 			`INSERT INTO inventory_movements (inventory_id, movement_type, quantity, notes, user_id) 
-             VALUES ($1, $2, $3, $4, $5)`,
+             VALUES ($1, $2, $3, $4, $5) RETURNING *`,
 			[inventory_id, movement_type, delta, notes, userId],
 		);
 
-		await client.query(
+		const inventoryUpdate = await client.query(
 			`UPDATE inventory 
              SET quantity = $1 
              WHERE id = $2`,
@@ -356,6 +356,7 @@ const adjustProductInventory = async (
 		);
 
 		await client.query('COMMIT');
+		return movementUpdate.rows[0];
 	} catch (e) {
 		await client.query('ROLLBACK');
 		throw e;

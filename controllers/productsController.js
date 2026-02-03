@@ -15,25 +15,25 @@ const getProduct = async (req, res) => {
 		console.log('Fetching product with id:', req.params.id);
 
 		const product = await db.getProductDB(req.params.id);
-		const productInventory = await db.getInventoryId(product.id);
-		const inventory = await db.getProductInventory(product.id);
-
-		console.log('oinventory====', inventory);
+		// const inventory = await db.getInventoryId(product.id);
+		const productInventory = await db.getProductInventory(req.params.id);
+		let totalValuation = 0;
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
 			return;
 		}
 
-		const rawTotalValuation =
-			productInventory.cost_price * productInventory.quantity;
+		console.log(productInventory);
 
-		const totalValuation = rawTotalValuation.toFixed(2);
+		// const rawTotalValuation =
+		// 	productInventory.cost_price * productInventory.quantity;
+
+		// const totalValuation = rawTotalValuation.toFixed(2);
 		res.render('products/product', {
 			product,
 			productInventory,
 			totalValuation,
-			inventory,
 		});
 	} catch (error) {
 		res.status(500).json({ error: 'Database error retreiving single product' });

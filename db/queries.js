@@ -414,6 +414,7 @@ const getInventoryByBatch = async (product_id, location, batch) => {
 		`SELECT * FROM inventory WHERE product_id=$1 AND location=$2 AND lot_number=$3`,
 		[product_id, location, batch],
 	);
+	return rows[0] || null;
 };
 
 const adjustProductInventory = async (
@@ -530,14 +531,14 @@ const getInventoryId = async (productId) => {
 		`SELECT * FROM inventory WHERE product_id=$1`,
 		[productId],
 	);
-	return rows[0];
+	return rows;
 };
 
 const getProductInventory = async (productId) => {
 	const { rows } = await pool.query(
 		`
 		SELECT * FROM inventory 
-		WHERE id=$1
+		WHERE product_id=$1
 		ORDER BY (location, lot_number)
 		`,
 		[productId],

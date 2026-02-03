@@ -17,19 +17,22 @@ const getProduct = async (req, res) => {
 		const product = await db.getProductDB(req.params.id);
 		// const inventory = await db.getInventoryId(product.id);
 		const productInventory = await db.getProductInventory(req.params.id);
-		let totalValuation = 0;
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
 			return;
 		}
 
-		console.log(productInventory);
+		console.log('productInventory====', productInventory);
 
-		// const rawTotalValuation =
-		// 	productInventory.cost_price * productInventory.quantity;
-
-		// const totalValuation = rawTotalValuation.toFixed(2);
+		let totalValuation = 0;
+		if (productInventory.length > 0) {
+			totalValuation = productInventory.reduce(
+				(sum, batch) => sum + batch.quantity * batch.cost_price,
+				0,
+			);
+			totalValuation = Number(totalValuation.toFixed(2));
+		}
 		res.render('products/product', {
 			product,
 			productInventory,

@@ -537,7 +537,8 @@ const getInventoryId = async (productId) => {
 const getProductInventory = async (productId) => {
 	const { rows } = await pool.query(
 		`
-		SELECT * FROM inventory 
+		SELECT *, COALESCE(cost_price, 0) AS cost_price
+		FROM inventory 
 		WHERE product_id=$1
 		ORDER BY (location, lot_number)
 		`,

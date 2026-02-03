@@ -4,7 +4,7 @@
       <div><strong>Lot:</strong> <%= batch.lot_number %></div>
       <div><strong>Location:</strong> <%= batch.location %></div>
       <div><strong>Quantity:</strong> <%= batch.quantity %></div>
-      <a href="/products/<%= product.id %>/adjust" class="btn-secondary">Adjust Quantity</a>
+      <a href="/products/<%= product.id %>/adjust/<%= batch.lot_number %>" class="btn-secondary">Adjust Quantity</a>
 
     </li>
   <% }) %>

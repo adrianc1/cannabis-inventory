@@ -23,8 +23,6 @@ const getProduct = async (req, res) => {
 			return;
 		}
 
-		console.log('productInventory====', productInventory);
-
 		let totalValuation = 0;
 		if (productInventory.length > 0) {
 			totalValuation = productInventory.reduce(
@@ -162,10 +160,15 @@ const adjustInventoryGet = async (req, res) => {
 	const units = ['g', 'mg', 'oz', 'each'];
 
 	try {
+		const lotNumber = req.params.lotNumber;
 		const product = await db.getProductDB(req.params.id);
 		const brand = await db.getBrand(product.brand_id);
 		const strain = await db.getStrain(product.strain_id);
 		const category = await db.getSingleCategory(product.category_id);
+		const selectedBatch = await db.getInventoryByLot(product.id, lotNumber);
+
+		console.log('this is the test', selectedBatch);
+
 		const adjustmentReasons = [
 			'Audit/Cycle Count',
 			'Drying/Moisture Loss',
@@ -196,6 +199,7 @@ const adjustInventoryGet = async (req, res) => {
 			category,
 			units,
 			adjustmentReasons,
+			selectedBatch,
 		});
 	} catch (error) {
 		console.error(error);
@@ -208,16 +212,14 @@ const updateInventory = async (req, res) => {
 	const product = await db.getInventoryId(id);
 	const inventory_id = product.id;
 
-	console.log('the for adjustment body===', req.user);
-
 	const { quantity, movement_type, notes } = req.body;
-	const delta = await db.applyInventoryMovement(
+	const delta = await db.applyInventoryMovement({
 		inventory_id,
-		quantity,
+		delta: Number(quantity),
 		movement_type,
 		notes,
 		userId,
-	);
+	});
 
 	res.status(200).json({ success: true });
 };
@@ -234,7 +236,6 @@ const receiveInventoryGet = async (req, res) => {
 		const strain = await db.getStrain(product.strain_id);
 		const category = await db.getSingleCategory(product.category_id);
 		const adjustmentReason = 'Receive';
-		console.log();
 		res.render('products/receiveInventory', {
 			product,
 			brand,

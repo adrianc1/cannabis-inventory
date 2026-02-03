@@ -333,7 +333,6 @@ const applyInventoryMovement = async ({
 		let invId, newQty;
 
 		if (inventory_id) {
-			// existing row → update
 			const { rows } = await client.query(
 				`SELECT quantity FROM inventory WHERE id=$1 FOR UPDATE`,
 				[inventory_id],
@@ -356,7 +355,6 @@ const applyInventoryMovement = async ({
 
 			invId = inventory_id;
 		} else {
-			// find batch row by product + location + batch
 			const { rows } = await client.query(
 				`SELECT id, quantity FROM inventory
          WHERE product_id=$1 AND location=$2 AND lot_number=$3 FOR UPDATE`,
@@ -364,7 +362,6 @@ const applyInventoryMovement = async ({
 			);
 
 			if (rows.length) {
-				// batch exists → update quantity
 				invId = rows[0].id;
 				newQty = rows[0].quantity + delta;
 
@@ -378,7 +375,6 @@ const applyInventoryMovement = async ({
 					[newQty, cost_per_unit, null, invId],
 				);
 			} else {
-				// new batch → insert row
 				const { rows: insertRows } = await client.query(
 					`INSERT INTO inventory
            (product_id, company_id, location, quantity, cost_price, supplier_name, lot_number)
@@ -415,6 +411,17 @@ const getInventoryByBatch = async (product_id, location, batch) => {
 		[product_id, location, batch],
 	);
 	return rows[0] || null;
+};
+
+const getInventoryByLot = async (productId, lotNumber) => {
+	const { rows } = await pool.query(
+		`SELECT * FROM inventory WHERE product_id = $1 AND lot_number = $2`,
+		[productId, lotNumber],
+	);
+
+	if (!rows || rows.length === 0) return null; // safer
+
+	return rows[0];
 };
 
 const adjustProductInventory = async (
@@ -639,4 +646,5 @@ module.exports = {
 	getProductInventory,
 	applyInventoryMovement,
 	getInventoryByBatch,
+	getInventoryByLot,
 };

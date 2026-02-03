@@ -18,13 +18,14 @@ router.get(
 	productsController.editProductForm,
 );
 
-router.get(
-	'/:id/adjust',
-	ensureAuthenticated,
-	productsController.adjustInventoryGet,
-);
+// router.get(
+// 	'/:id/adjust',
+// 	ensureAuthenticated,
+// 	productsController.adjustInventoryGet,
+// );
 
 router.put('/:id/adjust', productsController.updateInventory);
+router.get('/:id/adjust/:lotNumber', productsController.adjustInventoryGet);
 router.put('/:id/receive', productsController.receiveInventoryPut);
 
 router.put('/:id', productsController.updateProduct);

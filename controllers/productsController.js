@@ -16,6 +16,7 @@ const getProduct = async (req, res) => {
 
 		const product = await db.getProductDB(req.params.id);
 		const productInventory = await db.getInventoryId(product.id);
+		const inventory = await db.getProductInventory(product.id);
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
@@ -30,6 +31,7 @@ const getProduct = async (req, res) => {
 			product,
 			productInventory,
 			totalValuation,
+			inventory,
 		});
 	} catch (error) {
 		res.status(500).json({ error: 'Database error retreiving single product' });

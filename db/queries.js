@@ -429,6 +429,19 @@ const getInventoryId = async (productId) => {
 	return rows[0];
 };
 
+const getProductInventory = async (productId) => {
+	const { rows } = await pool.query(
+		`
+		SELECT * FROM inventory 
+		WHERE id=$1
+		ORDER BY (location, lot_number)
+		`,
+		[productId],
+	);
+
+	return rows;
+};
+
 const createCompany = async (companyName, licenseNumber) => {
 	const { rows } = await pool.query(
 		`INSERT INTO companies(name, license_number) VALUES ($1, $2) `,
@@ -517,4 +530,5 @@ module.exports = {
 	adjustProductInventory,
 	getInventoryId,
 	receiveInventory,
+	getProductInventory,
 };

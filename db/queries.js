@@ -340,7 +340,13 @@ const applyInventoryMovement = async ({
 
 			if (!rows.length) throw new Error('Inventory not found');
 
-			newQty = rows[0].quantity + delta;
+			const currentQty = parseFloat(rows[0].quantity);
+			const targetQty = Number(delta);
+			delta = targetQty - currentQty;
+			newQty = targetQty;
+
+			console.log('from the db!', rows, 'newQty', newQty, 'delta', delta);
+
 			if (newQty < 0) throw new Error('Inventory cannot be negative');
 
 			await client.query(
@@ -363,7 +369,7 @@ const applyInventoryMovement = async ({
 
 			if (rows.length) {
 				invId = rows[0].id;
-				newQty = rows[0].quantity + delta;
+				newQty = parseFloat(rows[0].quantity) + delta;
 
 				await client.query(
 					`UPDATE inventory
@@ -383,7 +389,7 @@ const applyInventoryMovement = async ({
 					[product_id, company_id, location, delta, cost_per_unit, null, batch],
 				);
 				invId = insertRows[0].id;
-				newQty = insertRows[0].quantity;
+				newQty = parseFloat(insertRows[0].quantity);
 			}
 		}
 
@@ -419,7 +425,7 @@ const getInventoryByLot = async (productId, lotNumber) => {
 		[productId, lotNumber],
 	);
 
-	if (!rows || rows.length === 0) return null; // safer
+	if (!rows || rows.length === 0) return null;
 
 	return rows[0];
 };

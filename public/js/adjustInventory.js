@@ -3,6 +3,7 @@ const formEl = document.getElementById('adjust-form');
 document.addEventListener('DOMContentLoaded', () => {
 	const adjustInventoryFunction = async () => {
 		const productId = formEl.dataset.id;
+		const lotNumber = formEl.dataset.lot;
 
 		const formData = new FormData(formEl);
 		const data = {
@@ -14,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		console.log('Data to send:', data);
 
-		const res = await fetch(`/products/${productId}/adjust`, {
+		const res = await fetch(`/products/${productId}/adjust/${lotNumber}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',

@@ -15,8 +15,8 @@ const getProduct = async (req, res) => {
 		console.log('Fetching product with id:', req.params.id);
 
 		const product = await db.getProductDB(req.params.id);
-		// const inventory = await db.getInventoryId(product.id);
 		const productInventory = await db.getProductInventory(req.params.id);
+		console.log('prodducts inv', productInventory);
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
@@ -208,23 +208,27 @@ const adjustInventoryGet = async (req, res) => {
 
 const updateInventory = async (req, res) => {
 	const id = req.params.id;
+	const lotNumber = req.params.lotNumber;
 	const userId = req.user.id;
-	const product = await db.getInventoryId(id);
-	const inventory_id = product.id;
 
+	const selectedBatch = await db.getInventoryByLot(id, lotNumber);
+
+	// console.log('hahahaah!!!!', selectedBatch);
 	const { quantity, movement_type, notes } = req.body;
-	const delta = await db.applyInventoryMovement({
-		inventory_id,
+	await db.applyInventoryMovement({
+		product_id: id,
+		inventory_id: selectedBatch.id,
+		company_id: selectedBatch.company_id,
+		location: selectedBatch.location,
 		delta: Number(quantity),
 		movement_type,
 		notes,
+		cost_per_unit: selectedBatch.cost_price || null,
 		userId,
 	});
 
 	res.status(200).json({ success: true });
 };
-
-// update this back to the old coe
 
 const receiveInventoryGet = async (req, res) => {
 	const units = ['g', 'mg', 'oz', 'each'];

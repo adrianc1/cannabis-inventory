@@ -15,9 +15,10 @@
 
                 <form
 					data-id="<%= product.id %>"
+                    data-lot="<%= selectedBatch.lot_number %>"
 					id="adjust-form"
 					method="POST"
-					action="/products/<%= product.id %>/adjust"
+					action="/products/<%= product.id %>/adjust/<%= selectedBatch.lot_number %>"
 					class="space-y-6 px-8 mt-8"
 				>
 					
@@ -58,6 +59,8 @@
                          name="quantity"
                          id="quantity"
                          value="<%= selectedBatch.quantity %>"
+                         step="0.001"
+                         min="0"
                          required
                          class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
                         >

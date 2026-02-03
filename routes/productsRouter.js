@@ -24,7 +24,7 @@ router.get(
 // 	productsController.adjustInventoryGet,
 // );
 
-router.put('/:id/adjust', productsController.updateInventory);
+router.put('/:id/adjust/:lotNumber', productsController.updateInventory);
 router.get('/:id/adjust/:lotNumber', productsController.adjustInventoryGet);
 router.put('/:id/receive', productsController.receiveInventoryPut);
 

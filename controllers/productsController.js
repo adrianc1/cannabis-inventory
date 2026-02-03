@@ -18,6 +18,8 @@ const getProduct = async (req, res) => {
 		const productInventory = await db.getInventoryId(product.id);
 		const inventory = await db.getProductInventory(product.id);
 
+		console.log('oinventory====', inventory);
+
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
 			return;
@@ -127,21 +129,29 @@ const updateProduct = async (req, res) => {
 };
 
 const receiveInventoryPut = async (req, res) => {
-	const id = req.params.id;
+	const product_id = req.params.id;
 	const userId = req.user.id;
-	const inventoryData = await db.getInventoryId(id);
-	const inventory_id = inventoryData.id;
+	const company_id = req.user.company_id;
 	const { quantity, unit, unit_price, reason, notes, vendor, batch } = req.body;
-	await db.receiveInventory(
-		inventory_id,
-		quantity,
+	const existingInventory = await db.getInventoryByBatch(
+		product_id,
+		'backroom',
 		batch,
-		unit_price,
-		vendor,
-		reason,
-		notes,
-		userId,
 	);
+	const inventory_id = existingInventory ? existingInventory.id : null;
+
+	await db.applyInventoryMovement({
+		product_id,
+		inventory_id,
+		company_id,
+		location: 'backroom',
+		batch,
+		delta: Number(quantity),
+		movement_type: reason,
+		notes,
+		cost_per_unit: unit_price,
+		userId,
+	});
 	res.status(200).json({ success: true });
 };
 
@@ -195,17 +205,17 @@ const updateInventory = async (req, res) => {
 	const product = await db.getInventoryId(id);
 	const inventory_id = product.id;
 
-	console.log('the for adjustment body===', req.body);
+	console.log('the for adjustment body===', req.user);
 
 	const { quantity, movement_type, notes } = req.body;
-	const delta = await db.adjustProductInventory(
+	const delta = await db.applyInventoryMovement(
 		inventory_id,
-		movement_type,
 		quantity,
+		movement_type,
 		notes,
 		userId,
 	);
-	console.log('the change in inventory:', delta);
+
 	res.status(200).json({ success: true });
 };
 

@@ -25,6 +25,7 @@ build/
 out/
 .next/
 .nuxt/
+public/tailwind.css
 
 # Logs
 npm-debug.log*

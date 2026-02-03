@@ -314,6 +314,108 @@ const createProductInventory = async (
 	);
 };
 
+const applyInventoryMovement = async ({
+	product_id,
+	inventory_id = null,
+	company_id,
+	location = 'backroom',
+	batch,
+	delta,
+	movement_type,
+	notes,
+	cost_per_unit = null,
+	userId,
+}) => {
+	const client = await pool.connect();
+	try {
+		await client.query('BEGIN');
+
+		let invId, newQty;
+
+		if (inventory_id) {
+			// existing row → update
+			const { rows } = await client.query(
+				`SELECT quantity FROM inventory WHERE id=$1 FOR UPDATE`,
+				[inventory_id],
+			);
+
+			if (!rows.length) throw new Error('Inventory not found');
+
+			newQty = rows[0].quantity + delta;
+			if (newQty < 0) throw new Error('Inventory cannot be negative');
+
+			await client.query(
+				`UPDATE inventory
+         SET quantity = $1,
+             cost_price = COALESCE($2, cost_price),
+             supplier_name = COALESCE($3, supplier_name),
+             last_updated = NOW()
+         WHERE id = $4`,
+				[newQty, cost_per_unit, null, inventory_id],
+			);
+
+			invId = inventory_id;
+		} else {
+			// find batch row by product + location + batch
+			const { rows } = await client.query(
+				`SELECT id, quantity FROM inventory
+         WHERE product_id=$1 AND location=$2 AND lot_number=$3 FOR UPDATE`,
+				[product_id, location, batch],
+			);
+
+			if (rows.length) {
+				// batch exists → update quantity
+				invId = rows[0].id;
+				newQty = rows[0].quantity + delta;
+
+				await client.query(
+					`UPDATE inventory
+           SET quantity=$1,
+               cost_price=COALESCE($2, cost_price),
+               supplier_name=COALESCE($3, supplier_name),
+               last_updated=NOW()
+           WHERE id=$4`,
+					[newQty, cost_per_unit, null, invId],
+				);
+			} else {
+				// new batch → insert row
+				const { rows: insertRows } = await client.query(
+					`INSERT INTO inventory
+           (product_id, company_id, location, quantity, cost_price, supplier_name, lot_number)
+           VALUES ($1,$2,$3,$4,$5,$6,$7)
+           RETURNING id, quantity`,
+					[product_id, company_id, location, delta, cost_per_unit, null, batch],
+				);
+				invId = insertRows[0].id;
+				newQty = insertRows[0].quantity;
+			}
+		}
+
+		// log movement
+		await client.query(
+			`INSERT INTO inventory_movements
+       (inventory_id, movement_type, quantity, cost_per_unit, notes, user_id)
+       VALUES ($1,$2,$3,$4,$5,$6)`,
+			[invId, movement_type, delta, cost_per_unit, notes, userId],
+		);
+
+		await client.query('COMMIT');
+		return { inventoryId: invId, newQty };
+	} catch (err) {
+		await client.query('ROLLBACK');
+		throw err;
+	} finally {
+		client.release();
+	}
+};
+
+const getInventoryByBatch = async (product_id, location, batch) => {
+	const { rows } = pool.query(
+		`SELECT * FROM inventory WHERE product_id=$1 AND location=$2 AND lot_number=$3`,
+		[product_id, location, batch],
+	);
+};
+
 const adjustProductInventory = async (
 	inventory_id,
 	movement_type,
@@ -394,12 +496,13 @@ const receiveInventory = async (
 		}
 
 		const currentQty = current.rows[0].quantity;
-		const sum = Number(quantity) + Number(currentQty);
+		const delta = Number(quantity);
+		const newQty = Number(currentQty) + delta;
 
 		await client.query(
 			`INSERT INTO inventory_movements (inventory_id, movement_type, quantity, cost_per_unit, notes, user_id) 
              VALUES ($1, $2, $3, $4, $5, $6)`,
-			[inventory_id, reason, sum, unit_price, notes, userId],
+			[inventory_id, reason, delta, unit_price, notes, userId],
 		);
 
 		await client.query(
@@ -409,10 +512,11 @@ const receiveInventory = async (
          supplier_name = $3,
          lot_number = $4
      WHERE id = $5`,
-			[sum, unit_price, vendor, batch, inventory_id],
+			[newQty, unit_price, vendor, batch, inventory_id],
 		);
 
 		await client.query('COMMIT');
+		return { newQty, delta };
 	} catch (e) {
 		await client.query('ROLLBACK');
 		throw e;
@@ -531,4 +635,6 @@ module.exports = {
 	getInventoryId,
 	receiveInventory,
 	getProductInventory,
+	applyInventoryMovement,
+	getInventoryByBatch,
 };

@@ -23,6 +23,18 @@ const getProduct = async (req, res) => {
 			return;
 		}
 
+		let totalInventory = 0;
+
+		if (productInventory.length > 0) {
+			console.log('========', typeof Number(productInventory[0].quantity));
+			totalInventory = productInventory.reduce(
+				(sum, batch) => sum + Number(batch.quantity),
+				0,
+			);
+		}
+
+		totalInventory = Number(totalInventory.toFixed(2));
+
 		let totalValuation = 0;
 		if (productInventory.length > 0) {
 			totalValuation = productInventory.reduce(
@@ -35,6 +47,7 @@ const getProduct = async (req, res) => {
 			product,
 			productInventory,
 			totalValuation,
+			totalInventory,
 		});
 	} catch (error) {
 		res.status(500).json({ error: 'Database error retreiving single product' });
@@ -213,7 +226,6 @@ const updateInventory = async (req, res) => {
 
 	const selectedBatch = await db.getInventoryByLot(id, lotNumber);
 
-	// console.log('hahahaah!!!!', selectedBatch);
 	const { quantity, movement_type, notes } = req.body;
 	await db.applyInventoryMovement({
 		product_id: id,

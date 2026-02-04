@@ -8,6 +8,17 @@ DROP TABLE IF EXISTS brands CASCADE;
 DROP TABLE IF EXISTS strains CASCADE;
 DROP TABLE IF EXISTS categories CASCADE;
 DROP TYPE IF EXISTS user_role CASCADE;
+DROP TYPE IF EXISTS inventory_status CASCADE;
+
+CREATE TYPE user_role AS ENUM ('admin', 'manager', 'staff');
+CREATE TYPE inventory_status AS ENUM (
+  'active',        
+  'inactive',     
+  'quarantine',    
+  'damaged',       
+  'expired',       
+  'reserved'       
+);
 
 -- CREATE LEVEL 1 (Independent Tables)
 CREATE TABLE companies (
@@ -37,7 +48,6 @@ CREATE TABLE categories (
 );
 
 -- CREATE LEVEL 2 (Depends on Companies)
-CREATE TYPE user_role AS ENUM ('admin', 'manager', 'staff');
 
 CREATE TABLE users (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -71,6 +81,7 @@ CREATE TABLE inventory (
     product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     location VARCHAR(255) DEFAULT 'backroom',
+    status inventory_status NOT NULL DEFAULT 'available',
     quantity DECIMAL(10,3) NOT NULL DEFAULT 0,
     cost_price DECIMAL(10,2),
     supplier_name VARCHAR(255),

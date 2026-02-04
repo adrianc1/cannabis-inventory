@@ -16,7 +16,6 @@ const getProduct = async (req, res) => {
 
 		const product = await db.getProductDB(req.params.id);
 		const productInventory = await db.getProductInventory(req.params.id);
-		console.log('prodducts inv', productInventory);
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
@@ -26,7 +25,6 @@ const getProduct = async (req, res) => {
 		let totalInventory = 0;
 
 		if (productInventory.length > 0) {
-			console.log('========', typeof Number(productInventory[0].quantity));
 			totalInventory = productInventory.reduce(
 				(sum, batch) => sum + Number(batch.quantity),
 				0,
@@ -179,8 +177,6 @@ const adjustInventoryGet = async (req, res) => {
 		const strain = await db.getStrain(product.strain_id);
 		const category = await db.getSingleCategory(product.category_id);
 		const selectedBatch = await db.getInventoryByLot(product.id, lotNumber);
-
-		console.log('this is the test', selectedBatch);
 
 		const adjustmentReasons = [
 			'Audit/Cycle Count',

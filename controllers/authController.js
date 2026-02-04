@@ -73,7 +73,7 @@ const getLoginForm = async (req, res) => {
 
 const postLoginForm = async (req, res) => {
 	const { email, password } = req.body;
-	await db.authLogin();
+	console.log(email, password);
 };
 
 module.exports = {

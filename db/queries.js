@@ -336,28 +336,6 @@ const applyInventoryMovement = async ({
 			delta = targetQty - currentQty;
 			newQty = targetQty;
 
-			console.log(targetQty === 0, 'this is what it should be!!');
-
-			// if adjusment goes to 0 or if restocked
-			if (targetQty === 0) {
-				await client.query(
-					`
-					UPDATE inventory 
-					SET inventory_status=$1
-					WHERE id=$2`,
-					['inactive', inventory_id],
-				);
-			} else {
-				await client.query(
-					`
-					UPDATE inventory
-					SET inventory_status=$1 
-					WHERE id=$2
-					`,
-					['active', inventory_id],
-				);
-			}
-
 			if (newQty < 0) throw new Error('Inventory cannot be negative');
 
 			await client.query(
@@ -405,24 +383,37 @@ const applyInventoryMovement = async ({
 		}
 
 		// ----- inventory status handling -----
-		const { rows: statusRows } = await client.query(
-			`SELECT inventory_status FROM inventory WHERE id=$1`,
-			[invId],
-		);
 
-		const currentStatus = statusRows[0]?.inventory_status;
-
-		if (currentStatus === 'active' || currentStatus === 'inactive') {
-			const newStatus = newQty === 0 ? 'inactive' : 'active';
-
+		if (status_override) {
 			await client.query(
 				`
 		UPDATE inventory
 		SET inventory_status = $1
 		WHERE id = $2
 		`,
-				[newStatus, invId],
+				[status_override, invId],
 			);
+		} else {
+			// Automatic quantity-based status
+			const { rows: statusRows } = await client.query(
+				`SELECT inventory_status FROM inventory WHERE id=$1`,
+				[invId],
+			);
+
+			const currentStatus = statusRows[0]?.inventory_status;
+
+			if (currentStatus === 'active' || currentStatus === 'inactive') {
+				const newStatus = newQty === 0 ? 'inactive' : 'active';
+
+				await client.query(
+					`
+			UPDATE inventory
+			SET inventory_status = $1
+			WHERE id = $2
+			`,
+					[newStatus, invId],
+				);
+			}
 		}
 
 		// log movement

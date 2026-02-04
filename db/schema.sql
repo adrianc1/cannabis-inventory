@@ -1,4 +1,26 @@
--- Independent Tables
+-- CLEAN SLATE
+DROP TABLE IF EXISTS inventory_movements CASCADE;
+DROP TABLE IF EXISTS inventory CASCADE;
+DROP TABLE IF EXISTS products CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS companies CASCADE;
+DROP TABLE IF EXISTS brands CASCADE;
+DROP TABLE IF EXISTS strains CASCADE;
+DROP TABLE IF EXISTS categories CASCADE;
+DROP TYPE IF EXISTS user_role CASCADE;
+DROP TYPE IF EXISTS inventory_status CASCADE;
+
+CREATE TYPE user_role AS ENUM ('admin', 'manager', 'staff');
+CREATE TYPE inventory_status AS ENUM (
+  'active',        
+  'inactive',     
+  'quarantine',    
+  'damaged',       
+  'expired',       
+  'reserved'       
+);
+
+-- CREATE LEVEL 1 (Independent Tables)
 CREATE TABLE companies (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(255) NOT NULL,
@@ -25,8 +47,7 @@ CREATE TABLE categories (
     description TEXT
 );
 
--- Depends on Companies
-CREATE TYPE user_role AS ENUM ('admin', 'manager', 'staff');
+-- CREATE LEVEL 2 (Depends on Companies)
 
 CREATE TABLE users (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -39,7 +60,7 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Depends on Companies + Metadata
+-- CREATE LEVEL 3 (Depends on Companies + Metadata)
 CREATE TABLE products (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
@@ -49,31 +70,35 @@ CREATE TABLE products (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     unit VARCHAR(50),
-    sku VARCHAR(100) UNIQUE,
-    created_at TIMESTAMP DEFAULT NOW()
+    sku VARCHAR(100),
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (company_id, sku)
 );
 
--- Depends on Products + Companies
+-- CREATE LEVEL 4 (Depends on Products + Companies)
 CREATE TABLE inventory (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     location VARCHAR(255) DEFAULT 'backroom',
+    status inventory_status NOT NULL DEFAULT 'active',
     quantity DECIMAL(10,3) NOT NULL DEFAULT 0,
     cost_price DECIMAL(10,2),
     supplier_name VARCHAR(255),
-    last_updated TIMESTAMP DEFAULT NOW()
+    lot_number VARCHAR(100),
+    last_updated TIMESTAMP DEFAULT NOW(),
+    UNIQUE (product_id, location, lot_number)
 );
 
--- Audit Trail
+-- CREATE LEVEL 5 (Audit Trail)
 CREATE TABLE inventory_movements (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     inventory_id INTEGER NOT NULL REFERENCES inventory(id) ON DELETE CASCADE,
     user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     movement_type VARCHAR(50) NOT NULL,
     quantity DECIMAL(10,3) NOT NULL,
+    cost_per_unit DECIMAL(10,2),
     notes TEXT,
     created_at TIMESTAMP DEFAULT NOW()
 );
-
 

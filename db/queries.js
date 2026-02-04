@@ -121,7 +121,6 @@ const updateProduct = async (
 	strainId,
 	categoryId,
 	id,
-	quantity = 0,
 ) => {
 	const client = await pool.connect();
 
@@ -139,14 +138,6 @@ const updateProduct = async (
        category_id = $6
    WHERE id = $7`,
 			[name, description, unit, brandId, strainId, categoryId, id],
-		);
-
-		await client.query(
-			`UPDATE inventory 
-            SET quantity = $1 
-			WHERE product_id = $2
-`,
-			[quantity, id],
 		);
 
 		await client.query('COMMIT');
@@ -412,10 +403,11 @@ const applyInventoryMovement = async ({
 };
 
 const getInventoryByBatch = async (product_id, location, batch) => {
-	const { rows } = pool.query(
+	const { rows } = await pool.query(
 		`SELECT * FROM inventory WHERE product_id=$1 AND location=$2 AND lot_number=$3`,
 		[product_id, location, batch],
 	);
+
 	return rows[0] || null;
 };
 

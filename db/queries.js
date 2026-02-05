@@ -1,34 +1,79 @@
 const pool = require('./pool');
 
+const getProductWithInventoryDB = async (id) => {
+	try {
+		const { rows } = await pool.query(
+			`
+      SELECT 
+        p.id,
+        p.name,
+        p.description,
+        p.sku,
+        p.unit,
+        p.brand_id,
+        p.category_id,
+        p.strain_id,
+        brands.name AS brand_name,
+        categories.name AS category_name,
+        strains.name AS strain_name,
+        COALESCE(SUM(i.quantity),0) AS total_quantity,
+        COALESCE(SUM(i.quantity * i.cost_price),0) AS total_valuation,
+        CASE 
+          WHEN SUM(i.quantity) > 0 THEN ROUND(SUM(i.quantity * i.cost_price) / SUM(i.quantity), 2)
+          ELSE 0
+        END AS average_cost
+      FROM products p
+      LEFT JOIN brands ON p.brand_id = brands.id
+      LEFT JOIN categories ON p.category_id = categories.id
+      LEFT JOIN strains ON p.strain_id = strains.id
+      LEFT JOIN inventory i ON p.id = i.product_id
+      WHERE p.id = $1
+      GROUP BY p.id, p.name, p.sku, p.unit, p.brand_id, p.category_id, p.strain_id, brand_name, category_name, strain_name
+      `,
+			[id],
+		);
+		return rows[0];
+	} catch (error) {
+		throw error;
+	}
+};
+
 // Product Queries
 const getAllProductsDB = async (user_id) => {
 	try {
 		const { rows } = await pool.query(
 			`
-			SELECT 
-			p.id,
-			p.name,
-			p.description,
-			p.unit,
-			p.category_id,
-			brands.name AS brand_name,
-			categories.name AS category_name,
-			strains.name AS strain_name,
-			COALESCE(SUM(i.quantity), 0) AS product_qty
-			FROM products AS p
-			LEFT JOIN brands ON p.brand_id = brands.id
-			LEFT JOIN categories ON p.category_id = categories.id
-			LEFT JOIN strains ON p.strain_id = strains.id
-			LEFT JOIN inventory AS i ON p.id = i.product_id
-			WHERE p.company_id=$1
-			GROUP BY p.id,
-			p.name,
-			p.description,
-			p.unit,
-			brand_name,
-			category_name,
-			strain_name
-			`,
+      SELECT 
+        p.id,
+        p.name,
+        p.description,
+        p.unit,
+        p.category_id,
+        brands.name AS brand_name,
+        categories.name AS category_name,
+        strains.name AS strain_name,
+        COALESCE(SUM(i.quantity),0) AS product_qty,
+        COALESCE(SUM(i.quantity * COALESCE(i.cost_price,0)),0)::FLOAT AS total_valuation,
+        CASE 
+          WHEN SUM(i.quantity) > 0 THEN ROUND(SUM(i.quantity * COALESCE(i.cost_price,0)) / SUM(i.quantity), 2)
+          ELSE 0
+        END::FLOAT AS average_cost
+      FROM products AS p
+      LEFT JOIN brands ON p.brand_id = brands.id
+      LEFT JOIN categories ON p.category_id = categories.id
+      LEFT JOIN strains ON p.strain_id = strains.id
+      LEFT JOIN inventory AS i ON p.id = i.product_id
+      WHERE p.company_id=$1
+      GROUP BY 
+        p.id,
+        p.name,
+        p.description,
+        p.unit,
+        p.category_id,
+        brand_name,
+        category_name,
+        strain_name
+      `,
 			[user_id],
 		);
 		return rows;
@@ -663,4 +708,5 @@ module.exports = {
 	applyInventoryMovement,
 	getInventoryByBatch,
 	getInventoryByLot,
+	getProductWithInventoryDB,
 };

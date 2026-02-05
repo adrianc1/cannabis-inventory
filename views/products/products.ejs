@@ -59,18 +59,29 @@
 				<th class="table-header">Brand</th>
 				<th class="table-header">Category</th>
 				<th class="table-header">Quantity</th>
+				<th class="table-header">Avg Cost</th>
+				<th class="table-header">Total Valuation</th>
 			</tr>
-			<% products.map((product) => { %>
+
+			<% products.forEach((product) => { %>
 			<tr class="product-row">
-				<td><a href="/products/<%=product.id%>"><%= product.name %></a></td>
-				<td><%=product.strain_name ? product.strain_name : 'N/A' %></td>
-				<td><%=product.brand_name%></td>
+				<td><a href="/products/<%= product.id %>"><%= product.name %></a></td>
+				<td><%= product.strain_name || 'N/A' %></td>
+				<td><%= product.brand_name || 'N/A' %></td>
 				<td>
-					<a href="/categories/<%=product.category_id%>"
-						><%=product.category_name%></a
-					>
+				<a href="/categories/<%= product.category_id %>">
+					<%= product.category_name || 'N/A' %>
+				</a>
 				</td>
-				<td><%=product.product_qty%></td>
+				<td>
+				<%= product.product_qty %> <%= product.unit %>
+				</td>
+				<td>
+				$<%= Number(product.average_cost || 0).toFixed(2) %>
+				</td>
+				<td>
+				$<%= Number(product.total_valuation || 0).toFixed(2) %>
+				</td>
 			</tr>
 			<% }) %>
 		</table>

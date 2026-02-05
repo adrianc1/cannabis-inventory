@@ -1,4 +1,5 @@
 const db = require('../db/queries');
+const { convertQuantity } = require('../utils/conversion');
 
 const getAllProducts = async (req, res) => {
 	try {
@@ -34,18 +35,33 @@ const getProduct = async (req, res) => {
 		totalInventory = Number(totalInventory.toFixed(2));
 
 		let totalValuation = 0;
-		if (productInventory.length > 0) {
-			totalValuation = productInventory.reduce(
-				(sum, batch) => sum + batch.quantity * batch.cost_price,
-				0,
-			);
-			totalValuation = Number(totalValuation.toFixed(2));
-		}
+		let totalQuantity = 0;
+
+		productInventory.forEach((batch) => {
+			const qty = Number(batch.quantity);
+			const cost = Number(batch.cost_price);
+
+			totalValuation += qty * cost;
+			totalQuantity += qty;
+		});
+
+		totalValuation = Number(totalValuation.toFixed(2));
+
+		const averageCost =
+			totalQuantity > 0
+				? Number((totalValuation / totalQuantity).toFixed(2))
+				: 0;
+
+		console.log('productInventory:', productInventory);
+		console.log('valuation:', totalValuation);
+		console.log('quantity sum:', totalQuantity);
+
 		res.render('products/product', {
 			product,
 			productInventory,
 			totalValuation,
 			totalInventory,
+			averageCost,
 		});
 	} catch (error) {
 		res.status(500).json({ error: 'Database error retreiving single product' });
@@ -97,7 +113,7 @@ const deleteProduct = async (req, res) => {
 };
 
 const editProductForm = async (req, res) => {
-	const units = ['g', 'mg', 'oz', 'each'];
+	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
 	try {
 		const brands = await db.getAllBrands();
@@ -142,6 +158,7 @@ const updateProduct = async (req, res) => {
 
 const receiveInventoryPut = async (req, res) => {
 	const product_id = req.params.id;
+	const product = await db.getProductDB(product_id);
 	const userId = req.user.id;
 	const company_id = req.user.company_id;
 	const { quantity, unit, unit_price, reason, notes, vendor, batch } = req.body;
@@ -152,13 +169,15 @@ const receiveInventoryPut = async (req, res) => {
 	);
 	const inventory_id = existingInventory ? existingInventory.id : null;
 
+	const normalizedQty = convertQuantity(quantity, unit, product.unit);
+
 	await db.applyInventoryMovement({
 		product_id,
 		inventory_id,
 		company_id,
 		location: 'backroom',
 		batch,
-		delta: Number(quantity),
+		delta: Number(normalizedQty),
 		movement_type: reason,
 		notes,
 		cost_per_unit: unit_price,
@@ -168,7 +187,7 @@ const receiveInventoryPut = async (req, res) => {
 };
 
 const adjustInventoryGet = async (req, res) => {
-	const units = ['g', 'mg', 'oz', 'each'];
+	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
 	try {
 		const lotNumber = req.params.lotNumber;
@@ -239,7 +258,7 @@ const updateInventory = async (req, res) => {
 };
 
 const receiveInventoryGet = async (req, res) => {
-	const units = ['g', 'mg', 'oz', 'each'];
+	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
 	try {
 		const id = req.params.id;

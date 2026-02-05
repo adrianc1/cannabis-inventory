@@ -19,7 +19,16 @@ CREATE TYPE inventory_status AS ENUM (
   'expired',       
   'reserved'       
 );
-
+CREATE TYPE unit AS ENUM (
+  'mg',  
+  'g',    
+  'kg',  
+  'oz',  
+  'lb',   
+  'ml',   
+  'l',   
+  'each'  
+);
 -- CREATE LEVEL 1 (Independent Tables)
 CREATE TABLE companies (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -69,7 +78,7 @@ CREATE TABLE products (
     category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    unit VARCHAR(50),
+    unit unit NOT NULL,
     sku VARCHAR(100),
     created_at TIMESTAMP DEFAULT NOW(),
     UNIQUE (company_id, sku)

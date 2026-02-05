@@ -53,7 +53,7 @@ const getProduct = async (req, res) => {
 };
 
 const createProductForm = async (req, res) => {
-	const units = ['g', 'mg', 'oz', 'each'];
+	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 	try {
 		const brands = await db.getAllBrands();
 		const strains = await db.getAllStrains();

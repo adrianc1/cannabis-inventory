@@ -381,39 +381,25 @@ const applyInventoryMovement = async ({
 				newQty = parseFloat(insertRows[0].quantity);
 			}
 		}
+		// Automatic quantity-based status
+		const { rows: statusRows } = await client.query(
+			`SELECT inventory_status FROM inventory WHERE id=$1`,
+			[invId],
+		);
 
-		// ----- inventory status handling -----
+		const currentStatus = statusRows[0]?.inventory_status;
 
-		if (status_override) {
+		if (currentStatus === 'active' || currentStatus === 'inactive') {
+			const newStatus = newQty === 0 ? 'inactive' : 'active';
+
 			await client.query(
 				`
-		UPDATE inventory
-		SET inventory_status = $1
-		WHERE id = $2
-		`,
-				[status_override, invId],
-			);
-		} else {
-			// Automatic quantity-based status
-			const { rows: statusRows } = await client.query(
-				`SELECT inventory_status FROM inventory WHERE id=$1`,
-				[invId],
-			);
-
-			const currentStatus = statusRows[0]?.inventory_status;
-
-			if (currentStatus === 'active' || currentStatus === 'inactive') {
-				const newStatus = newQty === 0 ? 'inactive' : 'active';
-
-				await client.query(
-					`
 			UPDATE inventory
 			SET inventory_status = $1
 			WHERE id = $2
 			`,
-					[newStatus, invId],
-				);
-			}
+				[newStatus, invId],
+			);
 		}
 
 		// log movement

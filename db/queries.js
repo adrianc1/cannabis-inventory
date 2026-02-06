@@ -374,7 +374,7 @@ const applyInventoryMovement = async ({
 	try {
 		await client.query('BEGIN');
 
-		let invId, newQty;
+		let invId, newQty, currentStatus;
 
 		if (inventory_id) {
 			const { rows } = await client.query(
@@ -434,21 +434,17 @@ const applyInventoryMovement = async ({
 				newQty = parseFloat(insertRows[0].quantity);
 			}
 		}
-		// Automatic quantity-based status
-		const { rows: statusRows } = await client.query(
-			`SELECT inventory_status FROM inventory WHERE id=$1`,
-			[invId],
-		);
-
-		const currentStatus = statusRows[0]?.inventory_status;
+		// Automatic quantity-based status if qty is 0
+		const newStatus = newQty === 0 ? 'inactive' : 'active';
 
 		if (currentStatus === 'active' || currentStatus === 'inactive') {
+			console.log('hey its updating here::', newQty === 0);
 			const newStatus = newQty === 0 ? 'inactive' : 'active';
 
 			await client.query(
 				`
 			UPDATE inventory
-			SET inventory_status = $1
+			SET status = $1
 			WHERE id = $2
 			`,
 				[newStatus, invId],
@@ -464,7 +460,7 @@ const applyInventoryMovement = async ({
 		);
 
 		await client.query('COMMIT');
-		return { inventoryId: invId, newQty };
+		return { inventoryId: invId, newQty, newStatus };
 	} catch (err) {
 		await client.query('ROLLBACK');
 		throw err;
@@ -519,6 +515,7 @@ const adjustProductInventory = async (
 		}
 
 		const currentQty = current.rows[0].quantity;
+		currentStatus = rows[0].status;
 		const delta = quantity - currentQty;
 
 		const movementUpdate = await client.query(

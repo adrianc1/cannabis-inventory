@@ -227,7 +227,7 @@ const adjustInventoryGet = async (req, res) => {
 			res.status(404).json({ error: 'No Brands, Strain, or Category Found' });
 		}
 
-		console.log('YOOOO!', selectedBatch);
+		console.log('heheheheheh', selectedBatch);
 
 		res.render('products/adjustInventory', {
 			product,

@@ -27,7 +27,25 @@
           <td class="px-3 py-2 border border-gray-300"><%= batch.quantity %></td>
           <td class="px-3 py-2 border border-gray-300">$<%= Number(batch.cost_price || 0).toFixed(2) %></td>
           <td class="px-3 py-2 border border-gray-300">$<%= Number((batch.quantity * (batch.cost_price || 0))).toFixed(2) %></td>
-          <td class="px-3 py-2 border border-gray-300 capitalize"><%= batch.status %></td>
+          <%
+            const statusClasses = {
+              active: 'bg-green-100 text-green-800',
+              inactive: 'bg-red-100 text-red-800',
+              pending: 'bg-yellow-100 text-yellow-800',
+              archived: 'bg-gray-200 text-gray-700'
+            };
+
+            const statusClass =
+              statusClasses[batch.inventory_status] || 'bg-gray-100 text-gray-800';
+          %>
+
+            <td class="px-3 py-2 border border-gray-300">
+              <span
+                class="inline-block px-2 py-1 rounded-full text-xs font-medium capitalize <%= statusClass %>"
+              >
+                <%= batch.inventory_status %>
+              </span>
+            </td>
           <td class="px-3 py-2 border border-gray-300">
             <a href="/products/<%= product.id %>/adjust/<%= batch.lot_number %>" class="btn-secondary">Adjust</a>
           </td>

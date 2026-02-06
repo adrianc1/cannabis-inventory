@@ -108,7 +108,14 @@ const insertProduct = async (req, res) => {
 };
 
 const deleteProduct = async (req, res) => {
-	await db.deleteProduct(req.params.id);
+	const result = await db.deleteProduct(req.params.id);
+
+	if (result.rowCount === 0) {
+		return res.status(400).json({
+			success: false,
+			message: 'Cannot delete product with exisiting inventory quantity',
+		});
+	}
 	res.status(200).json({ success: true });
 };
 
@@ -220,6 +227,8 @@ const adjustInventoryGet = async (req, res) => {
 			res.status(404).json({ error: 'No Brands, Strain, or Category Found' });
 		}
 
+		console.log('YOOOO!', selectedBatch);
+
 		res.render('products/adjustInventory', {
 			product,
 			brand,
@@ -241,7 +250,7 @@ const updateInventory = async (req, res) => {
 
 	const selectedBatch = await db.getInventoryByLot(id, lotNumber);
 
-	const { quantity, movement_type, notes } = req.body;
+	const { quantity, movement_type, notes, cost_price_unit } = req.body;
 	await db.applyInventoryMovement({
 		product_id: id,
 		inventory_id: selectedBatch.id,
@@ -250,7 +259,7 @@ const updateInventory = async (req, res) => {
 		delta: Number(quantity),
 		movement_type,
 		notes,
-		cost_per_unit: selectedBatch.cost_price || null,
+		cost_per_unit: cost_price_unit || null,
 		userId,
 	});
 

@@ -1,11 +1,38 @@
-<ul >
-  <% locals.productInventory.forEach(batch => { %>
-    <li class="flex justify-between items-center">
-      <div><strong>Lot:</strong> <%= batch.lot_number %></div>
-      <div><strong>Location:</strong> <%= batch.location %></div>
-      <div><strong>Quantity:</strong> <%= batch.quantity %></div>
-      <a href="/products/<%= product.id %>/adjust/<%= batch.lot_number %>" class="btn-secondary">Adjust Quantity</a>
+<div class="max-w-4xl mx-auto my-6">
+  <h2 class="text-2xl font-bold mb-4">Product Inventory: <%= product.name %></h2>
 
-    </li>
-  <% }) %>
-</ul>
+  <div class="mb-4 p-4 bg-gray-100 rounded-md flex justify-between">
+    <div>
+      <strong>Total Quantity:</strong> <%= productInventory.reduce((sum, b) => sum + Number(b.quantity), 0) %>
+    </div>
+  </div>
+
+  <table class="w-full table-auto border-collapse border border-gray-300">
+    <thead>
+      <tr class="bg-gray-200 text-left">
+        <th class="px-3 py-2 border border-gray-300">Lot #</th>
+        <th class="px-3 py-2 border border-gray-300">Location</th>
+        <th class="px-3 py-2 border border-gray-300">Quantity</th>
+        <th class="px-3 py-2 border border-gray-300">Cost Price</th>
+        <th class="px-3 py-2 border border-gray-300">Total Value</th>
+        <th class="px-3 py-2 border border-gray-300">Status</th>
+        <th class="px-3 py-2 border border-gray-300">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% productInventory.forEach(batch => { %>
+        <tr class="<%= batch.status === 'inactive' ? 'bg-red-100' : batch.status === 'reserved' ? 'bg-yellow-100' : '' %>">
+          <td class="px-3 py-2 border border-gray-300"><%= batch.lot_number %></td>
+          <td class="px-3 py-2 border border-gray-300"><%= batch.location %></td>
+          <td class="px-3 py-2 border border-gray-300"><%= batch.quantity %></td>
+          <td class="px-3 py-2 border border-gray-300">$<%= Number(batch.cost_price || 0).toFixed(2) %></td>
+          <td class="px-3 py-2 border border-gray-300">$<%= Number((batch.quantity * (batch.cost_price || 0))).toFixed(2) %></td>
+          <td class="px-3 py-2 border border-gray-300 capitalize"><%= batch.status %></td>
+          <td class="px-3 py-2 border border-gray-300">
+            <a href="/products/<%= product.id %>/adjust/<%= batch.lot_number %>" class="btn-secondary">Adjust</a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

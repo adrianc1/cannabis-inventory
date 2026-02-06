@@ -197,9 +197,17 @@ const updateProduct = async (
 
 // Delete Product
 const deleteProduct = async (productId) => {
-	const product = await pool.query('DELETE FROM products WHERE id = $1', [
-		productId,
-	]);
+	const product = await pool.query(
+		`DELETE FROM products 
+		WHERE id = $1
+		AND NOT EXISTS (
+		SELECT 1 
+		FROM inventory
+		WHERE product_id=$1
+		AND quantity > 0)
+		RETURNING id;`,
+		[productId],
+	);
 	return product;
 };
 

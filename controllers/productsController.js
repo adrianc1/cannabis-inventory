@@ -190,6 +190,7 @@ const receiveInventoryPut = async (req, res) => {
 		notes,
 		cost_per_unit: unit_price,
 		userId,
+		status: 'active',
 	});
 	res.status(200).json({ success: true });
 };

@@ -9,9 +9,11 @@ DROP TABLE IF EXISTS strains CASCADE;
 DROP TABLE IF EXISTS categories CASCADE;
 DROP TYPE IF EXISTS user_role CASCADE;
 DROP TYPE IF EXISTS inventory_status CASCADE;
+DROP TYPE IF EXISTS unit;
+DROP TYPE IF EXISTS inventory_status;
 
 CREATE TYPE user_role AS ENUM ('admin', 'manager', 'staff');
-CREATE TYPE inventory_status AS ENUM (
+CREATE TYPE IF NOT EXISTS inventory_status AS ENUM (
   'active',        
   'inactive',     
   'quarantine',    
@@ -19,7 +21,9 @@ CREATE TYPE inventory_status AS ENUM (
   'expired',       
   'reserved'       
 );
-CREATE TYPE unit AS ENUM (
+CREATE TYPE IF NOT EXISTS inventory_location AS ENUM ('backroom', 'front', 'cooler', 'quarantine', 'safe');
+
+CREATE TYPE IF NOT EXISTS unit AS ENUM (
   'mg',  
   'g',    
   'kg',  
@@ -95,7 +99,8 @@ CREATE TABLE inventory (
     cost_price DECIMAL(10,2),
     supplier_name VARCHAR(255),
     lot_number VARCHAR(100),
-    last_updated TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     UNIQUE (product_id, location, lot_number)
 );
 

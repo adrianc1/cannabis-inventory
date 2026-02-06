@@ -32,9 +32,9 @@ VALUES
 -- Users
 INSERT INTO users (company_id, first_name, last_name, email, password_hash, role)
 VALUES
-  (1, 'Alice', 'Green', 'alice@greenleaf.com', '$2b$10$vwxChUp5b5Zen4EpjraEpeFMnOGyhxe7d/a8QbCCf/1cVLn00IwDu', 'admin'),
-  (1, 'Bob', 'Smith', 'bob@greenleaf.com', '$2b$10$vwxChUp5b5Zen4EpjraEpeFMnOGyhxe7d/a8QbCCf/1cVLn00IwDu', 'manager'),
-  (2, 'Charlie', 'Jones', 'charlie@sunshine.com', '$2b$10$vwxChUp5b5Zen4EpjraEpeFMnOGyhxe7d/a8QbCCf/1cVLn00IwDu', 'staff');
+  (1, 'Alice', 'Green', 'alice@greenleaf.com', '$2b$10$GoxSfho.fxw1CED6FMlMyuYclnRsy.oFRr.THRmr43sToPq.IdQDG', 'admin'),
+  (1, 'Bob', 'Smith', 'bob@greenleaf.com', '$2b$10$GoxSfho.fxw1CED6FMlMyuYclnRsy.oFRr.THRmr43sToPq.IdQDG', 'manager'),
+  (2, 'Charlie', 'Jones', 'charlie@sunshine.com', '$2b$10$GoxSfho.fxw1CED6FMlMyuYclnRsy.oFRr.THRmr43sToPq.IdQDG', 'staff');
 
 -- Products
 INSERT INTO products (company_id, brand_id, strain_id, category_id, name, description, unit, sku)

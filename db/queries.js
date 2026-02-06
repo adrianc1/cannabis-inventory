@@ -402,7 +402,7 @@ const applyInventoryMovement = async ({
              cost_price = COALESCE($2, cost_price),
              supplier_name = COALESCE($3, supplier_name),
 			 status = $4,
-             last_updated = NOW()
+             updated_at = NOW()
          WHERE id = $5
 		 RETURNING *`,
 				[newQty, cost_per_unit, null, status, inventory_id],
@@ -428,7 +428,7 @@ const applyInventoryMovement = async ({
                cost_price=COALESCE($2, cost_price),
                supplier_name=COALESCE($3, supplier_name),
 			   status = $4,
-               last_updated=NOW()
+               updated_at=NOW()
            WHERE id=$5
 		   RETURNING *;`,
 					[newQty, cost_per_unit, null, status, invId],
@@ -463,7 +463,7 @@ const applyInventoryMovement = async ({
        cost_price = COALESCE($2, cost_price),
        supplier_name = COALESCE($3, supplier_name),
        status = $4,
-       last_updated = NOW()
+       updated_at = NOW()
    WHERE id = $5`,
 			[newQty, cost_per_unit, null, status, inventory_id],
 		);
@@ -639,7 +639,7 @@ const getProductInventory = async (productId) => {
 		SELECT *, COALESCE(cost_price, 0) AS cost_price
 		FROM inventory 
 		WHERE product_id=$1
-		ORDER BY (location, lot_number)
+		ORDER BY (created_at, location)
 		`,
 		[productId],
 	);

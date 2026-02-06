@@ -21,7 +21,7 @@
     </thead>
     <tbody>
       <% productInventory.forEach(batch => { %>
-        <tr class="<%= batch.status === 'inactive' ? 'bg-red-100' : batch.status === 'reserved' ? 'bg-yellow-100' : '' %>">
+        <tr>
           <td class="px-3 py-2 border border-gray-300"><%= batch.lot_number %></td>
           <td class="px-3 py-2 border border-gray-300"><%= batch.location %></td>
           <td class="px-3 py-2 border border-gray-300"><%= batch.quantity %></td>
@@ -30,20 +30,22 @@
           <%
             const statusClasses = {
               active: 'bg-green-100 text-green-800',
-              inactive: 'bg-red-100 text-red-800',
-              pending: 'bg-yellow-100 text-yellow-800',
-              archived: 'bg-gray-200 text-gray-700'
+              inactive: 'bg-gray-200 text-gray-700',
+              quarantine: 'bg-yellow-100 text-yellow-800',
+              damaged: 'bg-red-100 text-red-800',
+              expired: 'bg-orange-100 text-orange-800',
+              reserved: 'bg-blue-100 text-blue-800',
             };
 
             const statusClass =
-              statusClasses[batch.inventory_status] || 'bg-gray-100 text-gray-800';
+              statusClasses[batch.status] || 'bg-gray-100 text-gray-800';
           %>
 
             <td class="px-3 py-2 border border-gray-300">
               <span
                 class="inline-block px-2 py-1 rounded-full text-xs font-medium capitalize <%= statusClass %>"
               >
-                <%= batch.inventory_status %>
+                <%= batch.status %>
               </span>
             </td>
           <td class="px-3 py-2 border border-gray-300">

@@ -150,7 +150,8 @@ const editProductForm = async (req, res) => {
 
 const updateProduct = async (req, res) => {
 	const id = req.params.id;
-	const { name, description, unit, brandId, strainId, categoryId } = req.body;
+	const { name, description, unit, brandId, strainId, categoryId, status } =
+		req.body;
 	await db.updateProduct(
 		name,
 		description,
@@ -196,6 +197,15 @@ const receiveInventoryPut = async (req, res) => {
 const adjustInventoryGet = async (req, res) => {
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
+	const statusOptions = [
+		'active',
+		'inactive',
+		'quarantine',
+		'damaged',
+		'expired',
+		'reserved',
+	];
+
 	try {
 		const lotNumber = req.params.lotNumber;
 		const product = await db.getProductDB(req.params.id);
@@ -237,6 +247,7 @@ const adjustInventoryGet = async (req, res) => {
 			units,
 			adjustmentReasons,
 			selectedBatch,
+			statusOptions,
 		});
 	} catch (error) {
 		console.error(error);
@@ -250,17 +261,20 @@ const updateInventory = async (req, res) => {
 
 	const selectedBatch = await db.getInventoryByLot(id, lotNumber);
 
-	const { quantity, movement_type, notes, cost_price_unit } = req.body;
+	const { quantity, movement_type, notes, cost_price_unit, status } = req.body;
+
 	await db.applyInventoryMovement({
 		product_id: id,
 		inventory_id: selectedBatch.id,
 		company_id: selectedBatch.company_id,
 		location: selectedBatch.location,
+		batch: lotNumber,
 		delta: Number(quantity),
 		movement_type,
 		notes,
 		cost_per_unit: cost_price_unit || null,
 		userId,
+		status,
 	});
 
 	res.status(200).json({ success: true });

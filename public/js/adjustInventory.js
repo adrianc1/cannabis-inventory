@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			movement_type: formData.get('movement_type'),
 			notes: formData.get('notes'),
 			cost_price_unit: formData.get('cost_price_unit'),
+			status: formData.get('status'),
 		};
 
 		console.log('Data to send:', data);

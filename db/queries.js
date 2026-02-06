@@ -408,8 +408,6 @@ const applyInventoryMovement = async ({
 				[newQty, cost_per_unit, null, status, inventory_id],
 			);
 
-			console.log('results!!', result.rows);
-
 			updateInventory = result.rows[0];
 
 			invId = inventory_id;
@@ -424,14 +422,15 @@ const applyInventoryMovement = async ({
 				invId = rows[0].id;
 				newQty = parseFloat(rows[0].quantity) + delta;
 
-				const result = await client.query(
+				const { rows } = await client.query(
 					`UPDATE inventory
            SET quantity=$1,
                cost_price=COALESCE($2, cost_price),
                supplier_name=COALESCE($3, supplier_name),
 			   status = $4,
                last_updated=NOW()
-           WHERE id=$5`,
+           WHERE id=$5
+		   RETURNING *;`,
 					[newQty, cost_per_unit, null, status, invId],
 				);
 			} else {
@@ -451,7 +450,7 @@ const applyInventoryMovement = async ({
 						status,
 					],
 				);
-				updateInventory = result.rows[0];
+				updateInventory = insertRows[0];
 				invId = insertRows[0].id;
 				newQty = parseFloat(insertRows[0].quantity);
 			}

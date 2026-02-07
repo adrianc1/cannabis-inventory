@@ -639,7 +639,9 @@ const getProductInventory = async (productId) => {
 		SELECT *, COALESCE(cost_price, 0) AS cost_price
 		FROM inventory 
 		WHERE product_id=$1
-		ORDER BY (created_at, location)
+		  AND lot_number IS NOT NULL
+		  AND lot_number <> ''
+		ORDER BY created_at, location
 		`,
 		[productId],
 	);

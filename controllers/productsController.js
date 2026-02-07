@@ -92,14 +92,31 @@ const createProductForm = async (req, res) => {
 
 const insertProduct = async (req, res) => {
 	const userCompanyId = req.user.company_id;
-	const { name, description, unit, brandId, strainId, categoryId, sku } =
-		req.body;
-	const product = await db.insertProduct(
+	const {
 		name,
 		description,
 		unit,
 		brandId,
 		strainId,
+		newStrainName,
+		categoryId,
+		sku,
+	} = req.body;
+
+	let newStrain;
+
+	if (newStrainName?.trim()) {
+		newStrain = await db.insertStrain(newStrainName);
+	} else {
+		newStrain = null;
+	}
+	const strain_id = strainId ? strainId : newStrain.id;
+	const product = await db.insertProduct(
+		name,
+		description,
+		unit,
+		brandId,
+		strain_id,
 		categoryId,
 		userCompanyId,
 		sku,

@@ -2,7 +2,7 @@ const db = require('../db/queries');
 
 const getAllCategories = async (req, res) => {
 	try {
-		const categories = await db.getAllCategories();
+		const categories = await db.getAllCategories(req.user.company_id);
 		res.render('categories/categories', { categories });
 	} catch (error) {
 		res.status(500).json({ error: 'Database Error' });

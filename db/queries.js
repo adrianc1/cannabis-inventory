@@ -212,8 +212,11 @@ const deleteProduct = async (productId) => {
 };
 
 // Brand Queries
-const getAllBrands = async () => {
-	const { rows } = await pool.query('SELECT * FROM brands');
+const getAllBrands = async (companyId) => {
+	const { rows } = await pool.query(
+		'SELECT * FROM brands WHERE company_id=$1',
+		[companyId],
+	);
 	return rows;
 };
 
@@ -225,8 +228,11 @@ const getBrand = async (brandId) => {
 };
 
 // Strain Queries
-const getAllStrains = async () => {
-	const { rows } = await pool.query('SELECT * FROM strains');
+const getAllStrains = async (companyId) => {
+	const { rows } = await pool.query(
+		'SELECT * FROM strains WHERE company_id=$1',
+		[companyId],
+	);
 	return rows;
 };
 
@@ -241,12 +247,12 @@ const getStrain = async (id) => {
 	}
 };
 
-const insertStrain = async (name, description, type) => {
+const insertStrain = async (name, companyId, description, type) => {
 	try {
 		const result = await pool.query(
-			`INSERT INTO strains (name, description, type)
-			VALUES ($1, $2, $3) RETURNING *`,
-			[name, description, type],
+			`INSERT INTO strains (name, company_id, description, type)
+			VALUES ($1, $2, $3, $4) RETURNING *`,
+			[name, companyId, description, type],
 		);
 		return result.rows[0];
 	} catch (error) {

@@ -92,19 +92,43 @@ const createProductForm = async (req, res) => {
 
 const insertProduct = async (req, res) => {
 	const userCompanyId = req.user.company_id;
-	const { name, description, unit, brandId, strainId, categoryId, sku } =
-		req.body;
-	const product = await db.insertProduct(
+	const {
 		name,
 		description,
 		unit,
 		brandId,
 		strainId,
+		newStrainName,
 		categoryId,
-		userCompanyId,
 		sku,
-	);
-	res.redirect(`/products/${product.id}`);
+	} = req.body;
+
+	if (newStrainName?.trim()) {
+		const newStrain = await db.insertStrain(newStrainName);
+		const product = await db.insertProduct(
+			name,
+			description,
+			unit,
+			brandId,
+			newStrain.id,
+			categoryId,
+			userCompanyId,
+			sku,
+		);
+		res.redirect(`/products/${product.id}`);
+	} else {
+		const product = await db.insertProduct(
+			name,
+			description,
+			unit,
+			brandId,
+			strainId,
+			categoryId,
+			userCompanyId,
+			sku,
+		);
+		res.redirect(`/products/${product.id}`);
+	}
 };
 
 const deleteProduct = async (req, res) => {

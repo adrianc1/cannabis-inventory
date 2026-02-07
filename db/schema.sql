@@ -12,7 +12,7 @@ DROP TYPE IF EXISTS inventory_status CASCADE;
 DROP TYPE IF EXISTS unit;
 DROP TYPE IF EXISTS inventory_status;
 
-CREATE TYPE user_role AS ENUM ('admin', 'manager', 'staff');
+CREATE TYPE IF NOT EXISTS user_role AS ENUM ('admin', 'manager', 'staff');
 CREATE TYPE IF NOT EXISTS inventory_status AS ENUM (
   'active',        
   'inactive',     
@@ -33,7 +33,6 @@ CREATE TYPE IF NOT EXISTS unit AS ENUM (
   'l',   
   'each'  
 );
--- CREATE LEVEL 1 (Independent Tables)
 CREATE TABLE companies (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(255) NOT NULL,
@@ -44,12 +43,14 @@ CREATE TABLE companies (
 CREATE TABLE brands (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(255) UNIQUE NOT NULL,
-    description TEXT
+    description TEXT,
+    company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE
 );
 
 CREATE TABLE strains (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(255) UNIQUE NOT NULL,
+    company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     type VARCHAR(50),
     description TEXT
 );
@@ -57,10 +58,9 @@ CREATE TABLE strains (
 CREATE TABLE categories (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(255) UNIQUE NOT NULL,
-    description TEXT
+    description TEXT,
+    company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE
 );
-
--- CREATE LEVEL 2 (Depends on Companies)
 
 CREATE TABLE users (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -73,7 +73,7 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- CREATE LEVEL 3 (Depends on Companies + Metadata)
+-- Depends on Companies + Metadata
 CREATE TABLE products (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
@@ -88,7 +88,7 @@ CREATE TABLE products (
     UNIQUE (company_id, sku)
 );
 
--- CREATE LEVEL 4 (Depends on Products + Companies)
+-- Depends on Products + Companies
 CREATE TABLE inventory (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
@@ -104,7 +104,7 @@ CREATE TABLE inventory (
     UNIQUE (product_id, location, lot_number)
 );
 
--- CREATE LEVEL 5 (Audit Trail)
+-- Audit Trail
 CREATE TABLE inventory_movements (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     inventory_id INTEGER NOT NULL REFERENCES inventory(id) ON DELETE CASCADE,

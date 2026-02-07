@@ -71,9 +71,9 @@ const getProduct = async (req, res) => {
 const createProductForm = async (req, res) => {
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 	try {
-		const brands = await db.getAllBrands();
-		const strains = await db.getAllStrains();
-		const categories = await db.getAllCategories();
+		const brands = await db.getAllBrands(req.user.company_id);
+		const strains = await db.getAllStrains(req.user.company_id);
+		const categories = await db.getAllCategories(req.user.company_id);
 
 		if (!brands || !strains || !categories) {
 			res.status(404).json({ error: 'No Brands Found' });
@@ -106,7 +106,7 @@ const insertProduct = async (req, res) => {
 	let newStrain;
 
 	if (newStrainName?.trim()) {
-		newStrain = await db.insertStrain(newStrainName);
+		newStrain = await db.insertStrain(newStrainName, req.user.company_id);
 	} else {
 		newStrain = null;
 	}

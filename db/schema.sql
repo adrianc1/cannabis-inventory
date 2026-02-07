@@ -1,38 +1,24 @@
 -- CLEAN SLATE
-DROP TABLE IF EXISTS inventory_movements CASCADE;
-DROP TABLE IF EXISTS inventory CASCADE;
-DROP TABLE IF EXISTS products CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
-DROP TABLE IF EXISTS companies CASCADE;
-DROP TABLE IF EXISTS brands CASCADE;
-DROP TABLE IF EXISTS strains CASCADE;
-DROP TABLE IF EXISTS categories CASCADE;
+DROP TABLE inventory_movements CASCADE;
+DROP TABLE inventory CASCADE;
+DROP TABLE products CASCADE;
+DROP TABLE users CASCADE;
+DROP TABLE brands CASCADE;
+DROP TABLE strains CASCADE;
+DROP TABLE categories CASCADE;
+DROP TABLE companies CASCADE;
+
 DROP TYPE IF EXISTS user_role CASCADE;
 DROP TYPE IF EXISTS inventory_status CASCADE;
-DROP TYPE IF EXISTS unit;
-DROP TYPE IF EXISTS inventory_status;
+DROP TYPE IF EXISTS inventory_location CASCADE;
+DROP TYPE IF EXISTS unit CASCADE;
 
-CREATE TYPE IF NOT EXISTS user_role AS ENUM ('admin', 'manager', 'staff');
-CREATE TYPE IF NOT EXISTS inventory_status AS ENUM (
-  'active',        
-  'inactive',     
-  'quarantine',    
-  'damaged',       
-  'expired',       
-  'reserved'       
-);
-CREATE TYPE IF NOT EXISTS inventory_location AS ENUM ('backroom', 'front', 'cooler', 'quarantine', 'safe');
+CREATE TYPE user_role AS ENUM ('admin', 'manager', 'staff');
+CREATE TYPE inventory_status AS ENUM ('active','inactive','quarantine','damaged','expired','reserved');
+CREATE TYPE inventory_location AS ENUM ('backroom', 'front', 'cooler', 'quarantine', 'safe');
+CREATE TYPE unit AS ENUM ('mg','g','kg','oz','lb','ml','l','each');
 
-CREATE TYPE IF NOT EXISTS unit AS ENUM (
-  'mg',  
-  'g',    
-  'kg',  
-  'oz',  
-  'lb',   
-  'ml',   
-  'l',   
-  'each'  
-);
+
 CREATE TABLE companies (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(255) NOT NULL,

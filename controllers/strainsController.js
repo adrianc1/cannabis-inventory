@@ -2,7 +2,7 @@ const db = require('../db/queries');
 
 const getAllStrains = async (req, res) => {
 	try {
-		const strains = await db.getAllStrains();
+		const strains = await db.getAllStrains(req.user.company_id);
 		res.render('strains/strains', { message: 'All Strains', strains });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });

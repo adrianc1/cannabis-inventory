@@ -11,7 +11,7 @@ const getAllStrains = async (req, res) => {
 
 const getStrain = async (req, res) => {
 	try {
-		const strain = await db.getStrain(req.params.id);
+		const strain = await db.getStrain(req.params.id, req.user.company_id);
 
 		if (!strain) {
 			res.status(404).json({ error: 'Strain not found' });
@@ -42,7 +42,7 @@ const insertStrain = async (req, res) => {
 };
 
 const editStrainForm = async (req, res) => {
-	let strain = await db.getStrain(req.params.id);
+	let strain = await db.getStrain(req.params.id, req.user.company_id);
 
 	if (!strain) {
 		res.status(404).json({ error: 'Strain not found' });

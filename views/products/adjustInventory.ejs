@@ -37,15 +37,15 @@
                         <div class="w-full flex justify-between ">
                             <div class="">
                                  <p class="text-md font-semibold text-gray-700"> Brand: </p>
-                                <div class="text-lg text-gray-800"><%= brand.name %></div>
+                                <div class="text-lg text-gray-800"><%= brand?.name || 'No Brand' %></div>
                             </div>
                              <div class="">
                                  <p class="text-md font-semibold text-gray-700"> Strain: </p>
-                                <div class="text-lg text-gray-800"><%= strain.name %></div>
+                                <div class="text-lg text-gray-800"><%= strain?.name || 'No Strain' %></div>
                             </div>
                             <div class="">
                                  <p class="text-md font-semibold text-gray-700"> Category: </p>
-                                <div class="text-lg text-gray-800"><%= category.name %></div>
+                                <div class="text-lg text-gray-800"><%= category?.name || "No category" %></div>
                             </div>
                         </div>
     

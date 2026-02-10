@@ -201,7 +201,7 @@ const updateProduct = async (req, res) => {
 
 const receiveInventoryPut = async (req, res) => {
 	const product_id = req.params.id;
-	const product = await db.getProductDB(product_id);
+	const product = await db.getProductDB(product_id, req.user.company_id);
 	const userId = req.user.id;
 	const company_id = req.user.company_id;
 	const { quantity, unit, unit_price, reason, notes, vendor, batch } = req.body;
@@ -244,10 +244,16 @@ const adjustInventoryGet = async (req, res) => {
 
 	try {
 		const lotNumber = req.params.lotNumber;
-		const product = await db.getProductDB(req.params.id);
-		const brand = await db.getBrand(product.brand_id);
-		const strain = await db.getStrain(product.strain_id);
-		const category = await db.getSingleCategory(product.category_id);
+		const product = await db.getProductDB(req.params.id, req.user.company_id);
+		const brand = product.brand_id
+			? await db.getBrand(product.brand_id, req.user.company_id)
+			: null;
+		const strain = product.strain_id
+			? await db.getStrain(product.strain_id, req.user.company_id)
+			: null;
+		const category = product.category_id
+			? await db.getSingleCategory(product.category_id, req.user.company_id)
+			: null;
 		const selectedBatch = await db.getInventoryByLot(product.id, lotNumber);
 
 		const adjustmentReasons = [

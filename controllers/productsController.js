@@ -15,7 +15,7 @@ const getProduct = async (req, res) => {
 	try {
 		console.log('Fetching product with id:', req.params.id);
 
-		const product = await db.getProductDB(req.params.id);
+		const product = await db.getProductDB(req.params.id, req.user.company_id);
 		const productInventory = await db.getProductInventory(req.params.id);
 
 		if (!product) {
@@ -119,11 +119,7 @@ const insertProduct = async (req, res) => {
 		newBrand = null;
 	}
 	if (newCategoryName?.trim()) {
-		newCategory = await db.insertCategory(
-			newCategoryName,
-			'yo',
-			req.user.company_id,
-		);
+		newCategory = await db.insertCategory(newCategoryName, req.user.company_id);
 		console.log('what it is;', newCategory);
 	} else {
 		newCategory = null;
@@ -162,10 +158,10 @@ const editProductForm = async (req, res) => {
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
 	try {
-		const brands = await db.getAllBrands();
-		const strains = await db.getAllStrains();
-		const categories = await db.getAllCategories();
-		const product = await db.getProductDB(req.params.id);
+		const brands = await db.getAllBrands(req.user.company_id);
+		const strains = await db.getAllStrains(req.user.company_id);
+		const categories = await db.getAllCategories(req.user.company_id);
+		const product = await db.getProductDB(req.params.id, req.user.company_id);
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
@@ -325,10 +321,18 @@ const receiveInventoryGet = async (req, res) => {
 
 	try {
 		const id = req.params.id;
-		const product = await db.getProductDB(req.params.id);
-		const brand = await db.getBrand(product.brand_id);
-		const strain = await db.getStrain(product.strain_id);
-		const category = await db.getSingleCategory(product.category_id);
+		const product = await db.getProductDB(req.params.id, req.user.company_id);
+		const brand = product.brand_id
+			? await db.getBrand(product.brand_id, req.user.company_id)
+			: null;
+		const strain = product.strain_id
+			? await db.getStrain(product.strain_id, req.user.company_id)
+			: null;
+		const category = product.category_id
+			? await db.getSingleCategory(product.category_id, req.user.company_id)
+			: null;
+
+		console.log('da producT!!', product);
 		const adjustmentReason = 'Receive';
 		res.render('products/receiveInventory', {
 			product,

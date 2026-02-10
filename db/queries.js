@@ -83,7 +83,7 @@ const getAllProductsDB = async (user_id) => {
 	}
 };
 
-const getProductDB = async (id) => {
+const getProductDB = async (id, companyId) => {
 	try {
 		const { rows } = await pool.query(
 			`SELECT 
@@ -104,8 +104,9 @@ const getProductDB = async (id) => {
 			LEFT JOIN categories ON p.category_id = categories.id
 			LEFT JOIN strains ON p.strain_id = strains.id
 			LEFT JOIN inventory ON p.id = inventory.product_id
-			WHERE p.id = $1`,
-			[id],
+			WHERE p.id = $1
+			AND p.company_id=$2`,
+			[id, companyId],
 		);
 		return rows[0];
 	} catch (error) {
@@ -181,7 +182,8 @@ const updateProduct = async (
        brand_id = $4, 
        strain_id = $5, 
        category_id = $6
-   WHERE id = $7`,
+   WHERE id = $7
+`,
 			[name, description, unit, brandId, strainId, categoryId, id],
 		);
 
@@ -220,10 +222,11 @@ const getAllBrands = async (companyId) => {
 	return rows;
 };
 
-const getBrand = async (brandId) => {
-	const { rows } = await pool.query(`SELECT * FROM brands WHERE id=$1 `, [
-		brandId,
-	]);
+const getBrand = async (brandId, companyId) => {
+	const { rows } = await pool.query(
+		`SELECT * FROM brands WHERE id=$1 AND company_id=$2 `,
+		[brandId, companyId],
+	);
 	return rows[0];
 };
 
@@ -249,11 +252,12 @@ const getAllStrains = async (companyId) => {
 	return rows;
 };
 
-const getStrain = async (id) => {
+const getStrain = async (id, companyId) => {
 	try {
-		const { rows } = await pool.query(`SELECT * FROM strains WHERE id=$1`, [
-			id,
-		]);
+		const { rows } = await pool.query(
+			`SELECT * FROM strains WHERE id=$1 AND company_id=$2`,
+			[id, companyId],
+		);
 		return rows[0];
 	} catch (error) {
 		throw error;
@@ -339,16 +343,12 @@ const getSingleCategory = async (id, companyId) => {
 	}
 };
 
-const insertCategory = async (
-	name,
-	description = 'brand info here',
-	companyId,
-) => {
+const insertCategory = async (name, companyId) => {
 	try {
 		const result = await pool.query(
-			`INSERT INTO categories (name, description, company_id)
-			VALUES ($1, $2, $3) RETURNING *`,
-			[name, description, companyId],
+			`INSERT INTO categories (name, company_id)
+			VALUES ($1, $2) RETURNING *`,
+			[name, companyId],
 		);
 		return result.rows[0];
 	} catch (error) {

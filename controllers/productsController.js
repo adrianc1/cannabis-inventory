@@ -99,25 +99,42 @@ const insertProduct = async (req, res) => {
 		brandId,
 		strainId,
 		newStrainName,
+		newBrandName,
+		newCategoryName,
 		categoryId,
 		sku,
 	} = req.body;
 
-	let newStrain;
+	let newStrain, newBrand, newCategory;
 
 	if (newStrainName?.trim()) {
 		newStrain = await db.insertStrain(newStrainName, req.user.company_id);
 	} else {
 		newStrain = null;
 	}
+
+	if (newBrandName?.trim()) {
+		newBrand = await db.insertBrand(newBrandName, req.user.company_id);
+	} else {
+		newBrand = null;
+	}
+	if (newCategoryName?.trim()) {
+		newCategory = await db.insertCategory(newCategoryName, req.user.company_id);
+	} else {
+		newCategory = null;
+	}
+
 	const strain_id = strainId ? strainId : newStrain.id;
+	const brand_id = brandId ? brandId : newBrand.id;
+	const category_id = categoryId ? categoryId : newCategory.id;
+
 	const product = await db.insertProduct(
 		name,
 		description,
 		unit,
-		brandId,
+		brand_id,
 		strain_id,
-		categoryId,
+		category_id,
 		userCompanyId,
 		sku,
 	);

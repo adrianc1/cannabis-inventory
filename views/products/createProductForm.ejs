@@ -101,17 +101,20 @@
 						>
 							Brand
 						</label>
-						<select
-							name="brandId"
-							id="brandId"
-							required
-							class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
-						>
-							<option value="">-- Select a Brand --</option>
-							<% brands.forEach((brand) => { %>
-							<option value="<%= brand.id %>"><%= brand.name %></option>
-							<% }) %>
-						</select>
+						<div id="brand-wrapper">
+							<select
+								name="brandId"
+								id="brandId"
+								required
+								class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
+							>
+								<option value="">-- Select a Brand --</option>
+								<% brands.forEach((brand) => { %>
+								<option value="<%= brand.id %>"><%= brand.name %></option>
+								<% }) %>
+								<option id="create-brand" value="">+ Add New Brand</option>
+							</select>
+						</div>
 					</div>
 
 					<!-- Strain -->
@@ -145,17 +148,20 @@
 						>
 							Category
 						</label>
-						<select
-							name="categoryId"
-							id="categoryId"
-							required
-							class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
-						>
-							<option value="">-- Select a Category --</option>
-							<% categories.forEach((category) => { %>
-							<option value="<%= category.id %>"><%= category.name %></option>
-							<% }) %>
-						</select>
+						<div id="category-wrapper">
+							<select
+								name="categoryId"
+								id="categoryId"
+								required
+								class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
+							>
+								<option value="">-- Select a Category --</option>
+								<% categories.forEach((category) => { %>
+								<option value="<%= category.id %>"><%= category.name %></option>
+								<% }) %>
+								<option id="create-category" value="">+ Add New Category</option>
+							</select>
+						</div>
 					</div>
 
 					<!-- Submit Button -->

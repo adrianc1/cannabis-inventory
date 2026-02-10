@@ -227,6 +227,19 @@ const getBrand = async (brandId) => {
 	return rows[0];
 };
 
+const insertBrand = async (name, companyId, description) => {
+	try {
+		const result = await pool.query(
+			`INSERT INTO brands (name, company_id, description)
+			VALUES ($1, $2, $3) RETURNING *`,
+			[name, companyId, description],
+		);
+		return result.rows[0];
+	} catch (error) {
+		throw error;
+	}
+};
+
 // Strain Queries
 const getAllStrains = async (companyId) => {
 	const { rows } = await pool.query(
@@ -748,4 +761,5 @@ module.exports = {
 	getInventoryByBatch,
 	getInventoryByLot,
 	getProductWithInventoryDB,
+	insertBrand,
 };

@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		categoryWrapper.appendChild(container);
 
 		document
-			.getElementById('cancel-new-brand')
+			.getElementById('cancel-new-category')
 			.addEventListener('click', () => {
 				container.remove();
 				categorySelect.disabled = false;

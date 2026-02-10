@@ -289,12 +289,15 @@ const deleteStrain = async (id) => {
 };
 
 // Category Queries
-const getAllCategories = async () => {
-	const { rows } = await pool.query('SELECT * FROM categories');
+const getAllCategories = async (companyId) => {
+	const { rows } = await pool.query(
+		'SELECT * FROM categories WHERE company_id=$1',
+		[companyId],
+	);
 	return rows;
 };
 
-const getCategory = async (id) => {
+const getCategory = async (id, companyId) => {
 	try {
 		const { rows } = await pool.query(
 			`SELECT 
@@ -312,8 +315,9 @@ const getCategory = async (id) => {
 			LEFT JOIN strains ON p.strain_id = strains.id
 			LEFT JOIN inventory ON p.id = inventory.product_id
 			WHERE p.category_id = $1
+			AND p.company_id=$2
 			ORDER BY p.name`,
-			[id],
+			[id, companyId],
 		);
 		return rows;
 	} catch (error) {
@@ -321,13 +325,13 @@ const getCategory = async (id) => {
 	}
 };
 
-const getSingleCategory = async (id) => {
+const getSingleCategory = async (id, companyId) => {
 	try {
 		const { rows } = await pool.query(
 			`
-			SELECT id, name, description FROM categories WHERE id=$1
+			SELECT id, name, description FROM categories WHERE id=$1 AND company_id=$2
 			`,
-			[id],
+			[id, companyId],
 		);
 		return rows[0];
 	} catch (error) {
@@ -335,12 +339,16 @@ const getSingleCategory = async (id) => {
 	}
 };
 
-const insertCategory = async (name, description) => {
+const insertCategory = async (
+	name,
+	description = 'brand info here',
+	companyId,
+) => {
 	try {
 		const result = await pool.query(
-			`INSERT INTO categories (name, description)
-			VALUES ($1, $2) RETURNING *`,
-			[name, description],
+			`INSERT INTO categories (name, description, company_id)
+			VALUES ($1, $2, $3) RETURNING *`,
+			[name, description, companyId],
 		);
 		return result.rows[0];
 	} catch (error) {

@@ -119,14 +119,19 @@ const insertProduct = async (req, res) => {
 		newBrand = null;
 	}
 	if (newCategoryName?.trim()) {
-		newCategory = await db.insertCategory(newCategoryName, req.user.company_id);
+		newCategory = await db.insertCategory(
+			newCategoryName,
+			'yo',
+			req.user.company_id,
+		);
+		console.log('what it is;', newCategory);
 	} else {
 		newCategory = null;
 	}
 
-	const strain_id = strainId ? strainId : newStrain.id;
-	const brand_id = brandId ? brandId : newBrand.id;
-	const category_id = categoryId ? categoryId : newCategory.id;
+	const strain_id = strainId || newStrain?.id || null;
+	const brand_id = brandId || newBrand?.id || null;
+	const category_id = categoryId || newCategory?.id || null;
 
 	const product = await db.insertProduct(
 		name,

@@ -13,6 +13,10 @@ const productsRouter = require('./routes/productsRouter');
 const strainsRouter = require('./routes/strainsRouter');
 const signupRouter = require('./routes/auth/signupRouter');
 const loginRouter = require('./routes/auth/loginRouter');
+const {
+	ensureAuthenticated,
+	setUserLocals,
+} = require('./middleware/authMiddleware.js');
 
 const app = express();
 const PORT = 3000;
@@ -51,13 +55,15 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(setUserLocals);
+
 app.use('/', signupRouter);
 app.use('/login', loginRouter);
 
-app.use('/products', productsRouter);
-app.use('/categories', categoryRouter);
-app.use('/strains', strainsRouter);
-app.use('/brands', brandsRouter);
+app.use('/products', ensureAuthenticated, productsRouter);
+app.use('/categories', ensureAuthenticated, categoryRouter);
+app.use('/strains', ensureAuthenticated, strainsRouter);
+app.use('/brands', ensureAuthenticated, brandsRouter);
 
 app.listen(PORT, () => {
 	console.log(`server running on PORT ${PORT}`);

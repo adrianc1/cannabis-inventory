@@ -1,28 +1,17 @@
 const express = require('express');
 const productsController = require('../controllers/productsController');
 const router = express.Router();
-const { ensureAuthenticated } = require('../middleware/authMiddleware');
 
-router.get('/', ensureAuthenticated, productsController.getAllProducts);
+router.get('/', productsController.getAllProducts);
 router.get(
 	'/create-product',
-	ensureAuthenticated,
+
 	productsController.createProductForm,
 );
 router.post('/create-product', productsController.insertProduct);
 
 router.get('/:id/receive', productsController.receiveInventoryGet);
-router.get(
-	'/:id/edit',
-	ensureAuthenticated,
-	productsController.editProductForm,
-);
-
-// router.get(
-// 	'/:id/adjust',
-// 	ensureAuthenticated,
-// 	productsController.adjustInventoryGet,
-// );
+router.get('/:id/edit', productsController.editProductForm);
 
 router.put('/:id/adjust/:lotNumber', productsController.updateInventory);
 router.get('/:id/adjust/:lotNumber', productsController.adjustInventoryGet);
@@ -31,6 +20,6 @@ router.put('/:id/receive', productsController.receiveInventoryPut);
 router.put('/:id', productsController.updateProduct);
 
 router.delete('/:id', productsController.deleteProduct);
-router.get('/:id', ensureAuthenticated, productsController.getProduct);
+router.get('/:id', productsController.getProduct);
 
 module.exports = router;

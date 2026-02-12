@@ -7,18 +7,14 @@
 		<title>Category</title>
 	</head>
 	<body>
+		<%- include ('../partials/header.ejs') %>
+
 		<div class="mb-8 mt-4 relative">
-			<a href="/">
-				<img
-					src="/greenventory-logo.png"
-					alt="Greenventory Logo"
-					class="h-16 ml-8"
-				/>
-			</a>
+
 			<h1
 				class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-3xl font-bold text-gray-800"
 			>
-				*category name*
+				category
 			</h1>
 		</div>
 		<button
@@ -47,7 +43,6 @@
 			</tr>
 			<% category.map((c) => { %>
 			<tr class="product-row" data-id="<%= c.category_id %>">
-				<!-- <td><%= c.category_id %></td> -->
 				<td><a href="/categories/<%=c.id%>"><%= c.name %></a></td>
 				<td><%=c.strain_name ? c.strain_name : 'N/A' %></td>
 				<td><%=c.brand_name%></td>

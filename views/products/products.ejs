@@ -9,37 +9,8 @@
 		<title>Products Page</title>
 	</head>
 	<body class="md:px-4">
-		<a href="/logout">Log Out</a>
-		<div class="max-w-7xl mx-auto py-4">
-			<div class="flex items-center justify-between">
-				<div class="flex w-full justify-between items-center space-x-3">
-					<div class="">
-						<img
-							src="/greenventory-logo.png"
-							alt="Greenventory Logo"
-							class="h-16"
-						/>
-					</div>
-					<div class="hidden md:flex space-x-8">
-						<a
-							href="/categories"
-							class="text-gray-600 hover:text-emerald-600 transition-colors"
-							>Categories</a
-						>
-						<a
-							href="/strains"
-							class="text-gray-600 hover:text-emerald-600 transition-colors"
-							>Strains</a
-						>
-						<a
-							href="/brands"
-							class="text-gray-600 hover:text-emerald-600 transition-colors"
-							>Brands</a
-						>
-					</div>
-				</div>
-			</div>
-		</div>
+
+		<%- include ('../partials/header.ejs') %>
 
 		<div class="mb-8 mt-4 relative">
 			<h1

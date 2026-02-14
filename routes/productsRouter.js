@@ -12,6 +12,7 @@ router.post('/create-product', productsController.insertProduct);
 
 router.get('/:id/receive', productsController.receiveInventoryGet);
 router.get('/:id/edit', productsController.editProductForm);
+router.get('/:id/split', productsController.splitPackageProductForm);
 
 router.put('/:id/adjust/:lotNumber', productsController.updateInventory);
 router.get('/:id/adjust/:lotNumber', productsController.adjustInventoryGet);

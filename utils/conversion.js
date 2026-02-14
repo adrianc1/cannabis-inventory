@@ -18,8 +18,7 @@ function convertQuantity(amount, fromUnit, toUnit) {
 		const grams = amount * weightToGrams[fromUnit];
 		return grams / weightToGrams[toUnit];
 	}
-	//volu
-	// me conversion
+	//volume conversion
 	if (volumeToMl[fromUnit] && volumeToMl[toUnit]) {
 		const ml = amount * volumeToMl[fromUnit];
 		return ml / volumeToMl[toUnit];

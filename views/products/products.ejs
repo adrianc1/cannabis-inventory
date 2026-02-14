@@ -27,10 +27,10 @@
 			<tr class="products-table-headers">
 				<th class="table-header">Name</th>
 				<th class="table-header">Strain</th>
-				<th class="table-header">Brand</th>
+				<th class="table-header sm: hidden">Brand</th>
 				<th class="table-header">Category</th>
 				<th class="table-header">Quantity</th>
-				<th class="table-header">Avg Cost</th>
+				<th class="table-header sm: hidden">Avg Cost</th>
 				<th class="table-header">Total Valuation</th>
 			</tr>
 
@@ -38,7 +38,7 @@
 			<tr class="product-row">
 				<td><a href="/products/<%= product.id %>"><%= product.name %></a></td>
 				<td><%= product.strain_name || 'N/A' %></td>
-				<td><%= product.brand_name || 'N/A' %></td>
+				<td class="sm: hidden"><%= product.brand_name || 'N/A' %></td>
 				<td>
 				<a href="/categories/<%= product.category_id %>">
 					<%= product.category_name || 'N/A' %>
@@ -47,7 +47,7 @@
 				<td>
 				<%= product.product_qty %> <%= product.unit %>
 				</td>
-				<td>
+				<td class="sm: hidden">
 				$<%= Number(product.average_cost || 0).toFixed(2) %>
 				</td>
 				<td>

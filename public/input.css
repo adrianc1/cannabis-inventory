@@ -11,6 +11,7 @@ body {
 		system-ui,
 		-apple-system,
 		sans-serif;
+	padding: 0 16px;
 }
 
 .bg-gradient-radial {

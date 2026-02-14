@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/tailwind.css">
+  <title>Split Package</title>
+</head>
+<body>
+<div class="max-w-4xl mx-auto px-6 py-8">
+
+  <!-- Back -->
+  <a href="/products/<%= pkg.id %>"
+     class="inline-flex items-center text-emerald-600 hover:text-green-700 font-medium mb-6">
+    ← Back to package
+  </a>
+
+  <div class="bg-white rounded-lg shadow-md p-8">
+
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Split Package</h1>
+    <p class="text-gray-600 mb-6">Create child lots from inventory</p>
+
+    <!-- Parent Package Info -->
+    <div class="bg-gray-50 border rounded-lg p-4 mb-8">
+      <h2 class="font-semibold text-gray-800 mb-2">Parent Lot</h2>
+      <div class="grid grid-cols-3 gap-4 text-sm">
+        <div>
+          <p class="text-gray-500">Lot Tag</p>
+          <p class="font-semibold"><%= pkg.tag %></p>
+        </div>
+        <div>
+          <p class="text-gray-500">Product</p>
+          <p class="font-semibold"><%= pkg.product_name %></p>
+        </div>
+        <div>
+          <p class="text-gray-500">Available</p>
+          <p class="font-semibold">
+            <span id="availableQty"><%= pkg.quantity %></span> <%= pkg.unit %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Split Form -->
+    <form method="POST" action="/packages/<%= pkg.id %>/split" id="splitForm">
+
+      <div id="splitRows" class="space-y-4">
+
+        <!-- Split Row Template -->
+        <div class="split-row grid grid-cols-5 gap-3 border rounded-lg p-4">
+
+          <!-- Product -->
+          <div>
+            <label class="text-sm font-semibold text-gray-700">Product</label>
+            <select name="productId[]"
+                    class="w-full border-2 rounded-lg px-3 py-2">
+              <option value="<%= pkg.product_id %>" selected><%= pkg.product_name %></option>
+              <% products.forEach(p => { %>
+                <option value="<%= p.id %>"><%= p.name %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- Package Size -->
+          <div>
+            <label class="text-sm font-semibold text-gray-700">
+              Package Size (<%= pkg.unit %>)
+            </label>
+            <input type="number"
+                   step="0.01"
+                   name="packageSize[]"
+                   class="package-size w-full border-2 rounded-lg px-3 py-2"
+                   value="<%= pkg.package_size || '' %>"
+            />
+          </div>
+
+          <!-- Quantity (Number of Packages) -->
+          <div>
+            <label class="text-sm font-semibold text-gray-700"># Packages</label>
+            <input type="number"
+                   name="quantity[]"
+                   class="quantity w-full border-2 rounded-lg px-3 py-2"
+            />
+          </div>
+
+          <!-- Total Weight -->
+          <div>
+            <label class="text-sm font-semibold text-gray-700">Total Weight (<%= pkg.unit %>)</label>
+            <input type="text"
+                   class="total-weight w-full border-2 rounded-lg px-3 py-2 bg-gray-100"
+                   readonly
+            />
+          </div>
+
+          <!-- Remove Row -->
+          <div class="flex items-end">
+            <button type="button"
+                    class="remove-row text-red-600 font-semibold">
+              Remove
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Add Row -->
+      <button type="button"
+              id="addRow"
+              class="mt-4 text-emerald-600 font-semibold hover:text-emerald-700">
+        + Add Split Row
+      </button>
+
+      <!-- Quantity Summary -->
+      <div class="mt-8 bg-emerald-50 border rounded-lg p-4">
+        <div class="flex justify-between">
+          <span>Total Used:</span>
+          <span id="totalUsed">0</span>
+        </div>
+        <div class="flex justify-between font-semibold">
+          <span>Remaining:</span>
+          <span id="remainingQty"><%= pkg.quantity %></span>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="flex gap-3 pt-6">
+        <button type="submit" class="btn-primary flex-1">
+          Create Split Lot
+        </button>
+        <a href="/packages/<%= pkg.id %>" class="btn-secondary flex-1 text-center">
+          Cancel
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  const splitRows = document.getElementById('splitRows');
+  const initialQty = <%= pkg.quantity %>; 
+
+  function updateTotals() {
+    let totalUsed = 0;
+    splitRows.querySelectorAll('.split-row').forEach(row => {
+      const packageSize = parseFloat(row.querySelector('.package-size').value) || 0;
+      const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+      const totalWeight = packageSize * quantity;
+      row.querySelector('.total-weight').value = totalWeight.toFixed(3);
+      totalUsed += totalWeight;
+    });
+
+    document.getElementById('totalUsed').textContent = totalUsed.toFixed(3);
+    document.getElementById('remainingQty').textContent = (initialQty - totalUsed).toFixed(3);
+  }
+
+  splitRows.addEventListener('input', updateTotals);
+
+  // Add/Remove Row
+  document.getElementById('addRow').addEventListener('click', () => {
+    const newRow = splitRows.querySelector('.split-row').cloneNode(true);
+    newRow.querySelectorAll('input').forEach(input => input.value = '');
+    splitRows.appendChild(newRow);
+    updateTotals();
+  });
+
+  splitRows.addEventListener('click', e => {
+    if (e.target.classList.contains('remove-row')) {
+      e.target.closest('.split-row').remove();
+      updateTotals();
+    }
+  });
+</script>
+
+</body>
+</html>

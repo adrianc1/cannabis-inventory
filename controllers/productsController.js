@@ -93,7 +93,7 @@ const createProductForm = async (req, res) => {
 const splitPackageProductForm = async (req, res) => {
 	const pkg = await db.getProductDB(req.params.id, req.user.company_id);
 	const products = await db.getAllProductsDB(req.user.id);
-	console.log(pkg, products);
+	console.log(pkg);
 	res.render('products/splitPackageProductForm', { pkg, products });
 };
 

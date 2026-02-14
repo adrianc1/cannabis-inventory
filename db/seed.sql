@@ -50,13 +50,13 @@ VALUES
 (2, 4, 4, 4, 'Northern Lights Cream', 'Relaxing topical cream', 'ml', 'NL-050');
 
 -- Inventory
-INSERT INTO inventory (product_id, company_id, location, status, quantity, cost_price, supplier_name, lot_number)
+INSERT INTO inventory (product_id, company_id, parent_lot_id,  location, status, quantity, package_size, unit, cost_price, supplier_name, lot_number)
 VALUES
-(1, 1, 'backroom', 'active', 10, 8.50, 'Supplier A', 'BD0901'),
-(1, 1, 'front', 'active', 5, 8.50, 'Supplier A', 'BD0902'),
-(2, 1, 'backroom', 'active', 3, 15.00, 'Supplier B', 'OGK0501'),
-(3, 2, 'cooler', 'active', 20, 1.50, 'Supplier C', 'SD1001'),
-(4, 2, 'front', 'active', 10, 12.00, 'Supplier D', 'NL0501');
+(1, 1, NULL, 'backroom', 'active', 10, 1, 'g', 8.50, 'Supplier A', 'BD0901'),
+(1, 1, NULL, 'front', 'active', 5, 1, 'g', 8.50, 'Supplier A', 'BD0902'),
+(2, 1, NULL, 'backroom', 'active', 3, 0.5, 'g' 15.00, 'Supplier B', 'OGK0501'),
+(3, 2, NULL, 'cooler', 'active', 20, 10, 'mg', 1.50, 'Supplier C', 'SD1001'),
+(4, 2, NULL, 'front', 'active', 10, 35, 'ml', 12.00, 'Supplier D', 'NL0501');
 
 -- Inventory Movements
 INSERT INTO inventory_movements (inventory_id, user_id, movement_type, quantity, cost_per_unit, notes)

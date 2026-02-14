@@ -111,7 +111,7 @@
       </button>
 
       <!-- Quantity Summary -->
-      <div class="mt-8 bg-emerald-50 border rounded-lg p-4">
+      <div class="mt-8 bg-emerald-50 border rounded-lg p-4" id="summaryBox">
         <div class="flex justify-between">
           <span>Total Used:</span>
           <span id="totalUsed">0</span>
@@ -150,8 +150,20 @@
       totalUsed += totalWeight;
     });
 
+    const remaining = initialQty - totalUsed;
+
     document.getElementById('totalUsed').textContent = totalUsed.toFixed(3);
     document.getElementById('remainingQty').textContent = (initialQty - totalUsed).toFixed(3);
+
+      const summaryBox = document.getElementById('summaryBox');
+  if (remaining < 0) {
+    summaryBox.classList.remove('bg-emerald-50', 'border-green-300');
+    summaryBox.classList.add('bg-red-100', 'border-red-500');
+  } else {
+    summaryBox.classList.remove('bg-red-100', 'border-red-500');
+    summaryBox.classList.add('bg-emerald-50', 'border-green-300');
+  }
+
   }
 
   splitRows.addEventListener('input', updateTotals);

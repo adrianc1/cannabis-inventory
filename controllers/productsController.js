@@ -91,12 +91,42 @@ const createProductForm = async (req, res) => {
 };
 
 const splitPackageProductForm = async (req, res) => {
+	const lotNumber = req.params.lotNumber;
 	const pkg = await db.getProductDB(req.params.id, req.user.company_id);
 	const products = await db.getAllProductsDB(req.user.id);
+	const selectedBatch = await db.getInventoryByLot(pkg.id, lotNumber);
 	console.log(pkg);
-	res.render('products/splitPackageProductForm', { pkg, products });
+	res.render('products/splitPackageProductForm', {
+		pkg,
+		products,
+		selectedBatch,
+	});
 };
 
+const splitPackagePost = async (req, res) => {
+	const originalP = await db.getProductDB(req.params.id, req.user.company_id);
+	const { productId, packageSize, quantity } = req.body;
+	let totalUsed = 0;
+
+	const splits = packageSize.map((size, i) => {
+		const qty = parseFloat(quantity[i]);
+		const weight = parseFloat(size) * qty;
+
+		totalUsed += weight;
+
+		return {
+			productId: productId[i],
+			packageSize: size,
+			quantity: qty,
+			totalWeight: weight,
+		};
+	});
+
+	if (totalUsed > orignalPackageQty) {
+	}
+	await db.splitPackageTransaction;
+	res.render('/products/products');
+};
 const insertProduct = async (req, res) => {
 	const userCompanyId = req.user.company_id;
 	const {
@@ -286,8 +316,6 @@ const adjustInventoryGet = async (req, res) => {
 			res.status(404).json({ error: 'No Brands, Strain, or Category Found' });
 		}
 
-		console.log('heheheheheh', selectedBatch);
-
 		res.render('products/adjustInventory', {
 			product,
 			brand,
@@ -373,4 +401,5 @@ module.exports = {
 	receiveInventoryGet,
 	receiveInventoryPut,
 	splitPackageProductForm,
+	splitPackagePost,
 };

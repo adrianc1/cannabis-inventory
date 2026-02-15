@@ -19,6 +19,7 @@ function updateTotals() {
 		initialQty - totalUsed
 	).toFixed(3);
 
+	// render UI colors based on remaining qty
 	const summaryBox = document.getElementById('summaryBox');
 	if (remaining < 0) {
 		summaryBox.classList.remove('bg-emerald-50', 'border-green-300');

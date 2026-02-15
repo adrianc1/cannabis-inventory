@@ -114,6 +114,18 @@ const getProductDB = async (id, companyId) => {
 	}
 };
 
+const splitPackageTransaction = async () => {
+	const client = await pool.connect();
+
+	await client.query('BEGIN');
+	try {
+		const parentBatch = await client.query(
+			`SELECT * FROM inventory WHERE lot_number=$1`,
+			[lotNumber],
+		);
+	} catch (error) {}
+};
+
 const insertProduct = async (
 	name,
 	description,

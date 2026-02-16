@@ -35,7 +35,7 @@
         <div>
           <p class="text-gray-500">Available</p>
           <p class="font-semibold">
-            <span id="availableQty"><%= pkg.quantity %></span> <%= pkg.unit %>
+            <span id="availableQty"><%= selectedBatch.quantity %></span> <%= pkg.unit %>
           </p>
         </div>
       </div>
@@ -128,7 +128,7 @@
         </div>
         <div class="flex justify-between font-semibold">
           <span>Remaining:</span>
-          <span id="remainingQty"><%= pkg.quantity %></span>
+          <span id="remainingQty"><%= selectedBatch.quantity %></span>
         </div>
       </div>
 

@@ -1,3 +1,4 @@
+const { totalCount } = require('../db/pool');
 const db = require('../db/queries');
 const { convertQuantity } = require('../utils/conversion');
 
@@ -52,10 +53,6 @@ const getProduct = async (req, res) => {
 				? Number((totalValuation / totalQuantity).toFixed(2))
 				: 0;
 
-		console.log('productInventory:', productInventory);
-		console.log('valuation:', totalValuation);
-		console.log('quantity sum:', totalQuantity);
-
 		res.render('products/product', {
 			product,
 			productInventory,
@@ -93,7 +90,7 @@ const createProductForm = async (req, res) => {
 const splitPackageProductForm = async (req, res) => {
 	const lotNumber = req.params.lotNumber;
 	const pkg = await db.getProductDB(req.params.id, req.user.company_id);
-	const products = await db.getAllProductsDB(req.user.id);
+	const products = await db.getAllProductsDB(req.user.company_id);
 	const selectedBatch = await db.getInventoryByLot(pkg.id, lotNumber);
 	console.log(pkg);
 	res.render('products/splitPackageProductForm', {
@@ -106,12 +103,11 @@ const splitPackageProductForm = async (req, res) => {
 const splitPackagePost = async (req, res) => {
 	const lotNumber = req.params.lotNumber;
 	const product_id = req.params.id;
+	const userId = req.user.id;
 	const selectedBatch = await db.getInventoryByLot(product_id, lotNumber);
 	const { productId, packageSize, quantity } = req.body;
 	let totalUsed = 0;
 	let orignalPackageQty = parseFloat(selectedBatch.quantity);
-
-	console.log('SELECTED==', selectedBatch);
 
 	const splits = packageSize.map((size, i) => {
 		const qty = parseFloat(quantity[i]);
@@ -120,8 +116,8 @@ const splitPackagePost = async (req, res) => {
 		totalUsed += weight;
 
 		return {
-			productId: productId[i],
-			packageSize: size,
+			productId: parseFloat(productId[i]),
+			packageSize: parseFloat(size),
 			quantity: qty,
 			totalWeight: weight,
 		};
@@ -131,8 +127,8 @@ const splitPackagePost = async (req, res) => {
 		return res.status(400).send('Split exceeds available quantity');
 	}
 
-	await db.splitPackageTransaction(selectedBatch, splits);
-	res.render('/products/products');
+	await db.splitPackageTransaction(selectedBatch, splits, userId);
+	res.redirect('/');
 };
 const insertProduct = async (req, res) => {
 	const userCompanyId = req.user.company_id;

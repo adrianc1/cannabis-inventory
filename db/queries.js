@@ -116,15 +116,16 @@ const getProductDB = async (id, companyId) => {
 
 // NEED TO CREATED AND FINISH THE SPLIT TRANSACTION
 
-const splitPackageTransaction = async (selectedBatch, splits) => {
+const splitPackageTransaction = async (selectedBatch, splits, userId) => {
 	const client = await pool.connect();
 
 	try {
 		await client.query('BEGIN');
+		const lotNumber = selectedBatch.lot_number;
 		// set parent batch
 		const parentBatch = await client.query(
 			`SELECT * FROM inventory WHERE lot_number=$1 FOR UPDATE`,
-			[selectedBatch.lot_number],
+			[lotNumber],
 		);
 
 		if (parentBatch.rows.length === 0) {
@@ -134,28 +135,37 @@ const splitPackageTransaction = async (selectedBatch, splits) => {
 		const parent = parentBatch.rows[0];
 		//calc total weight used
 		const totalUsed = splits.reduce(
-			(sum, s) => sum + s.packageSize * s.quanity,
+			(sum, s) => sum + s.packageSize * s.quantity,
+			0,
 		);
 
-		if (totalUsed > parent.quanity) {
+		if (totalUsed > parent.quantity) {
 			throw new Error('Split exceeds available inventory');
 		}
 
 		// create child packages
 		for (const split of splits) {
-			await client.query(
+			const childQty = split.packageSize * split.quantity;
+			const childResult = await client.query(
 				`INSERT INTO inventory
 				(product_id, company_id, status, quantity, package_size, unit, parent_lot_id)
-				VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+				VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
 				[
 					parent.product_id,
 					parent.company_id,
 					parent.status,
-					parent.quanity,
-					parent.package_size,
+					childQty,
+					split.packageSize,
 					'g',
-					parent.parent_lot_id,
+					parent.id,
 				],
+			);
+
+			const childInventoryId = childResult.rows[0].id;
+
+			await client.query(
+				`INSERT INTO inventory_movements(inventory_id, user_id, movement_type, quantity, cost_per_unit) VALUES ($1,$2,$3,$4,$5)`,
+				[childInventoryId, userId, 'split', childQty, parent.cost_price],
 			);
 		}
 
@@ -166,6 +176,9 @@ const splitPackageTransaction = async (selectedBatch, splits) => {
 			WHERE lot_number=$2`,
 			[totalUsed, parent.lot_number],
 		);
+
+		console.log('selected', selectedBatch);
+		console.log('parent', parent);
 
 		await client.query('COMMIT');
 	} catch (error) {
@@ -185,7 +198,7 @@ const insertProduct = async (
 	categoryId,
 	userCompanyId,
 	sku,
-	quanity = 0,
+	quantity = 0,
 ) => {
 	const client = await pool.connect();
 
@@ -209,7 +222,7 @@ const insertProduct = async (
 
 		await client.query(
 			`INSERT INTO inventory (product_id, company_id, quantity) VALUES ($1, $2, $3)`,
-			[product.id, userCompanyId, quanity],
+			[product.id, userCompanyId, quantity],
 		);
 		await client.query('COMMIT');
 		return product;
@@ -832,4 +845,5 @@ module.exports = {
 	getInventoryByLot,
 	getProductWithInventoryDB,
 	insertBrand,
+	splitPackageTransaction,
 };

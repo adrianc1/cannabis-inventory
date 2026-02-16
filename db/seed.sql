@@ -36,10 +36,10 @@ VALUES
 -- Users
 INSERT INTO users (company_id, first_name, last_name, email, password_hash, role)
 VALUES
-  (1, 'Alice', 'Green', 'alice@greenleaf.com', '$2b$10$GoxSfho.fxw1CED6FMlMyuYclnRsy.oFRr.THRmr43sToPq.IdQDG', 'admin'),
-  (1, 'Bob', 'Smith', 'bob@greenleaf.com', '$2b$10$GoxSfho.fxw1CED6FMlMyuYclnRsy.oFRr.THRmr43sToPq.IdQDG', 'manager'),
-  (2, 'Charlie', 'Jones', 'charlie@sunshine.com', '$2b$10$GoxSfho.fxw1CED6FMlMyuYclnRsy.oFRr.THRmr43sToPq.IdQDG', 'staff'),
-  (2, 'Billy', 'Jean', 'billyjean@sunshine.com', '$2b$10$GoxSfho.fxw1CED6FMlMyuYclnRsy.oFRr.THRmr43sToPq.IdQDG', 'staff');
+  (1, 'Alice', 'Green', 'alice@greenleaf.com', '$2b$10$fmR5a7oJNK4DsW3Z2ww7L.eNgbKSGQp7bZN9jXqeZi3X4JRYcdmu6', 'admin'),
+  (1, 'Bob', 'Smith', 'bob@greenleaf.com', '$2b$10$fmR5a7oJNK4DsW3Z2ww7L.eNgbKSGQp7bZN9jXqeZi3X4JRYcdmu6', 'manager'),
+  (2, 'Charlie', 'Jones', 'charlie@sunshine.com', '$2b$10$fmR5a7oJNK4DsW3Z2ww7L.eNgbKSGQp7bZN9jXqeZi3X4JRYcdmu6', 'staff'),
+  (2, 'Billy', 'Jean', 'billyjean@sunshine.com', '$2b$10$fmR5a7oJNK4DsW3Z2ww7L.eNgbKSGQp7bZN9jXqeZi3X4JRYcdmu6', 'staff');
 
 -- Products
 INSERT INTO products (company_id, brand_id, strain_id, category_id, name, description, unit, sku)
@@ -54,7 +54,7 @@ INSERT INTO inventory (product_id, company_id, parent_lot_id,  location, status,
 VALUES
 (1, 1, NULL, 'backroom', 'active', 10, 1, 'g', 8.50, 'Supplier A', 'BD0901'),
 (1, 1, NULL, 'front', 'active', 5, 1, 'g', 8.50, 'Supplier A', 'BD0902'),
-(2, 1, NULL, 'backroom', 'active', 3, 0.5, 'g' 15.00, 'Supplier B', 'OGK0501'),
+(2, 1, NULL, 'backroom', 'active', 3, 0.5, 'g', 15.00, 'Supplier B', 'OGK0501'),
 (3, 2, NULL, 'cooler', 'active', 20, 10, 'mg', 1.50, 'Supplier C', 'SD1001'),
 (4, 2, NULL, 'front', 'active', 10, 35, 'ml', 12.00, 'Supplier D', 'NL0501');
 

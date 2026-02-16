@@ -148,8 +148,8 @@ const splitPackageTransaction = async (selectedBatch, splits, userId) => {
 			const childQty = split.packageSize * split.quantity;
 			const childResult = await client.query(
 				`INSERT INTO inventory
-				(product_id, company_id, status, quantity, package_size, unit, parent_lot_id)
-				VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+				(product_id, company_id, status, quantity, package_size, unit, parent_lot_id, lot_number, cost_price)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
 				[
 					parent.product_id,
 					parent.company_id,
@@ -158,6 +158,8 @@ const splitPackageTransaction = async (selectedBatch, splits, userId) => {
 					split.packageSize,
 					'g',
 					parent.id,
+					split.childLotNumber,
+					parent.cost_price,
 				],
 			);
 

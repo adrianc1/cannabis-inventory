@@ -105,7 +105,7 @@ const splitPackagePost = async (req, res) => {
 	const product_id = req.params.id;
 	const userId = req.user.id;
 	const selectedBatch = await db.getInventoryByLot(product_id, lotNumber);
-	const { productId, packageSize, quantity } = req.body;
+	const { productId, packageSize, quantity, batch } = req.body;
 	let totalUsed = 0;
 	let orignalPackageQty = parseFloat(selectedBatch.quantity);
 
@@ -120,6 +120,7 @@ const splitPackagePost = async (req, res) => {
 			packageSize: parseFloat(size),
 			quantity: qty,
 			totalWeight: weight,
+			childLotNumber: batch[i],
 		};
 	});
 

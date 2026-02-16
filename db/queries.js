@@ -114,6 +114,68 @@ const getProductDB = async (id, companyId) => {
 	}
 };
 
+// NEED TO CREATED AND FINISH THE SPLIT TRANSACTION
+
+const splitPackageTransaction = async (selectedBatch, splits) => {
+	const client = await pool.connect();
+
+	try {
+		await client.query('BEGIN');
+		// set parent batch
+		const parentBatch = await client.query(
+			`SELECT * FROM inventory WHERE lot_number=$1 FOR UPDATE`,
+			[selectedBatch.lot_number],
+		);
+
+		if (parentBatch.rows.length === 0) {
+			throw new Error('Package not found');
+		}
+
+		const parent = parentBatch.rows[0];
+		//calc total weight used
+		const totalUsed = splits.reduce(
+			(sum, s) => sum + s.packageSize * s.quanity,
+		);
+
+		if (totalUsed > parent.quanity) {
+			throw new Error('Split exceeds available inventory');
+		}
+
+		// create child packages
+		for (const split of splits) {
+			await client.query(
+				`INSERT INTO inventory
+				(product_id, company_id, status, quantity, package_size, unit, parent_lot_id)
+				VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+				[
+					parent.product_id,
+					parent.company_id,
+					parent.status,
+					parent.quanity,
+					parent.package_size,
+					'g',
+					parent.parent_lot_id,
+				],
+			);
+		}
+
+		//update parent remaining qty
+		await client.query(
+			`UPDATE inventory
+			SET quantity = quantity - $1
+			WHERE lot_number=$2`,
+			[totalUsed, parent.lot_number],
+		);
+
+		await client.query('COMMIT');
+	} catch (error) {
+		await client.query('ROLLBACK');
+		throw error;
+	} finally {
+		client.release();
+	}
+};
+
 const insertProduct = async (
 	name,
 	description,

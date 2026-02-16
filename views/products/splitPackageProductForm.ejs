@@ -42,7 +42,7 @@
     </div>
 
     <!-- Split Form -->
-    <form method="POST" action="/packages/<%= pkg.id %>/split" id="splitForm">
+    <form method="POST" action="/products/<%= pkg.id %>/split/<%= selectedBatch.lot_number %>" id="splitForm">
 
       <div id="splitRows" class="space-y-4" data-initial-qty="<%= pkg. quantity %>">
 
@@ -124,7 +124,7 @@
 
       <!-- Submit -->
       <div class="flex gap-3 pt-6">
-        <button type="submit" class="btn-primary flex-1">
+        <button type="submit" class="btn-primary flex-1" id="submitSplit">
           Create Split Lot
         </button>
         <a href="/packages/<%= pkg.id %>" class="btn-secondary flex-1 text-center">

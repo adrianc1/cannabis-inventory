@@ -13,12 +13,16 @@ function updateTotals() {
 	});
 
 	const remaining = initialQty - totalUsed;
+	const submitBtn = document.getElementById('submitSplit');
+
+	submitBtn.disabled = remaining < 0;
 
 	document.getElementById('totalUsed').textContent = totalUsed.toFixed(3);
 	document.getElementById('remainingQty').textContent = (
 		initialQty - totalUsed
 	).toFixed(3);
 
+	// render UI colors based on remaining qty
 	const summaryBox = document.getElementById('summaryBox');
 	if (remaining < 0) {
 		summaryBox.classList.remove('bg-emerald-50', 'border-green-300');

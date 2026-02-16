@@ -12,10 +12,12 @@ router.post('/create-product', productsController.insertProduct);
 
 router.get('/:id/receive', productsController.receiveInventoryGet);
 router.get('/:id/edit', productsController.editProductForm);
-router.get('/:id/split', productsController.splitPackageProductForm);
 
+router.get('/:id/split/:lotNumber', productsController.splitPackageProductForm);
+router.post('/:id/split/:lotNumber', productsController.splitPackagePost);
 router.put('/:id/adjust/:lotNumber', productsController.updateInventory);
 router.get('/:id/adjust/:lotNumber', productsController.adjustInventoryGet);
+
 router.put('/:id/receive', productsController.receiveInventoryPut);
 
 router.put('/:id', productsController.updateProduct);

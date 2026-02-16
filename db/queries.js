@@ -468,7 +468,7 @@ const applyInventoryMovement = async ({
 	company_id,
 	location = 'backroom',
 	batch,
-	delta,
+	targetQty,
 	movement_type,
 	notes,
 	cost_per_unit = null,
@@ -476,6 +476,7 @@ const applyInventoryMovement = async ({
 	status,
 }) => {
 	const client = await pool.connect();
+	let delta;
 	console.log('LIVE FROM HE DB', status);
 	try {
 		await client.query('BEGIN');
@@ -493,18 +494,19 @@ const applyInventoryMovement = async ({
 			if (!rows.length) throw new Error('Inventory not found');
 
 			const currentQty = parseFloat(rows[0].quantity);
-			delta = Number(delta);
-			newQty = currentQty + delta;
+
+			delta = targetQty - currentQty;
+			newQty = targetQty;
 
 			if (newQty < 0) throw new Error('Inventory cannot be negative');
 
 			if (!status) {
-				status = newQty <= 0 ? 'empty' : 'active';
+				status = newQty <= 0 ? 'inactive' : 'active';
 			}
 
 			console.log('updating inventory with:', status);
 
-			const result = await client.query(
+			const { rows: updated } = await client.query(
 				`UPDATE inventory
          SET quantity = $1,
              cost_price = COALESCE($2, cost_price),
@@ -516,7 +518,16 @@ const applyInventoryMovement = async ({
 				[newQty, cost_per_unit, null, status, invId],
 			);
 
-			updateInventory = result.rows[0];
+			updateInventory = updated[0];
+			console.log('currentqty:', currentQty);
+			console.log('newQty:', newQty);
+			console.log('delta:', delta);
+			console.log(updateInventory);
+
+			await client.query(
+				`INSERT INTO inventory_movements (inventory_id, movement_type, quantity, cost_per_unit, notes, user_id) VALUES ($1,$2,$3,$4,$5,$6)`,
+				[invId, movement_type, delta, cost_per_unit, notes, userId],
+			);
 		} else {
 			const { rows } = await client.query(
 				`SELECT id, quantity FROM inventory
@@ -526,7 +537,11 @@ const applyInventoryMovement = async ({
 
 			if (rows.length) {
 				invId = rows[0].id;
-				newQty = parseFloat(rows[0].quantity) + delta;
+				const currentQty = parseFloat(rows[0].quantity);
+				const delta = targetQty - currentQty;
+				newQty = targetQty;
+
+				if (!status) status = newQty <= 0 ? 'inactive' : 'active';
 
 				const { rows: updated } = await client.query(
 					`UPDATE inventory
@@ -540,7 +555,15 @@ const applyInventoryMovement = async ({
 					[newQty, cost_per_unit, null, status, invId],
 				);
 				updateInventory = updated[0];
+
+				await client.query(
+					`INSERT INTO inventory_movements
+           (inventory_id, movement_type, quantity, cost_per_unit, notes, user_id)
+           VALUES ($1,$2,$3,$4,$5,$6)`,
+					[invId, movement_type, delta, cost_per_unit, notes, userId],
+				);
 			} else {
+				invId = null;
 				const { rows: insertRows } = await client.query(
 					`INSERT INTO inventory
            (product_id, company_id, location, quantity, cost_price, supplier_name, lot_number, status)
@@ -554,7 +577,7 @@ const applyInventoryMovement = async ({
 						cost_per_unit,
 						null,
 						batch,
-						status,
+						status || (targetQty <= 0 ? 'inactive' : 'active'),
 					],
 				);
 				updateInventory = insertRows[0];
@@ -562,18 +585,6 @@ const applyInventoryMovement = async ({
 				newQty = parseFloat(insertRows[0].quantity);
 			}
 		}
-		// Automatic quantity-based status if qty is 0
-
-		// 		await client.query(
-		// 			`UPDATE inventory
-		//    SET quantity = $1,
-		//        cost_price = COALESCE($2, cost_price),
-		//        supplier_name = COALESCE($3, supplier_name),
-		//        status = $4,
-		//        updated_at = NOW()
-		//    WHERE id = $5`,
-		// 			[newQty, cost_per_unit, null, status, inventory_id],
-		// 		);
 
 		// log movement
 		await client.query(

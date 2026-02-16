@@ -14,9 +14,7 @@ const getAllProducts = async (req, res) => {
 
 const getProduct = async (req, res) => {
 	try {
-		console.log('Fetching product with id:', req.params.id);
-
-		const product = await db.getProductDB(req.params.id, req.user.company_id);
+		const product = await db.getProductWithInventoryDB(req.params.id);
 		const productInventory = await db.getProductInventory(req.params.id);
 
 		if (!product) {

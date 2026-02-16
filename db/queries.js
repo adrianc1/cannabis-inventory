@@ -97,13 +97,11 @@ const getProductDB = async (id, companyId) => {
 			p.strain_id,
 			brands.name AS brand_name,
 			categories.name AS category_name,
-			strains.name AS strain_name,
-			inventory.quantity
+			strains.name AS strain_name
 			FROM products AS p
 			LEFT JOIN brands ON p.brand_id = brands.id
 			LEFT JOIN categories ON p.category_id = categories.id
 			LEFT JOIN strains ON p.strain_id = strains.id
-			LEFT JOIN inventory ON p.id = inventory.product_id
 			WHERE p.id = $1
 			AND p.company_id=$2`,
 			[id, companyId],

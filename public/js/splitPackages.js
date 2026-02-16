@@ -13,6 +13,9 @@ function updateTotals() {
 	});
 
 	const remaining = initialQty - totalUsed;
+	const submitBtn = document.getElementById('submitSplit');
+
+	submitBtn.disabled = remaining < 0;
 
 	document.getElementById('totalUsed').textContent = totalUsed.toFixed(3);
 	document.getElementById('remainingQty').textContent = (

@@ -104,9 +104,14 @@ const splitPackageProductForm = async (req, res) => {
 };
 
 const splitPackagePost = async (req, res) => {
-	const originalP = await db.getProductDB(req.params.id, req.user.company_id);
+	const lotNumber = req.params.lotNumber;
+	const product_id = req.params.id;
+	const selectedBatch = await db.getInventoryByLot(product_id, lotNumber);
 	const { productId, packageSize, quantity } = req.body;
 	let totalUsed = 0;
+	let orignalPackageQty = parseFloat(selectedBatch.quantity);
+
+	console.log('SELECTED==', selectedBatch);
 
 	const splits = packageSize.map((size, i) => {
 		const qty = parseFloat(quantity[i]);
@@ -123,8 +128,10 @@ const splitPackagePost = async (req, res) => {
 	});
 
 	if (totalUsed > orignalPackageQty) {
+		return res.status(400).send('Split exceeds available quantity');
 	}
-	await db.splitPackageTransaction;
+
+	await db.splitPackageTransaction(selectedBatch, splits);
 	res.render('/products/products');
 };
 const insertProduct = async (req, res) => {

@@ -482,6 +482,7 @@ const applyInventoryMovement = async ({
 		let newQty, updateInventory;
 		let invId = packages_id;
 
+		// check if package exists
 		if (packages_id) {
 			invId = packages_id;
 			const { rows } = await client.query(
@@ -517,10 +518,6 @@ const applyInventoryMovement = async ({
 			);
 
 			updateInventory = updated[0];
-			console.log('currentqty:', currentQty);
-			console.log('newQty:', newQty);
-			console.log('delta:', delta);
-			console.log(updateInventory);
 
 			await client.query(
 				`INSERT INTO inventory_movements (packages_id, movement_type, quantity, cost_per_unit, notes, user_id) VALUES ($1,$2,$3,$4,$5,$6)`,
@@ -536,7 +533,7 @@ const applyInventoryMovement = async ({
 			if (rows.length) {
 				invId = rows[0].id;
 				const currentQty = parseFloat(rows[0].quantity);
-				const delta = targetQty - currentQty;
+				delta = targetQty - currentQty;
 				newQty = targetQty;
 
 				if (!status) status = newQty <= 0 ? 'inactive' : 'active';
@@ -562,6 +559,7 @@ const applyInventoryMovement = async ({
 				);
 			} else {
 				invId = null;
+				delta = targetQty;
 				const { rows: insertRows } = await client.query(
 					`INSERT INTO packages
            (product_id, company_id, location, quantity, cost_price, supplier_name, lot_number, status)
@@ -571,7 +569,7 @@ const applyInventoryMovement = async ({
 						product_id,
 						company_id,
 						location,
-						delta,
+						targetQty,
 						cost_per_unit,
 						null,
 						batch,
@@ -581,23 +579,18 @@ const applyInventoryMovement = async ({
 				updateInventory = insertRows[0];
 				invId = insertRows[0].id;
 				newQty = parseFloat(insertRows[0].quantity);
+
+				// log movement
+				await client.query(
+					`INSERT INTO inventory_movements
+       (packages_id, movement_type, quantity, cost_per_unit, notes, user_id)
+       VALUES ($1,$2,$3,$4,$5,$6)`,
+					[invId, movement_type, delta, cost_per_unit, notes, userId],
+				);
 			}
 		}
 
-		// log movement
-		await client.query(
-			`INSERT INTO inventory_movements
-       (packages_id, movement_type, quantity, cost_per_unit, notes, user_id)
-       VALUES ($1,$2,$3,$4,$5,$6)`,
-			[invId, movement_type, delta, cost_per_unit, notes, userId],
-		);
-
 		await client.query('COMMIT');
-
-		console.log(
-			'update Inventory!!! this is the current status',
-			updateInventory.status,
-		);
 		return {
 			inventoryId: invId,
 			newQty,
@@ -658,7 +651,7 @@ const adjustProductInventory = async (
 
 		const currentQty = current.rows[0].quantity;
 		currentStatus = rows[0].status;
-		const delta = quantity - currentQty;
+		delta = quantity - currentQty;
 
 		const movementUpdate = await client.query(
 			`INSERT INTO inventory_movements (packages_id, movement_type, quantity, notes, user_id) 

@@ -498,7 +498,7 @@ const applyInventoryMovement = async ({
 
 			if (newQty < 0) throw new Error('Inventory cannot be negative');
 
-			if (!status) {
+			if (status) {
 				status = newQty <= 0 ? 'inactive' : 'active';
 			}
 

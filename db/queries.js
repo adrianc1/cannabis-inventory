@@ -26,7 +26,7 @@ const getProductWithInventoryDB = async (id) => {
       LEFT JOIN brands ON p.brand_id = brands.id
       LEFT JOIN categories ON p.category_id = categories.id
       LEFT JOIN strains ON p.strain_id = strains.id
-      LEFT JOIN inventory i ON p.id = i.product_id
+      LEFT JOIN packages i ON p.id = i.product_id
       WHERE p.id = $1
       GROUP BY p.id, p.name, p.sku, p.unit, p.brand_id, p.category_id, p.strain_id, brand_name, category_name, strain_name
       `,
@@ -62,7 +62,7 @@ const getAllProductsDB = async (user_id) => {
       LEFT JOIN brands ON p.brand_id = brands.id
       LEFT JOIN categories ON p.category_id = categories.id
       LEFT JOIN strains ON p.strain_id = strains.id
-      LEFT JOIN inventory AS i ON p.id = i.product_id
+      LEFT JOIN packages AS i ON p.id = i.product_id
       WHERE p.company_id=$1
       GROUP BY 
         p.id,
@@ -122,7 +122,7 @@ const splitPackageTransaction = async (selectedBatch, splits, userId) => {
 		const lotNumber = selectedBatch.lot_number;
 		// set parent batch
 		const parentBatch = await client.query(
-			`SELECT * FROM inventory WHERE lot_number=$1 FOR UPDATE`,
+			`SELECT * FROM packages WHERE lot_number=$1 FOR UPDATE`,
 			[lotNumber],
 		);
 
@@ -145,7 +145,7 @@ const splitPackageTransaction = async (selectedBatch, splits, userId) => {
 		for (const split of splits) {
 			const childQty = split.packageSize * split.quantity;
 			const childResult = await client.query(
-				`INSERT INTO inventory
+				`INSERT INTO packages
 				(product_id, company_id, status, quantity, package_size, unit, parent_lot_id, lot_number, cost_price)
 				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
 				[
@@ -164,14 +164,14 @@ const splitPackageTransaction = async (selectedBatch, splits, userId) => {
 			const childInventoryId = childResult.rows[0].id;
 
 			await client.query(
-				`INSERT INTO inventory_movements(inventory_id, user_id, movement_type, quantity, cost_per_unit) VALUES ($1,$2,$3,$4,$5)`,
+				`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit) VALUES ($1,$2,$3,$4,$5)`,
 				[childInventoryId, userId, 'split', childQty, parent.cost_price],
 			);
 		}
 
 		//update parent remaining qty
 		await client.query(
-			`UPDATE inventory
+			`UPDATE packages
 			SET quantity = quantity - $1
 			WHERE lot_number=$2`,
 			[totalUsed, parent.lot_number],
@@ -221,7 +221,7 @@ const insertProduct = async (
 		const product = result.rows[0];
 
 		await client.query(
-			`INSERT INTO inventory (product_id, company_id, quantity) VALUES ($1, $2, $3)`,
+			`INSERT INTO packages (product_id, company_id, quantity) VALUES ($1, $2, $3)`,
 			[product.id, userCompanyId, quantity],
 		);
 		await client.query('COMMIT');
@@ -279,7 +279,7 @@ const deleteProduct = async (productId) => {
 		WHERE id = $1
 		AND NOT EXISTS (
 		SELECT 1 
-		FROM inventory
+		FROM packages
 		WHERE product_id=$1
 		AND quantity > 0)
 		RETURNING id;`,
@@ -387,12 +387,12 @@ const getCategory = async (id, companyId) => {
 			brands.name AS brand_name,
 			categories.name AS category_name,
 			strains.name AS strain_name,
-			inventory.quantity
+			packages.quantity
 			FROM products AS p
 			LEFT JOIN brands ON p.brand_id = brands.id
 			LEFT JOIN categories ON p.category_id = categories.id
 			LEFT JOIN strains ON p.strain_id = strains.id
-			LEFT JOIN inventory ON p.id = inventory.product_id
+			LEFT JOIN packages ON p.id = packages.product_id
 			WHERE p.category_id = $1
 			AND p.company_id=$2
 			ORDER BY p.name`,
@@ -449,20 +449,20 @@ const deleteCategory = async (categoryId) => {
 };
 
 const createProductInventory = async (
-	inventory_id,
+	packages_id,
 	movement_type,
 	quantity,
 	notes,
 ) => {
 	const insert = await pool.query(
-		'INSERT INTO inventory (product_id, location, quantity, cost_price, supplier_name) VALUES $1, $2, $3, $4, $5',
+		'INSERT INTO packages (product_id, location, quantity, cost_price, supplier_name) VALUES $1, $2, $3, $4, $5',
 		[product_id, location, quantity, cost_price, supplier_name],
 	);
 };
 
 const applyInventoryMovement = async ({
 	product_id,
-	inventory_id = null,
+	packages_id = null,
 	company_id,
 	location = 'backroom',
 	batch,
@@ -480,13 +480,13 @@ const applyInventoryMovement = async ({
 		await client.query('BEGIN');
 
 		let newQty, updateInventory;
-		let invId = inventory_id;
+		let invId = packages_id;
 
-		if (inventory_id) {
-			invId = inventory_id;
+		if (packages_id) {
+			invId = packages_id;
 			const { rows } = await client.query(
-				`SELECT quantity FROM inventory WHERE id=$1 FOR UPDATE`,
-				[inventory_id],
+				`SELECT quantity FROM packages WHERE id=$1 FOR UPDATE`,
+				[packages_id],
 			);
 
 			if (!rows.length) throw new Error('Inventory not found');
@@ -505,7 +505,7 @@ const applyInventoryMovement = async ({
 			console.log('updating inventory with:', status);
 
 			const { rows: updated } = await client.query(
-				`UPDATE inventory
+				`UPDATE packages
          SET quantity = $1,
              cost_price = COALESCE($2, cost_price),
              supplier_name = COALESCE($3, supplier_name),
@@ -523,12 +523,12 @@ const applyInventoryMovement = async ({
 			console.log(updateInventory);
 
 			await client.query(
-				`INSERT INTO inventory_movements (inventory_id, movement_type, quantity, cost_per_unit, notes, user_id) VALUES ($1,$2,$3,$4,$5,$6)`,
+				`INSERT INTO inventory_movements (packages_id, movement_type, quantity, cost_per_unit, notes, user_id) VALUES ($1,$2,$3,$4,$5,$6)`,
 				[invId, movement_type, delta, cost_per_unit, notes, userId],
 			);
 		} else {
 			const { rows } = await client.query(
-				`SELECT id, quantity FROM inventory
+				`SELECT id, quantity FROM packages
          WHERE product_id=$1 AND location=$2 AND lot_number=$3 FOR UPDATE`,
 				[product_id, location, batch],
 			);
@@ -542,7 +542,7 @@ const applyInventoryMovement = async ({
 				if (!status) status = newQty <= 0 ? 'inactive' : 'active';
 
 				const { rows: updated } = await client.query(
-					`UPDATE inventory
+					`UPDATE packages
            SET quantity=$1,
                cost_price=COALESCE($2, cost_price),
                supplier_name=COALESCE($3, supplier_name),
@@ -556,14 +556,14 @@ const applyInventoryMovement = async ({
 
 				await client.query(
 					`INSERT INTO inventory_movements
-           (inventory_id, movement_type, quantity, cost_per_unit, notes, user_id)
+           (packages_id, movement_type, quantity, cost_per_unit, notes, user_id)
            VALUES ($1,$2,$3,$4,$5,$6)`,
 					[invId, movement_type, delta, cost_per_unit, notes, userId],
 				);
 			} else {
 				invId = null;
 				const { rows: insertRows } = await client.query(
-					`INSERT INTO inventory
+					`INSERT INTO packages
            (product_id, company_id, location, quantity, cost_price, supplier_name, lot_number, status)
            VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
            RETURNING *`,
@@ -587,7 +587,7 @@ const applyInventoryMovement = async ({
 		// log movement
 		await client.query(
 			`INSERT INTO inventory_movements
-       (inventory_id, movement_type, quantity, cost_per_unit, notes, user_id)
+       (packages_id, movement_type, quantity, cost_per_unit, notes, user_id)
        VALUES ($1,$2,$3,$4,$5,$6)`,
 			[invId, movement_type, delta, cost_per_unit, notes, userId],
 		);
@@ -613,7 +613,7 @@ const applyInventoryMovement = async ({
 
 const getInventoryByBatch = async (product_id, location, batch) => {
 	const { rows } = await pool.query(
-		`SELECT * FROM inventory WHERE product_id=$1 AND location=$2 AND lot_number=$3`,
+		`SELECT * FROM packages WHERE product_id=$1 AND location=$2 AND lot_number=$3`,
 		[product_id, location, batch],
 	);
 
@@ -622,7 +622,7 @@ const getInventoryByBatch = async (product_id, location, batch) => {
 
 const getInventoryByLot = async (productId, lotNumber) => {
 	const { rows } = await pool.query(
-		`SELECT * FROM inventory WHERE product_id = $1 AND lot_number = $2`,
+		`SELECT * FROM packagesy WHERE product_id = $1 AND lot_number = $2`,
 		[productId, lotNumber],
 	);
 
@@ -632,7 +632,7 @@ const getInventoryByLot = async (productId, lotNumber) => {
 };
 
 const adjustProductInventory = async (
-	inventory_id,
+	packages_id,
 	movement_type,
 	quantity,
 	notes,
@@ -644,8 +644,8 @@ const adjustProductInventory = async (
 		await client.query('BEGIN');
 
 		const current = await client.query(
-			`SELECT quantity FROM inventory WHERE id=$1`,
-			[inventory_id],
+			`SELECT quantity FROM packages WHERE id=$1`,
+			[packages_id],
 		);
 
 		if (current.rows.length === 0) {
@@ -661,16 +661,16 @@ const adjustProductInventory = async (
 		const delta = quantity - currentQty;
 
 		const movementUpdate = await client.query(
-			`INSERT INTO inventory_movements (inventory_id, movement_type, quantity, notes, user_id) 
+			`INSERT INTO inventory_movements (packages_id, movement_type, quantity, notes, user_id) 
              VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-			[inventory_id, movement_type, delta, notes, userId],
+			[packages_id, movement_type, delta, notes, userId],
 		);
 
 		const inventoryUpdate = await client.query(
-			`UPDATE inventory 
+			`UPDATE packages 
              SET quantity = $1 
              WHERE id = $2`,
-			[quantity, inventory_id],
+			[quantity, packages_id],
 		);
 
 		await client.query('COMMIT');
@@ -684,7 +684,7 @@ const adjustProductInventory = async (
 };
 
 const receiveInventory = async (
-	inventory_id,
+	packages_id,
 	quantity,
 	batch,
 	unit_price,
@@ -699,8 +699,8 @@ const receiveInventory = async (
 		await client.query('BEGIN');
 
 		const current = await client.query(
-			`SELECT quantity FROM inventory WHERE id=$1`,
-			[inventory_id],
+			`SELECT quantity FROM packages WHERE id=$1`,
+			[packages_id],
 		);
 
 		if (current.rows.length === 0) {
@@ -716,19 +716,19 @@ const receiveInventory = async (
 		const newQty = Number(currentQty) + delta;
 
 		await client.query(
-			`INSERT INTO inventory_movements (inventory_id, movement_type, quantity, cost_per_unit, notes, user_id) 
+			`INSERT INTO inventory_movements (packages_id, movement_type, quantity, cost_per_unit, notes, user_id) 
              VALUES ($1, $2, $3, $4, $5, $6)`,
-			[inventory_id, reason, delta, unit_price, notes, userId],
+			[packages_id, reason, delta, unit_price, notes, userId],
 		);
 
 		await client.query(
-			`UPDATE inventory 
+			`UPDATE packages 
      SET quantity = $1,
          cost_price = $2,
          supplier_name = $3,
          lot_number = $4
      WHERE id = $5`,
-			[newQty, unit_price, vendor, batch, inventory_id],
+			[newQty, unit_price, vendor, batch, packages_id],
 		);
 
 		await client.query('COMMIT');
@@ -743,7 +743,7 @@ const receiveInventory = async (
 
 const getInventoryId = async (productId) => {
 	const { rows } = await pool.query(
-		`SELECT * FROM inventory WHERE product_id=$1`,
+		`SELECT * FROM packages WHERE product_id=$1`,
 		[productId],
 	);
 	return rows;
@@ -753,7 +753,7 @@ const getProductInventory = async (productId) => {
 	const { rows } = await pool.query(
 		`
 		SELECT *, COALESCE(cost_price, 0) AS cost_price
-		FROM inventory 
+		FROM packages 
 		WHERE product_id=$1
 		  AND lot_number IS NOT NULL
 		  AND lot_number <> ''

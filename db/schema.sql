@@ -1,6 +1,6 @@
 -- CLEAN SLATE
 DROP TABLE inventory_movements CASCADE;
-DROP TABLE inventory CASCADE;
+DROP TABLE packages CASCADE;
 DROP TABLE products CASCADE;
 DROP TABLE users CASCADE;
 DROP TABLE brands CASCADE;
@@ -9,12 +9,12 @@ DROP TABLE categories CASCADE;
 DROP TABLE companies CASCADE;
 
 DROP TYPE IF EXISTS user_role CASCADE;
-DROP TYPE IF EXISTS inventory_status CASCADE;
+DROP TYPE IF EXISTS packages_status CASCADE;
 DROP TYPE IF EXISTS inventory_location CASCADE;
 DROP TYPE IF EXISTS unit CASCADE;
 
 CREATE TYPE user_role AS ENUM ('admin', 'manager', 'staff');
-CREATE TYPE inventory_status AS ENUM ('active','inactive','quarantine','damaged','expired','reserved');
+CREATE TYPE package_status AS ENUM ('active','inactive','quarantine','damaged','expired','reserved');
 CREATE TYPE inventory_location AS ENUM ('backroom', 'front', 'cooler', 'quarantine', 'safe');
 CREATE TYPE unit AS ENUM ('mg','g','kg','oz','lb','ml','l','each');
 
@@ -75,13 +75,13 @@ CREATE TABLE products (
 );
 
 -- Depends on Products + Companies
-CREATE TABLE inventory (
+CREATE TABLE packages (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    parent_lot_id INTEGER REFERENCES inventory(id) ON DELETE SET NULL,
+    parent_lot_id INTEGER REFERENCES packages(id) ON DELETE SET NULL,
     location VARCHAR(255) DEFAULT 'backroom',
-    status inventory_status NOT NULL DEFAULT 'active',
+    status package_status NOT NULL DEFAULT 'active',
     quantity DECIMAL(10,3) NOT NULL DEFAULT 0,
     package_size DECIMAL(10,3),        
     unit VARCHAR(10) DEFAULT 'g', 
@@ -96,7 +96,7 @@ CREATE TABLE inventory (
 -- Audit Trail
 CREATE TABLE inventory_movements (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    inventory_id INTEGER NOT NULL REFERENCES inventory(id) ON DELETE CASCADE,
+    packages_id INTEGER NOT NULL REFERENCES packages(id) ON DELETE CASCADE,
     user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     movement_type VARCHAR(50) NOT NULL,
     quantity DECIMAL(10,3) NOT NULL,

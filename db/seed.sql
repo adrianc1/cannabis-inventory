@@ -50,7 +50,7 @@ VALUES
 (2, 4, 4, 4, 'Northern Lights Cream', 'Relaxing topical cream', 'ml', 'NL-050');
 
 -- Inventory
-INSERT INTO inventory (product_id, company_id, parent_lot_id,  location, status, quantity, package_size, unit, cost_price, supplier_name, lot_number)
+INSERT INTO packages (product_id, company_id, parent_lot_id,  location, status, quantity, package_size, unit, cost_price, supplier_name, lot_number)
 VALUES
 (1, 1, NULL, 'backroom', 'active', 10, 1, 'g', 8.50, 'Supplier A', 'BD0901'),
 (1, 1, NULL, 'front', 'active', 5, 1, 'g', 8.50, 'Supplier A', 'BD0902'),
@@ -59,7 +59,7 @@ VALUES
 (4, 2, NULL, 'front', 'active', 10, 35, 'ml', 12.00, 'Supplier D', 'NL0501');
 
 -- Inventory Movements
-INSERT INTO inventory_movements (inventory_id, user_id, movement_type, quantity, cost_per_unit, notes)
+INSERT INTO inventory_movements (packages_id, user_id, movement_type, quantity, cost_per_unit, notes)
 VALUES
 (1, 1, 'receive', 10, 8.50, 'Initial stock received'),
 (2, 2, 'receive', 5, 8.50, 'Front display replenished'),

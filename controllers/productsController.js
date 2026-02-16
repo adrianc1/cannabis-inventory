@@ -90,7 +90,7 @@ const splitPackageProductForm = async (req, res) => {
 	const pkg = await db.getProductDB(req.params.id, req.user.company_id);
 	const products = await db.getAllProductsDB(req.user.company_id);
 	const selectedBatch = await db.getInventoryByLot(pkg.id, lotNumber);
-	console.log(pkg);
+	console.log(selectedBatch, 'da bbbbbbb');
 	res.render('products/splitPackageProductForm', {
 		pkg,
 		products,

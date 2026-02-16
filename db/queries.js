@@ -615,7 +615,7 @@ const getInventoryByBatch = async (product_id, location, batch) => {
 
 const getInventoryByLot = async (productId, lotNumber) => {
 	const { rows } = await pool.query(
-		`SELECT * FROM packagesy WHERE product_id = $1 AND lot_number = $2`,
+		`SELECT * FROM packages WHERE product_id = $1 AND lot_number = $2`,
 		[productId, lotNumber],
 	);
 

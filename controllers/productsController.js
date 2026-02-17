@@ -22,29 +22,28 @@ const getProduct = async (req, res) => {
 			return;
 		}
 
-		// Build packages under each batch
-		const packages = await db.getPackagesByProductId(product.id);
-
-		// Group child packages under their parent batch
-		productInventory.forEach((batch) => {
-			batch.packages = packages.filter((pkg) => pkg.parent_lot_id === batch.id);
-		});
-
-		let totalInventory = productInventory.reduce((sum, batch) => {
-			return sum + Number(batch.quantity || 0);
-		}, 0);
-		totalInventory = Number(totalInventory.toFixed(2));
-
+		let totalInventory = 0;
 		let totalValuation = 0;
 		let totalQuantity = 0;
 
 		productInventory.forEach((batch) => {
-			const qty = Number(batch.quantity);
-			const cost = Number(batch.cost_price);
-			totalValuation += qty * cost;
-			totalQuantity += qty;
+			const childrenTotal = (batch.packages || []).reduce(
+				(sum, pkg) => sum + Number(pkg.quantity),
+				0,
+			);
+
+			batch.remainderQty = Math.max(0, Number(batch.quantity) - childrenTotal);
+
+			// Sum all for totals
+			const batchTotalQty = Number(batch.quantity); // parent total
+			totalQuantity += batchTotalQty;
+			totalValuation += batchTotalQty * Number(batch.cost_price || 0);
+
+			// Add children to totalInventory if you want it counted in inventory
+			totalInventory += batchTotalQty; // or batchTotalQty + childrenTotal if you prefer
 		});
 
+		totalInventory = Number(totalInventory.toFixed(2));
 		totalValuation = Number(totalValuation.toFixed(2));
 
 		const averageCost =

@@ -21,10 +21,21 @@
       </tr>
     </thead>
     <tbody>
+      
       <% productInventory.forEach(batch => { %>
         <!-- BATCH ROW -->
          
+         
         <tr class="batch-row cursor-pointer bg-gray-50 hover:bg-gray-100" data-batch-id="<%= batch.id %>">
+          <td class="px-3 py-2 border border-gray-300 font-semibold cursor-pointer">
+  <%= batch.lot_number %> (Batch)
+  <% if (batch.packages && batch.packages.length) { %>
+    <span class="ml-2 text-xs text-gray-500 flex items-center">
+      <span class="arrow transition-transform inline-block mr-1">▶</span>
+      <%= batch.packages.length %> packages
+    </span>
+  <% } %>
+</td>
 
           <td class="px-3 py-2 border border-gray-300 font-semibold"><%= batch.lot_number %> (Batch)</td>
           <td class="px-3 py-2 border border-gray-300"><%= batch.location || '-' %></td>

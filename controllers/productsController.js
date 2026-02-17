@@ -22,15 +22,17 @@ const getProduct = async (req, res) => {
 			return;
 		}
 
-		let totalInventory = 0;
+		// Build packages under each batch
+		const packages = await db.getPackagesByProductId(product.id);
 
-		if (productInventory.length > 0) {
-			totalInventory = productInventory.reduce(
-				(sum, batch) => sum + Number(batch.quantity),
-				0,
-			);
-		}
+		// Group child packages under their parent batch
+		productInventory.forEach((batch) => {
+			batch.packages = packages.filter((pkg) => pkg.parent_lot_id === batch.id);
+		});
 
+		let totalInventory = productInventory.reduce((sum, batch) => {
+			return sum + Number(batch.quantity || 0);
+		}, 0);
 		totalInventory = Number(totalInventory.toFixed(2));
 
 		let totalValuation = 0;
@@ -39,7 +41,6 @@ const getProduct = async (req, res) => {
 		productInventory.forEach((batch) => {
 			const qty = Number(batch.quantity);
 			const cost = Number(batch.cost_price);
-
 			totalValuation += qty * cost;
 			totalQuantity += qty;
 		});
@@ -59,7 +60,8 @@ const getProduct = async (req, res) => {
 			averageCost,
 		});
 	} catch (error) {
-		res.status(500).json({ error: 'Database error retreiving single product' });
+		console.error(error);
+		res.status(500).json({ error: 'Database error retrieving single product' });
 	}
 };
 
@@ -90,7 +92,6 @@ const splitPackageProductForm = async (req, res) => {
 	const pkg = await db.getProductDB(req.params.id, req.user.company_id);
 	const products = await db.getAllProductsDB(req.user.company_id);
 	const selectedBatch = await db.getInventoryByLot(pkg.id, lotNumber);
-	console.log(selectedBatch, 'da bbbbbbb');
 	res.render('products/splitPackageProductForm', {
 		pkg,
 		products,
@@ -244,18 +245,18 @@ const receiveInventoryPut = async (req, res) => {
 	const userId = req.user.id;
 	const company_id = req.user.company_id;
 	const { quantity, unit, unit_price, reason, notes, vendor, batch } = req.body;
-	const existingInventory = await db.getInventoryByBatch(
+	const existingInventory = await db.getPackageByLot(
 		product_id,
 		'backroom',
 		batch,
 	);
-	const inventory_id = existingInventory ? existingInventory.id : null;
+	const package_id = existingInventory ? existingInventory.id : null;
 
 	const normalizedQty = convertQuantity(quantity, unit, product.unit);
 
 	await db.applyInventoryMovement({
 		product_id,
-		inventory_id,
+		package_id,
 		company_id,
 		location: 'backroom',
 		batch,

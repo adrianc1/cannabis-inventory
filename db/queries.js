@@ -199,6 +199,7 @@ const insertProduct = async (
 	userCompanyId,
 	sku,
 	quantity = 0,
+	// batchId,
 ) => {
 	const client = await pool.connect();
 
@@ -220,10 +221,10 @@ const insertProduct = async (
 		);
 		const product = result.rows[0];
 
-		await client.query(
-			`INSERT INTO packages (product_id, company_id, quantity) VALUES ($1, $2, $3)`,
-			[product.id, userCompanyId, quantity],
-		);
+		// await client.query(
+		// 	`INSERT INTO packages (product_id, company_id, quantity, batch_id) VALUES ($1, $2, $3, $4)`,
+		// 	[product.id, userCompanyId, quantity, batchId],
+		// );
 		await client.query('COMMIT');
 		return product;
 	} catch (error) {
@@ -604,7 +605,7 @@ const applyInventoryMovement = async ({
 	}
 };
 
-const getInventoryByBatch = async (product_id, location, batch) => {
+const getPackageByLot = async (product_id, location, batch) => {
 	const { rows } = await pool.query(
 		`SELECT * FROM packages WHERE product_id=$1 AND location=$2 AND lot_number=$3`,
 		[product_id, location, batch],
@@ -755,6 +756,32 @@ const getProductInventory = async (productId) => {
 		[productId],
 	);
 
+	const batchesMap = {};
+	rows.forEach((pkg) => {
+		if (!pkg.parent_lot_id) {
+			batchesMap[pkg.id] = { ...pkg, packages: [] };
+		}
+	});
+
+	rows.forEach((pkg) => {
+		if (pkg.parent_lot_id) {
+			const parent = batchesMap[pkg.parent_lot_id];
+			if (parent) {
+				parent.packages.push(pkg);
+			} else {
+				batchesMap[pkg.id] = { ...pkg, packages: [] };
+			}
+		}
+	});
+
+	return Object.values(batchesMap);
+};
+
+const getPackagesByProductId = async (productId) => {
+	const { rows } = await pool.query(
+		`SELECT * FROM packages WHERE product_id = $1 ORDER BY created_at`,
+		[productId],
+	);
 	return rows;
 };
 
@@ -848,9 +875,10 @@ module.exports = {
 	receiveInventory,
 	getProductInventory,
 	applyInventoryMovement,
-	getInventoryByBatch,
+	getPackageByLot,
 	getInventoryByLot,
 	getProductWithInventoryDB,
 	insertBrand,
 	splitPackageTransaction,
+	getPackagesByProductId,
 };

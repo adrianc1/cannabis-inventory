@@ -1,11 +1,11 @@
-
 <div class="max-w-4xl mx-auto my-6">
   <h2 class="text-2xl font-bold mb-4">Product Inventory: <%= product.name %></h2>
 
   <div class="mb-4 p-4 bg-gray-100 rounded-md flex justify-between">
-    <div>
-      <strong>Total Quantity:</strong> <%= productInventory.reduce((sum, b) => sum + Number(b.quantity), 0) %>
-    </div>
+   <div>
+    <strong>Total Quantity:</strong> 
+    <%= productInventory.reduce((sum, batch) => sum + Number(batch.quantity || 0), 0) %>
+  </div>
   </div>
 
   <table class="w-full table-auto border-collapse border border-gray-300">
@@ -21,13 +21,16 @@
       </tr>
     </thead>
     <tbody>
-      <% productInventory?.forEach(batch => { %>
-        <tr>
-          <td class="px-3 py-2 border border-gray-300"><%= batch.lot_number %></td>
-          <td class="px-3 py-2 border border-gray-300"><%= batch.location %></td>
+      <% productInventory.forEach(batch => { %>
+        <!-- BATCH ROW -->
+         
+        <tr class="batch-row cursor-pointer bg-gray-50 hover:bg-gray-100" data-batch-id="<%= batch.id %>">
+
+          <td class="px-3 py-2 border border-gray-300 font-semibold"><%= batch.lot_number %> (Batch)</td>
+          <td class="px-3 py-2 border border-gray-300"><%= batch.location || '-' %></td>
           <td class="px-3 py-2 border border-gray-300"><%= batch.quantity %></td>
           <td class="px-3 py-2 border border-gray-300">$<%= Number(batch.cost_price || 0).toFixed(2) %></td>
-          <td class="px-3 py-2 border border-gray-300">$<%= Number((batch.quantity * (batch.cost_price || 0))).toFixed(2) %></td>
+          <td class="px-3 py-2 border border-gray-300">$<%= Number(batch.quantity * (batch.cost_price || 0)).toFixed(2) %></td>
           <%
             const statusClasses = {
               active: 'bg-green-100 text-green-800',
@@ -37,24 +40,56 @@
               expired: 'bg-orange-100 text-orange-800',
               reserved: 'bg-blue-100 text-blue-800',
             };
-
-            const statusClass =
-              statusClasses[batch.status] || 'bg-gray-100 text-gray-800';
+            const statusClass = statusClasses[batch.status] || 'bg-gray-100 text-gray-800';
           %>
-
-            <td class="px-3 py-2 border border-gray-300">
-              <span
-                class="inline-block px-2 py-1 rounded-full text-xs font-medium capitalize <%= statusClass %>"
-              >
-                <%= batch.status %>
-              </span>
-            </td>
+          <td class="px-3 py-2 border border-gray-300">
+            <span class="inline-block px-2 py-1 rounded-full text-xs font-medium capitalize <%= statusClass %>">
+              <%= batch.status %>
+            </span>
+          </td>
           <td class="px-3 py-2 border border-gray-300">
             <a href="/products/<%= product.id %>/adjust/<%= batch.lot_number %>" class="btn-secondary">Adjust</a>
-            	<a href="/products/<%= product.id %>/split/<%= batch.lot_number %>" class="btn-tertiary">Package / Split</a>
+            <a href="/products/<%= product.id %>/split/<%= batch.lot_number %>" class="btn-tertiary">Package / Split</a>
           </td>
         </tr>
+
+        <!-- CHILD PACKAGES ROWS -->
+        <% if (batch.packages && batch.packages.length) { %>
+          <% batch.packages.forEach(pkg => { %>
+            <tr data-parent-id="batch-<%= batch.id %>" class="hidden bg-white">
+              <td class="px-3 py-2 border border-gray-300 pl-6">↳ <%= pkg.lot_number %></td>
+              <td class="px-3 py-2 border border-gray-300"><%= pkg.location %></td>
+              <td class="px-3 py-2 border border-gray-300"><%= pkg.quantity %></td>
+              <td class="px-3 py-2 border border-gray-300">$<%= Number(pkg.cost_price || 0).toFixed(2) %></td>
+              <td class="px-3 py-2 border border-gray-300">$<%= Number(pkg.quantity * (pkg.cost_price || 0)).toFixed(2) %></td>
+              <%
+                const pkgStatusClass = statusClasses[pkg.status] || 'bg-gray-100 text-gray-800';
+              %>
+              <td class="px-3 py-2 border border-gray-300">
+                <span class="inline-block px-2 py-1 rounded-full text-xs font-medium capitalize <%= pkgStatusClass %>">
+                  <%= pkg.status %>
+                </span>
+              </td>
+              <td class="px-3 py-2 border border-gray-300">
+                <a href="/products/<%= product.id %>/adjust/<%= pkg.lot_number %>" class="btn-secondary">Adjust</a>
+              </td>
+            </tr>
+          <% }) %>
+        <% } %>
       <% }) %>
     </tbody>
   </table>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.batch-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const id = row.dataset.batchId;
+      if (!id) return; // safety
+      document.querySelectorAll(`[data-parent-id="batch-${id}"]`).forEach(child => {
+        child.classList.toggle('hidden');
+      });
+    });
+  });
+});
+</script>
 </div>

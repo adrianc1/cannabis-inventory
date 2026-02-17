@@ -241,24 +241,37 @@ const updateProduct = async (req, res) => {
 const receiveInventoryPut = async (req, res) => {
 	const product_id = req.params.id;
 	const product = await db.getProductDB(product_id, req.user.company_id);
+
 	const userId = req.user.id;
 	const company_id = req.user.company_id;
 	const { quantity, unit, unit_price, reason, notes, vendor, batch } = req.body;
-	const existingInventory = await db.getPackageByLot(
+	console.log('da batch', batch);
+	const existingInventory = await db.getPackageByLot(product_id, batch);
+	console.log('pid', existingInventory);
+
+	const newBatch = await db.createBatch(
 		product_id,
-		'backroom',
+		company_id,
 		batch,
+		quantity,
+		unit,
 	);
+
+	console.log('uyehehe', product_id, company_id, batch, quantity, unit);
+
+	const batch_id = newBatch.id;
+
 	const package_id = existingInventory ? existingInventory.id : null;
 
 	const normalizedQty = convertQuantity(quantity, unit, product.unit);
 
 	await db.applyInventoryMovement({
 		product_id,
-		package_id,
+		packages_id: package_id,
 		company_id,
 		location: 'backroom',
 		batch,
+		batch_id,
 		targetQty: Number(normalizedQty),
 		movement_type: reason,
 		notes,

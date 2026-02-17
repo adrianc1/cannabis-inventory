@@ -464,6 +464,7 @@ const createProductInventory = async (
 const applyInventoryMovement = async ({
 	product_id,
 	packages_id = null,
+	batch_id,
 	company_id,
 	location = 'backroom',
 	batch,
@@ -512,6 +513,7 @@ const applyInventoryMovement = async ({
              cost_price = COALESCE($2, cost_price),
              supplier_name = COALESCE($3, supplier_name),
 			 status = $4,
+			 batch_id = $6
              updated_at = NOW()
          WHERE id = $5
 		 RETURNING *`,
@@ -563,8 +565,8 @@ const applyInventoryMovement = async ({
 				delta = targetQty;
 				const { rows: insertRows } = await client.query(
 					`INSERT INTO packages
-           (product_id, company_id, location, quantity, cost_price, supplier_name, lot_number, status)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+           (product_id, company_id, location, quantity, cost_price, supplier_name, lot_number, status, batch_id)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
            RETURNING *`,
 					[
 						product_id,
@@ -575,6 +577,7 @@ const applyInventoryMovement = async ({
 						null,
 						batch,
 						status || (targetQty <= 0 ? 'inactive' : 'active'),
+						batch_id,
 					],
 				);
 				updateInventory = insertRows[0];
@@ -605,10 +608,24 @@ const applyInventoryMovement = async ({
 	}
 };
 
+const createBatch = async (
+	productId,
+	companyId,
+	batchNumber,
+	totalQty,
+	unit,
+) => {
+	const { rows } = await pool.query(
+		`INSERT INTO batches(product_id, company_id, batch_number, total_quantity, unit  ) VALUES($1,$2,$3,$4,$5) RETURNING *`,
+		[productId, companyId, batchNumber, totalQty, unit],
+	);
+	return rows[0];
+};
+
 const getPackageByLot = async (product_id, location, batch) => {
 	const { rows } = await pool.query(
-		`SELECT * FROM packages WHERE product_id=$1 AND location=$2 AND lot_number=$3`,
-		[product_id, location, batch],
+		`SELECT * FROM packages WHERE product_id=$1 AND lot_number=$2`,
+		[product_id, batch],
 	);
 
 	return rows[0] || null;
@@ -720,9 +737,10 @@ const receiveInventory = async (
      SET quantity = $1,
          cost_price = $2,
          supplier_name = $3,
-         lot_number = $4
-     WHERE id = $5`,
-			[newQty, unit_price, vendor, batch, packages_id],
+         lot_number = $4,
+		 batch_id = $5
+     WHERE id = $6`,
+			[newQty, unit_price, vendor, batch, packages_id, batchId],
 		);
 
 		await client.query('COMMIT');
@@ -881,4 +899,5 @@ module.exports = {
 	insertBrand,
 	splitPackageTransaction,
 	getPackagesByProductId,
+	createBatch,
 };

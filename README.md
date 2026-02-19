@@ -63,3 +63,16 @@ The goal of this project is to simulate production-grade inventory systems used 
 - Automatic logging of inventory actions
 - Historical tracking of quantity changes
 - Audit-friendly transaction history
+
+## Database Design
+- PostgreSQL relational schema
+- Explicit SQL schema definitions
+- Normalized inventory relationships
+- Ledger-based inventory tracking model
+  
+## Project Goals
+This project is designed to:
+
+- Model real cannabis industry workflows
+- Explore inventory reconciliation concepts
+- Serve as a foundation for future compliance tooling (e.g., METRC integrations)

@@ -99,7 +99,7 @@ CREATE TABLE packages (
     location VARCHAR(255) DEFAULT 'backroom',
     status packages_status NOT NULL DEFAULT 'active',
     quantity DECIMAL(10,3) NOT NULL DEFAULT 0,
-    package_size DECIMAL(10,3),        
+    package_size DECIMAL(10,3) DEFAULT NULL,        
     unit VARCHAR(10) DEFAULT 'g', 
     cost_price DECIMAL(10,2),
     supplier_name VARCHAR(255),

@@ -149,12 +149,12 @@ const splitPackageTransaction = async (selectedBatch, splits, userId) => {
 				(product_id, company_id, status, quantity, package_size, unit, parent_lot_id, lot_number, cost_price, batch_id)
 				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
 				[
-					parent.product_id,
+					split.product_id,
 					parent.company_id,
 					parent.status,
 					childQty,
 					split.packageSize,
-					'g',
+					parent.unit,
 					parent.id,
 					split.childLotNumber,
 					parent.cost_price,
@@ -176,6 +176,12 @@ const splitPackageTransaction = async (selectedBatch, splits, userId) => {
 			SET quantity = quantity - $1
 			WHERE lot_number=$2`,
 			[totalUsed, parent.lot_number],
+		);
+
+		await client.query(
+			`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit)
+     VALUES ($1,$2,$3,$4,$5)`,
+			[parent.id, userId, 'split_deduct', totalUsed, parent.cost_price],
 		);
 
 		console.log('selected', selectedBatch);
@@ -475,6 +481,7 @@ const applyInventoryMovement = async ({
 	cost_per_unit = null,
 	userId,
 	status,
+	package_size,
 }) => {
 	const client = await pool.connect();
 	let delta;
@@ -514,11 +521,11 @@ const applyInventoryMovement = async ({
              cost_price = COALESCE($2, cost_price),
              supplier_name = COALESCE($3, supplier_name),
 			 status = $4,
-			 batch_id = $6
+			 batch_id = $5
              updated_at = NOW()
-         WHERE id = $5
+         WHERE id = $6
 		 RETURNING *`,
-				[newQty, cost_per_unit, null, status, invId],
+				[newQty, cost_per_unit, null, status, batch, invId],
 			);
 
 			updateInventory = updated[0];
@@ -566,7 +573,7 @@ const applyInventoryMovement = async ({
 				delta = targetQty;
 				const { rows: insertRows } = await client.query(
 					`INSERT INTO packages
-           (product_id, company_id, location, quantity, cost_price, supplier_name, lot_number, status, batch_id)
+           (product_id, company_id, location, quantity, cost_price, package_size, lot_number, status, batch_id)
            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
            RETURNING *`,
 					[
@@ -575,7 +582,7 @@ const applyInventoryMovement = async ({
 						location,
 						targetQty,
 						cost_per_unit,
-						null,
+						package_size,
 						batch,
 						status || (targetQty <= 0 ? 'inactive' : 'active'),
 						batch_id,

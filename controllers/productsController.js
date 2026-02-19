@@ -1,3 +1,4 @@
+const { body } = require('express-validator');
 const { totalCount } = require('../db/pool');
 const db = require('../db/queries');
 const { convertQuantity } = require('../utils/conversion');
@@ -244,10 +245,18 @@ const receiveInventoryPut = async (req, res) => {
 
 	const userId = req.user.id;
 	const company_id = req.user.company_id;
-	const { quantity, unit, unit_price, reason, notes, vendor, batch } = req.body;
-	console.log('da batch', batch);
+
+	const {
+		quantity,
+		unit,
+		unit_price,
+		reason,
+		notes,
+		vendor,
+		batch,
+		package_size,
+	} = req.body;
 	const existingInventory = await db.getPackageByLot(product_id, batch);
-	console.log('pid', existingInventory);
 
 	const newBatch = await db.createBatch(
 		product_id,
@@ -278,6 +287,7 @@ const receiveInventoryPut = async (req, res) => {
 		cost_per_unit: unit_price,
 		userId,
 		status: 'active',
+		package_size: package_size || null,
 	});
 	res.status(200).json({ success: true });
 };

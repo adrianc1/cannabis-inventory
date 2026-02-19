@@ -1,20 +1,21 @@
 -- CLEAN SLATE
-DROP TABLE inventory_movements CASCADE;
-DROP TABLE inventory CASCADE;
-DROP TABLE products CASCADE;
-DROP TABLE users CASCADE;
-DROP TABLE brands CASCADE;
-DROP TABLE strains CASCADE;
-DROP TABLE categories CASCADE;
-DROP TABLE companies CASCADE;
+DROP TABLE IF EXISTS inventory_movements CASCADE;
+DROP TABLE IF EXISTS packages CASCADE;
+DROP TABLE IF EXISTS batches CASCADE;
+DROP TABLE IF EXISTS products CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS brands CASCADE;
+DROP TABLE IF EXISTS strains CASCADE;
+DROP TABLE IF EXISTS categories CASCADE;
+DROP TABLE IF EXISTS companies CASCADE;
 
 DROP TYPE IF EXISTS user_role CASCADE;
-DROP TYPE IF EXISTS inventory_status CASCADE;
+DROP TYPE IF EXISTS packages_status CASCADE;
 DROP TYPE IF EXISTS inventory_location CASCADE;
 DROP TYPE IF EXISTS unit CASCADE;
 
 CREATE TYPE user_role AS ENUM ('admin', 'manager', 'staff');
-CREATE TYPE inventory_status AS ENUM ('active','inactive','quarantine','damaged','expired','reserved');
+CREATE TYPE packages_status AS ENUM ('active','inactive','quarantine','damaged','expired','reserved');
 CREATE TYPE inventory_location AS ENUM ('backroom', 'front', 'cooler', 'quarantine', 'safe');
 CREATE TYPE unit AS ENUM ('mg','g','kg','oz','lb','ml','l','each');
 
@@ -74,29 +75,45 @@ CREATE TABLE products (
     UNIQUE (company_id, sku)
 );
 
--- Depends on Products + Companies
-CREATE TABLE inventory (
-    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+CREATE TABLE batches (
+    id SERIAL PRIMARY KEY,
     product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    parent_lot_id INTEGER REFERENCES inventory(id) ON DELETE SET NULL,
+    batch_number VARCHAR(100) NOT NULL,
+    total_quantity DECIMAL(10,3) NOT NULL,
+    unit VARCHAR(10) NOT NULL,
+    cost_per_unit DECIMAL(10,2),
+    supplier_name VARCHAR(255),
+    status packages_status DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(product_id, batch_number)
+);
+
+-- Depends on Products + Companies
+CREATE TABLE packages (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    batch_id INTEGER NOT NULL REFERENCES batches(id) ON DELETE CASCADE,
+    product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+    parent_lot_id INTEGER REFERENCES packages(id) ON DELETE SET NULL,
     location VARCHAR(255) DEFAULT 'backroom',
-    status inventory_status NOT NULL DEFAULT 'active',
+    status packages_status NOT NULL DEFAULT 'active',
     quantity DECIMAL(10,3) NOT NULL DEFAULT 0,
     package_size DECIMAL(10,3),        
     unit VARCHAR(10) DEFAULT 'g', 
     cost_price DECIMAL(10,2),
     supplier_name VARCHAR(255),
     lot_number VARCHAR(100),
+    state_uuid UUID UNIQUE,
     updated_at TIMESTAMP DEFAULT NOW(),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    UNIQUE (product_id, location, lot_number)
+    UNIQUE (batch_id, location, lot_number)
 );
 
 -- Audit Trail
 CREATE TABLE inventory_movements (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    inventory_id INTEGER NOT NULL REFERENCES inventory(id) ON DELETE CASCADE,
+    packages_id INTEGER NOT NULL REFERENCES packages(id) ON DELETE CASCADE,
     user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     movement_type VARCHAR(50) NOT NULL,
     quantity DECIMAL(10,3) NOT NULL,

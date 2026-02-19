@@ -3,10 +3,11 @@ const initialQty = parseFloat(splitRows.dataset.initialQty);
 
 function updateTotals() {
 	let totalUsed = 0;
-	splitRows.querySelectorAll('.split-row').forEach((row) => {
+	splitRows.querySelectorAll('.split-row').forEach((row, i) => {
 		const packageSize =
 			parseFloat(row.querySelector('.package-size').value) || 0;
 		const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+
 		const totalWeight = packageSize * quantity;
 		row.querySelector('.total-weight').value = totalWeight.toFixed(3);
 		totalUsed += totalWeight;

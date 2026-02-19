@@ -14,9 +14,7 @@ const getAllProducts = async (req, res) => {
 
 const getProduct = async (req, res) => {
 	try {
-		console.log('Fetching product with id:', req.params.id);
-
-		const product = await db.getProductDB(req.params.id, req.user.company_id);
+		const product = await db.getProductWithInventoryDB(req.params.id);
 		const productInventory = await db.getProductInventory(req.params.id);
 
 		if (!product) {
@@ -25,27 +23,27 @@ const getProduct = async (req, res) => {
 		}
 
 		let totalInventory = 0;
-
-		if (productInventory.length > 0) {
-			totalInventory = productInventory.reduce(
-				(sum, batch) => sum + Number(batch.quantity),
-				0,
-			);
-		}
-
-		totalInventory = Number(totalInventory.toFixed(2));
-
 		let totalValuation = 0;
 		let totalQuantity = 0;
 
 		productInventory.forEach((batch) => {
-			const qty = Number(batch.quantity);
-			const cost = Number(batch.cost_price);
+			const childrenTotal = (batch.packages || []).reduce(
+				(sum, pkg) => sum + Number(pkg.quantity),
+				0,
+			);
 
-			totalValuation += qty * cost;
-			totalQuantity += qty;
+			batch.remainderQty = Math.max(0, Number(batch.quantity) - childrenTotal);
+
+			// Sum all for totals
+			const batchTotalQty = Number(batch.quantity); // parent total
+			totalQuantity += batchTotalQty;
+			totalValuation += batchTotalQty * Number(batch.cost_price || 0);
+
+			// Add children to totalInventory if you want it counted in inventory
+			totalInventory += batchTotalQty; // or batchTotalQty + childrenTotal if you prefer
 		});
 
+		totalInventory = Number(totalInventory.toFixed(2));
 		totalValuation = Number(totalValuation.toFixed(2));
 
 		const averageCost =
@@ -61,7 +59,8 @@ const getProduct = async (req, res) => {
 			averageCost,
 		});
 	} catch (error) {
-		res.status(500).json({ error: 'Database error retreiving single product' });
+		console.error(error);
+		res.status(500).json({ error: 'Database error retrieving single product' });
 	}
 };
 
@@ -92,7 +91,6 @@ const splitPackageProductForm = async (req, res) => {
 	const pkg = await db.getProductDB(req.params.id, req.user.company_id);
 	const products = await db.getAllProductsDB(req.user.company_id);
 	const selectedBatch = await db.getInventoryByLot(pkg.id, lotNumber);
-	console.log(pkg);
 	res.render('products/splitPackageProductForm', {
 		pkg,
 		products,
@@ -243,24 +241,37 @@ const updateProduct = async (req, res) => {
 const receiveInventoryPut = async (req, res) => {
 	const product_id = req.params.id;
 	const product = await db.getProductDB(product_id, req.user.company_id);
+
 	const userId = req.user.id;
 	const company_id = req.user.company_id;
 	const { quantity, unit, unit_price, reason, notes, vendor, batch } = req.body;
-	const existingInventory = await db.getInventoryByBatch(
+	console.log('da batch', batch);
+	const existingInventory = await db.getPackageByLot(product_id, batch);
+	console.log('pid', existingInventory);
+
+	const newBatch = await db.createBatch(
 		product_id,
-		'backroom',
+		company_id,
 		batch,
+		quantity,
+		unit,
 	);
-	const inventory_id = existingInventory ? existingInventory.id : null;
+
+	console.log('uyehehe', product_id, company_id, batch, quantity, unit);
+
+	const batch_id = newBatch.id;
+
+	const package_id = existingInventory ? existingInventory.id : null;
 
 	const normalizedQty = convertQuantity(quantity, unit, product.unit);
 
 	await db.applyInventoryMovement({
 		product_id,
-		inventory_id,
+		packages_id: package_id,
 		company_id,
 		location: 'backroom',
 		batch,
+		batch_id,
 		targetQty: Number(normalizedQty),
 		movement_type: reason,
 		notes,

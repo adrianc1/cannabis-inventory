@@ -44,7 +44,7 @@
     <!-- Split Form -->
     <form method="POST" action="/products/<%= pkg.id %>/split/<%= selectedBatch.lot_number %>" id="splitForm">
 
-      <div id="splitRows" class="space-y-4" data-initial-qty="<%= pkg. quantity %>">
+      <div id="splitRows" class="space-y-4" data-initial-qty="<%= selectedBatch.quantity %>">
 
         <!-- Split Row Template -->
         <div class="split-row grid grid-cols-5 gap-3 border rounded-lg p-4">

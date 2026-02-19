@@ -51,8 +51,12 @@ const insertCategory = async (req, res) => {
 	try {
 		const { name, description } = req.body;
 
-		console.log(req.body);
-		const result = await db.insertCategory(name, description);
+		const result = await db.insertCategory(
+			name,
+			req.user.company_id,
+			description,
+		);
+		console.log(result);
 		res.redirect(`/categories/${result.id}`);
 	} catch (error) {}
 };

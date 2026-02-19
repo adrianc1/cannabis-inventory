@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	function showNewCategoryInput() {
 		if (document.getElementById('newCategoryName')) return;
 
-		brandSelect.disabled = true;
+		categorySelect.disabled = true;
 
 		const container = document.createElement('div');
 		container.id = 'new-category-container';

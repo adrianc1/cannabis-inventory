@@ -426,7 +426,7 @@ const getSingleCategory = async (id, companyId) => {
 	}
 };
 
-const insertCategory = async (name, companyId) => {
+const insertCategory = async (name, companyId, description) => {
 	try {
 		const result = await pool.query(
 			`INSERT INTO categories (name, company_id)

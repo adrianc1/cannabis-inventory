@@ -39,6 +39,8 @@
 
           const childrenTotal = (batch.packages || []).reduce((sum, pkg) => sum + Number(pkg.quantity), 0);
           const remainderQty = Math.max(0, Number(batch.quantity) - childrenTotal);
+          const totalQty = Number(childrenTotal) + Number(batch.quantity);
+
         %>
         
       <!-- Parent Row -->
@@ -52,7 +54,7 @@
           <% } %>
         </td>
         <td class="px-3 py-2 border border-gray-300"><%= batch.location || '-' %></td>
-        <td class="px-3 py-2 border border-gray-300"><%= batch.quantity %></td>
+        <td class="px-3 py-2 border border-gray-300"><%= batch.quantity %> /<%= totalQty %> <%= product.unit %></td>
         <td class="px-3 py-2 border border-gray-300">$<%= Number(batch.cost_price || 0).toFixed(2) %></td>
         <td class="px-3 py-2 border border-gray-300">$<%= Number(batch.quantity * (batch.cost_price || 0)).toFixed(2) %></td>
         <td class="px-3 py-2 border border-gray-300">

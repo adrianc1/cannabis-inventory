@@ -50,6 +50,8 @@ const getProduct = async (req, res) => {
 				? Number((totalValuation / totalQuantity).toFixed(2))
 				: 0;
 
+		console.log(product);
+
 		res.render('products/product', {
 			product,
 			productInventory,
@@ -89,7 +91,9 @@ const splitPackageProductForm = async (req, res) => {
 	const lotNumber = req.params.lotNumber;
 	const pkg = await db.getProductDB(req.params.id, req.user.company_id);
 	const products = await db.getAllProductsDB(req.user.company_id);
+	const product = await db.getProductDB(req.user.company_id);
 	const selectedBatch = await db.getInventoryByLot(pkg.id, lotNumber);
+	console.log('pkg!!!', selectedBatch);
 	res.render('products/splitPackageProductForm', {
 		pkg,
 		products,
@@ -103,18 +107,23 @@ const splitPackagePost = async (req, res) => {
 	const userId = req.user.id;
 	const selectedBatch = await db.getInventoryByLot(product_id, lotNumber);
 	const { productId, packageSize, quantity, batch } = req.body;
+	const unit = selectedBatch.unit;
 	let totalUsed = 0;
 	let orignalPackageQty = parseFloat(selectedBatch.quantity);
 
-	const splits = packageSize.map((size, i) => {
-		const qty = parseFloat(quantity[i]);
-		const weight = parseFloat(size) * qty;
+	const packageSizes = packageSize || quantity.map(() => 1);
+
+	const splits = quantity.map((_, i) => {
+		const qty = parseFloat(quantity[i]) || 0;
+		const size = parseFloat(packageSizes[i]) || 1;
+
+		const weight = unit === 'each' ? qty : size * qty;
 
 		totalUsed += weight;
 
 		return {
 			productId: parseFloat(productId[i]),
-			packageSize: parseFloat(size),
+			packageSize: unit === 'each' ? null : size,
 			quantity: qty,
 			totalWeight: weight,
 			childLotNumber: batch[i],

@@ -3,13 +3,27 @@ const initialQty = parseFloat(splitRows.dataset.initialQty);
 
 function updateTotals() {
 	let totalUsed = 0;
+	const unit = splitRows.dataset.unit;
+	if (!unit) return;
 	splitRows.querySelectorAll('.split-row').forEach((row, i) => {
-		const packageSize =
-			parseFloat(row.querySelector('.package-size').value) || 0;
+		const packageSizeInput = row.querySelector('.package-size');
+
+		const packageSize = packageSizeInput
+			? parseFloat(packageSizeInput.value) || 1
+			: 1;
+
 		const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
 
-		const totalWeight = packageSize * quantity;
-		row.querySelector('.total-weight').value = totalWeight.toFixed(3);
+		let totalWeight;
+
+		if (unit === 'each') {
+			totalWeight = quantity;
+			row.querySelector('.total-weight').value = totalWeight;
+		} else {
+			totalWeight = packageSize * quantity;
+			row.querySelector('.total-weight').value = totalWeight.toFixed(3);
+		}
+
 		totalUsed += totalWeight;
 	});
 
@@ -18,10 +32,13 @@ function updateTotals() {
 
 	submitBtn.disabled = remaining < 0;
 
-	document.getElementById('totalUsed').textContent = totalUsed.toFixed(3);
-	document.getElementById('remainingQty').textContent = (
-		initialQty - totalUsed
-	).toFixed(3);
+	document.getElementById('totalUsed').textContent =
+		unit === 'each' ? totalUsed : totalUsed.toFixed(3);
+
+	document.getElementById('remainingQty').textContent =
+		unit === 'each'
+			? initialQty - totalUsed
+			: (initialQty - totalUsed).toFixed(3);
 
 	// render UI colors based on remaining qty
 	const summaryBox = document.getElementById('summaryBox');

@@ -39,9 +39,7 @@ const getProduct = async (req, res) => {
 			const batchTotalQty = Number(batch.quantity); // parent total
 			totalQuantity += batchTotalQty;
 			totalValuation += batchTotalQty * Number(batch.cost_price || 0);
-
-			// Add children to totalInventory if you want it counted in inventory
-			totalInventory += batchTotalQty; // or batchTotalQty + childrenTotal if you prefer
+			totalInventory += batchTotalQty;
 		});
 
 		totalInventory = Number(totalInventory.toFixed(2));
@@ -160,7 +158,6 @@ const insertProduct = async (req, res) => {
 	}
 	if (newCategoryName?.trim()) {
 		newCategory = await db.insertCategory(newCategoryName, req.user.company_id);
-		console.log('what it is;', newCategory);
 	} else {
 		newCategory = null;
 	}
@@ -265,8 +262,6 @@ const receiveInventoryPut = async (req, res) => {
 		quantity,
 		unit,
 	);
-
-	console.log('uyehehe', product_id, company_id, batch, quantity, unit);
 
 	const batch_id = newBatch.id;
 
@@ -398,7 +393,6 @@ const receiveInventoryGet = async (req, res) => {
 			? await db.getSingleCategory(product.category_id, req.user.company_id)
 			: null;
 
-		console.log('da producT!!', product);
 		const adjustmentReason = 'Receive';
 		res.render('products/receiveInventory', {
 			product,

@@ -149,7 +149,7 @@ const splitPackageTransaction = async (selectedBatch, splits, userId) => {
 				(product_id, company_id, status, quantity, package_size, unit, parent_lot_id, lot_number, cost_price, batch_id)
 				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
 				[
-					split.product_id,
+					parent.product_id,
 					parent.company_id,
 					parent.status,
 					childQty,

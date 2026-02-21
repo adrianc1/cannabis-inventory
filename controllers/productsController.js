@@ -93,7 +93,7 @@ const splitPackageProductForm = async (req, res) => {
 	const products = await db.getAllProductsDB(req.user.company_id);
 	const product = await db.getProductDB(req.user.company_id);
 	const selectedBatch = await db.getInventoryByLot(pkg.id, lotNumber);
-	console.log('pkg!!!', selectedBatch);
+	console.log('pkg====', pkg);
 	res.render('products/splitPackageProductForm', {
 		pkg,
 		products,

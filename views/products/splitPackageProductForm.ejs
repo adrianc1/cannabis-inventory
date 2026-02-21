@@ -62,13 +62,12 @@
           <!-- Product -->
           <div>
             <label class="text-sm font-semibold text-gray-700">Product</label>
-            <select name="productId[]"
-                    class="w-full border-2 rounded-lg px-3 py-2">
-              <option value="<%= pkg.product_id %>" selected><%= pkg.product_name %></option>
-              <% products.forEach(p => { %>
-                <option value="<%= p.id %>"><%= p.name %></option>
-              <% }) %>
-            </select>
+            <input type="text"
+                  class="w-full border-2 rounded-lg px-3 py-2 bg-gray-100"
+                  value="<%= pkg.name %>"
+                  readonly
+            />
+            <input type="hidden" name="productId[]" value="<%= pkg.id %>" />
           </div>
 
           <!-- Package Size -->

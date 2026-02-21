@@ -3,26 +3,55 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" href="/style.css" />
+		<link href="/tailwind.css" rel="stylesheet" />
 		<title>Brands Page</title>
 	</head>
 	<body>
 		<%- include ('../partials/header.ejs') %>
 
-		<h1><%= message %></h1>
-		<button><a href="/brands/create-brand">Create New Brand</a></button>
-		<button><a href="/brands/">See Brands</a></button>
-		<table class="brands-table">
-			<tr class="brands-table-headers">
+		<!-- Page Title -->
+		<div class="mb-8 mt-4 relative">
+			<h1
+				class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-3xl font-bold text-gray-800"
+			>
+				<%= message %>
+			</h1>
+		</div>
+
+		<!-- Buttons -->
+		<div class="main-buttons">
+			<button class="btn-primary">
+				<a href="/brands/create-brand">Create New Brand</a>
+			</button>
+
+			<div class="view-buttons">
+				<button class="btn-primary">
+					<a href="/brands/">See Brands</a>
+				</button>
+				<button class="btn-primary">
+					<a href="/products/">See Products</a>
+				</button>
+			</div>
+		</div>
+
+		<!-- Table -->
+		<table class="products-table">
+			<tr class="products-table-headers">
 				<th class="table-header">Name</th>
 				<th class="table-header">Description</th>
 			</tr>
+
 			<% brands.map((brand) => { %>
-			<tr class="brand-row">
-				<td><a href="/brands/<%=brand.id%>"><%=brand.name %></a></td>
+			<tr class="product-row">
+				<td>
+					<a href="/brands/<%= brand.id %>">
+						<%= brand.name %>
+					</a>
+				</td>
 				<td><%= brand.description %></td>
 			</tr>
 			<% }) %>
 		</table>
+
 	</body>
 </html>

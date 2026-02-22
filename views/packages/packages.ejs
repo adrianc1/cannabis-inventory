@@ -51,9 +51,7 @@
 
         <tr class="product-row hover:bg-gray-50">
             <td class="px-3 py-2 border border-gray-300 font-mono text-xs">
-                <div >
                     <%= pkg.package_tag %>
-                </div>
             </td>
             
             <td class="px-3 py-2 border border-gray-300 text-xs text-gray-500">
@@ -68,7 +66,7 @@
 
             <td class="px-3 py-2 border border-gray-300">
                 <!-- insert here!!! -->
-                <a href="/products/<%= pkg.product_id %>" class="text-blue-600 hover:underline">
+                <a href="/packages/<%= pkg.id %>" class="text-blue-600 hover:underline">
                     <%= pkg.product_name %>
                 </a>
                 <!-- above here!! -->
@@ -95,10 +93,8 @@
             </td>
 
             <td class="px-3 py-2 border border-gray-300">
-                <div class="flex space-x-2">
+                <div class="flex flex-col space-x-2">
                     <a href="/packages/<%= pkg.id %>/adjust" class="text-xs text-gray-600 hover:text-black">Adjust</a>
-                    <a href="/products/<%= pkg.product_id %>/receive" class="text-xs text-gray-600 hover:text-black">Receive</a>
-
                     <% if (Number(pkg.quantity) > 0) { %>
                         <a href="/packages/<%= pkg.id %>/split" class="text-xs text-blue-600 hover:text-blue-800 font-semibold">Split</a>
                     <% } %>

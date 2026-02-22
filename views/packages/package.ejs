@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="/tailwind.css" rel="stylesheet" />
+
+		<title>Product - <%= product.name %></title>
+	</head>
+	<body class="bg-gray-50 min-h-screen">
+		<%- include ('../partials/header.ejs') %>
+
+		<p
+			class="inline-flex items-center text-emerald-800 hover:text-emerald-700 font-medium mb-6 transition-colors"
+		>
+			<a href="/packages"> <- Back to packages</a>
+		</p>
+		<div class="max-w-4xl mx-auto px-6 py-8">
+			
+
+			<div class="bg-white rounded-lg shadow-md p-8 mb-6">
+				<div class="border-b border-gray-200 pb-4 mb-6">
+					<h1 class="text-3xl font-bold text-gray-800 mb-2"><%=product.name %></h1>
+					<div class="flex justify-between">
+						<p class="text-2xl font-semibold text-green-600">Cost: $<%= product.average_cost %> / <%=product.unit %></p>
+						<p class="text-2xl font-semibold text-green-600">Total Valuation: $<%= product.total_valuation %></p>
+					</div>
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div class="">
+						<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Brand:</h3>
+						<p class="text-lg text-gray-800"> <%= product.brand_name%></p>
+					</div>
+						
+				<div>
+					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Strain</h3>
+					<p class="text-lg text-gray-800"><%= product.strain_name%></p>
+				</div>
+				<div>
+					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">SKU</h3>
+					<p class="text-lg text-gray-800"><%= product.sku%></p>
+				</div>
+
+				<div>
+					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Category</h3>
+					<p class="text-lg text-gray-800"><%= product.category_name%></p>
+				</div>
+
+				<div>
+					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Quantity</h3>
+					<p class="text-lg text-gray-800"><%= product.total_quantity || 'N/A' %></p>
+				</div>
+				<div>
+					<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Unit</h3>
+					<p class="text-lg text-gray-800"><%= product.unit%></p>
+				</div>
+				</div>
+
+			<div class="flex gap-3 mt-4">
+				<button id="delete-btn" class="btn-danger" data-id="<%= product.id %>">
+					Delete Product
+				</button>
+				<a href="/products/<%= product.id %>/edit" class="btn-secondary">Edit Product</a>
+				<a href="/products/<%= product.id %>/receive" class="btn-tertiary">Receive</a>
+
+			</div>
+
+
+				
+			</div>
+			<%- include('./productInventory', {productInventory}) %>
+
+
+		<script src="/js/deleteProduct.js"></script>
+	</body>
+</html>

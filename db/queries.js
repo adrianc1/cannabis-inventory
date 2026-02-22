@@ -90,6 +90,7 @@ const getAllPackages = async (company_id) => {
             SELECT 
                 pk.id,
                 pk.package_tag,
+				pk.product_id,
                 pk.quantity,
                 pk.unit,
                 pk.location,
@@ -105,7 +106,7 @@ const getAllPackages = async (company_id) => {
                 s.name AS strain_name,
                 -- Batch Details
                 bt.batch_number,
-                -- Parent Info (Self-Join)
+                -- Parent Info 
                 pk.parent_package_id,
                 parent_pk.package_tag AS parent_package_tag
             FROM packages AS pk
@@ -114,7 +115,6 @@ const getAllPackages = async (company_id) => {
             LEFT JOIN brands AS b ON p.brand_id = b.id
             LEFT JOIN strains AS s ON p.strain_id = s.id
             LEFT JOIN batches AS bt ON pk.batch_id = bt.id
-            -- This is the self-join:
             LEFT JOIN packages AS parent_pk ON pk.parent_package_id = parent_pk.id
             WHERE pk.company_id = $1 
               AND pk.status = 'active'

@@ -114,23 +114,23 @@ const getProductDB = async (id, companyId) => {
 
 // NEED TO CREATED AND FINISH THE SPLIT TRANSACTION
 
-const splitPackageTransaction = async (selectedBatch, splits, userId) => {
+const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 	const client = await pool.connect();
 
 	try {
 		await client.query('BEGIN');
-		const lotNumber = selectedBatch.lot_number;
-		// set parent batch
-		const parentBatch = await client.query(
-			`SELECT * FROM packages WHERE lot_number=$1 FOR UPDATE`,
-			[lotNumber],
+		// set source package
+		const sourcePackage = await client.query(
+			`SELECT * FROM packages WHERE id=$1 FOR UPDATE`,
+			[selectedPackage.id],
 		);
 
-		if (parentBatch.rows.length === 0) {
+		if (sourcePackage.rows.length === 0) {
 			throw new Error('Package not found');
 		}
 
-		const parent = parentBatch.rows[0];
+		const source = sourcePackage.rows[0];
+
 		//calc total weight used
 		const totalUsed = splits.reduce(
 			(sum, s) => sum + s.packageSize * s.quantity,
@@ -630,16 +630,16 @@ const createBatch = async (
 	return rows[0];
 };
 
-const getPackageByLot = async (product_id, location, batch) => {
-	const { rows } = await pool.query(
-		`SELECT * FROM packages WHERE product_id=$1 AND lot_number=$2`,
-		[product_id, batch],
-	);
+// const getPackageByLot = async (product_id, location, batch) => {
+// 	const { rows } = await pool.query(
+// 		`SELECT * FROM packages WHERE product_id=$1 AND lot_number=$2`,
+// 		[product_id, batch],
+// 	);
 
-	return rows[0] || null;
-};
+// 	return rows[0] || null;
+// };
 
-const getInventoryByLot = async (productId, lotNumber) => {
+const getPackageByLot = async (productId, lotNumber) => {
 	const { rows } = await pool.query(
 		`SELECT * FROM packages WHERE product_id = $1 AND lot_number = $2`,
 		[productId, lotNumber],
@@ -647,7 +647,7 @@ const getInventoryByLot = async (productId, lotNumber) => {
 
 	if (!rows || rows.length === 0) return null;
 
-	return rows[0];
+	return rows[0] || null;
 };
 
 const adjustProductInventory = async (
@@ -902,7 +902,6 @@ module.exports = {
 	getProductInventory,
 	applyInventoryMovement,
 	getPackageByLot,
-	getInventoryByLot,
 	getProductWithInventoryDB,
 	insertBrand,
 	splitPackageTransaction,

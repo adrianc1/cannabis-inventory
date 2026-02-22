@@ -23,41 +23,16 @@ const getProduct = async (req, res) => {
 			return;
 		}
 
-		let totalInventory = 0;
-		let totalValuation = 0;
-		let totalQuantity = 0;
-
-		productInventory.forEach((batch) => {
-			const childrenTotal = (batch.packages || []).reduce(
-				(sum, pkg) => sum + Number(pkg.quantity),
-				0,
-			);
-
-			batch.remainderQty = Math.max(0, Number(batch.quantity) - childrenTotal);
-
-			// Sum all for totals
-			const batchTotalQty = Number(batch.quantity); // parent total
-			totalQuantity += batchTotalQty;
-			totalValuation += batchTotalQty * Number(batch.cost_price || 0);
-			totalInventory += batchTotalQty;
-		});
-
-		totalInventory = Number(totalInventory.toFixed(2));
-		totalValuation = Number(totalValuation.toFixed(2));
-
-		const averageCost =
-			totalQuantity > 0
-				? Number((totalValuation / totalQuantity).toFixed(2))
-				: 0;
+		console.log('product');
 
 		console.log(product);
+		console.log('inv');
+
+		console.log(productInventory);
 
 		res.render('products/product', {
 			product,
 			productInventory,
-			totalValuation,
-			totalInventory,
-			averageCost,
 		});
 	} catch (error) {
 		console.error(error);
@@ -89,15 +64,17 @@ const createProductForm = async (req, res) => {
 
 const splitPackageProductForm = async (req, res) => {
 	const lotNumber = req.params.lotNumber;
-	const pkg = await db.getProductDB(req.params.id, req.user.company_id);
+	const product = await db.getProductDB(req.params.id, req.user.company_id);
 	const products = await db.getAllProductsDB(req.user.company_id);
-	const product = await db.getProductDB(req.user.company_id);
-	const selectedBatch = await db.getInventoryByLot(pkg.id, lotNumber);
-	console.log('pkg!!!', selectedBatch);
+	const selectedPackage = await db.getPackageByLot(product.id, lotNumber);
+
+	console.log('selectedBatch===', selectedPackage);
+	console.log('product===', product);
+	console.log('product===', products);
 	res.render('products/splitPackageProductForm', {
-		pkg,
+		product,
 		products,
-		selectedBatch,
+		selectedPackage,
 	});
 };
 
@@ -137,6 +114,7 @@ const splitPackagePost = async (req, res) => {
 	await db.splitPackageTransaction(selectedBatch, splits, userId);
 	res.redirect('/');
 };
+
 const insertProduct = async (req, res) => {
 	const userCompanyId = req.user.company_id;
 	const {

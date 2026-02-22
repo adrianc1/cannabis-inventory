@@ -10,7 +10,7 @@
 <div class="max-w-4xl mx-auto px-6 py-8">
 
   <!-- Back -->
-  <a href="/products/<%= pkg.id %>"
+  <a href="/products/<%= product.id %>"
      class="inline-flex items-center text-emerald-600 hover:text-green-700 font-medium mb-6">
     ← Back to package
   </a>
@@ -26,25 +26,25 @@
       <div class="grid grid-cols-3 gap-4 text-sm">
         <div>
           <p class="text-gray-500">SKU</p>
-          <p class="font-semibold"><%= pkg.sku %></p>
+          <p class="font-semibold"><%= product.sku %></p>
         </div>
         <div>
           <p class="text-gray-500">Product</p>
-          <p class="font-semibold"><%= pkg.name %></p>
+          <p class="font-semibold"><%= product.name %></p>
         </div>
         <div>
           <p class="text-gray-500">Available</p>
           <p class="font-semibold">
-            <span id="availableQty"><%= selectedBatch.quantity %></span> <%= pkg.unit %>
+            <span id="availableQty"><%= selectedPackage.quantity %></span> <%= product.unit %>
           </p>
         </div>
       </div>
     </div>
 
     <!-- Split Form -->
-    <form method="POST" action="/products/<%= pkg.id %>/split/<%= selectedBatch.lot_number %>" id="splitForm">
+    <form method="POST" action="/products/<%= product.id %>/split/<%= selectedPackage.lot_number %>" id="splitForm">
 
-      <div id="splitRows" class="space-y-4" data-initial-qty="<%= selectedBatch.quantity %>" data-unit="<%= pkg.unit %>">
+      <div id="splitRows" class="space-y-4" data-initial-qty="<%= selectedPackage.quantity %>" data-unit="<%= product.unit %>">
 
         <!-- Split Row Template -->
         <div class="split-row grid grid-cols-5 gap-3 border rounded-lg p-4">
@@ -62,26 +62,25 @@
           <!-- Product -->
           <div>
             <label class="text-sm font-semibold text-gray-700">Product</label>
-            <select name="productId[]"
-                    class="w-full border-2 rounded-lg px-3 py-2">
-              <option value="<%= pkg.product_id %>" selected><%= pkg.product_name %></option>
-              <% products.forEach(p => { %>
-                <option value="<%= p.id %>"><%= p.name %></option>
-              <% }) %>
-            </select>
+            <input type="text"
+                  class="w-full border-2 rounded-lg px-3 py-2 bg-gray-100"
+                  value="<%= product.name %>"
+                  readonly
+            />
+            <input type="hidden" name="productId[]" value="<%= product.id %>" />
           </div>
 
           <!-- Package Size -->
-      <% if (pkg && pkg.unit && pkg.unit !== 'each') { %>
+      <% if (product && product.unit && product.unit !== 'each') { %>
             <div>
             <label class="text-sm font-semibold text-gray-700">
-              Package Size (<%= pkg.unit %>)
+              Package Size (<%= product.unit %>)
             </label>
             <input type="number"
                    step="0.01"
                    name="packageSize[]"
                    class="package-size w-full border-2 rounded-lg px-3 py-2"
-                   value="<%= pkg.package_size || 1 %>"
+                   value="<%= product.package_size || 1 %>"
             />
           </div>
           <% } %>
@@ -98,7 +97,7 @@
 
           <!-- Total Weight -->
           <div>
-            <label class="text-sm font-semibold text-gray-700">Total Weight (<%= pkg.unit %>)</label>
+            <label class="text-sm font-semibold text-gray-700">Total Weight (<%= product.unit %>)</label>
             <input type="text"
                    class="total-weight w-full border-2 rounded-lg px-3 py-2 bg-gray-100"
                    readonly
@@ -131,7 +130,7 @@
         </div>
         <div class="flex justify-between font-semibold">
           <span>Remaining:</span>
-          <span id="remainingQty"><%= selectedBatch.quantity %></span>
+          <span id="remainingQty"><%= selectedPackage.quantity %></span>
         </div>
       </div>
 
@@ -140,7 +139,7 @@
         <button type="submit" class="btn-primary flex-1" id="submitSplit">
           Create Split Lot
         </button>
-        <a href="/packages/<%= pkg.id %>" class="btn-secondary flex-1 text-center">
+        <a href="/packages/<%= product.id %>" class="btn-secondary flex-1 text-center">
           Cancel
         </a>
       </div>

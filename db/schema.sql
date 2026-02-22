@@ -92,7 +92,7 @@ CREATE TABLE batches (
 -- Depends on Products + Companies
 CREATE TABLE packages (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    batch_id INTEGER NOT NULL REFERENCES batches(id) ON DELETE CASCADE,
+    batch_id INTEGER REFERENCES batches(id) ON DELETE CASCADE SET NULL,
     product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
     parent_lot_id INTEGER REFERENCES packages(id) ON DELETE SET NULL,

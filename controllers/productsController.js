@@ -64,14 +64,17 @@ const createProductForm = async (req, res) => {
 
 const splitPackageProductForm = async (req, res) => {
 	const lotNumber = req.params.lotNumber;
-	const pkg = await db.getProductDB(req.params.id, req.user.company_id);
+	const product = await db.getProductDB(req.params.id, req.user.company_id);
 	const products = await db.getAllProductsDB(req.user.company_id);
-	const product = await db.getProductDB(req.user.company_id);
-	const selectedBatch = await db.getInventoryByLot(pkg.id, lotNumber);
+	const selectedPackage = await db.getPackageByLot(product.id, lotNumber);
+
+	console.log('selectedBatch===', selectedPackage);
+	console.log('product===', product);
+	console.log('product===', products);
 	res.render('products/splitPackageProductForm', {
-		pkg,
+		product,
 		products,
-		selectedBatch,
+		selectedPackage,
 	});
 };
 
@@ -111,6 +114,7 @@ const splitPackagePost = async (req, res) => {
 	await db.splitPackageTransaction(selectedBatch, splits, userId);
 	res.redirect('/');
 };
+
 const insertProduct = async (req, res) => {
 	const userCompanyId = req.user.company_id;
 	const {

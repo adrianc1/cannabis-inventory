@@ -7,11 +7,16 @@ const getAllProducts = async (req, res) => {
 	try {
 		const userCompanyId = req.user.company_id;
 		const packages = await db.getAllPackages(userCompanyId);
-		console.log(packages);
 		res.render('products/products', { message: 'All Products', packages });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
 	}
+};
+
+const receiveNewPackageForm = async (req, res) => {
+	const products = await db.getAllProductsDB(req.user.company_id);
+	console.log('dasdfdf', products);
+	res.render('products/receiveAll.ejs', { products });
 };
 
 const getProduct = async (req, res) => {
@@ -23,13 +28,6 @@ const getProduct = async (req, res) => {
 			res.status(404).json({ error: 'Product not found' });
 			return;
 		}
-
-		console.log('product');
-
-		console.log(product);
-		console.log('inv');
-
-		console.log(productInventory);
 
 		res.render('products/product', {
 			product,
@@ -409,4 +407,5 @@ module.exports = {
 	receiveInventoryPut,
 	splitPackageProductForm,
 	splitPackagePost,
+	receiveNewPackageForm,
 };

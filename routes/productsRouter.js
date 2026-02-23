@@ -8,6 +8,9 @@ router.get(
 
 	productsController.createProductForm,
 );
+
+router.get('/receive', productsController.receiveNewPackageForm);
+
 router.post('/create-product', productsController.insertProduct);
 
 router.get('/:id/receive', productsController.receiveInventoryGet);

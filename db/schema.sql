@@ -92,7 +92,7 @@ CREATE TABLE batches (
 -- Depends on Products + Companies
 CREATE TABLE packages (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    package_tag VARCHAR(24) UNIQUE,
+    package_tag VARCHAR(24) UNIQUE NOT NULL,
     external_id VARCHAR(255),
     product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,

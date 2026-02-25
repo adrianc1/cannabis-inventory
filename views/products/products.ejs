@@ -20,8 +20,8 @@
 			</h1>
 		</div>
 		<div class="main-buttons">
-			<a href="/products/create-product" class="btn-primary">Add New Product</a>
-            <a href="/products/receive" class="btn-secondary">Receive</a>
+			<a href="/packages/create-product" class="btn-primary">Add New Product</a>
+            <a href="/packages/receive" class="btn-secondary">Receive</a>
 		</div>
 
 		<table class="products-table w-full border-collapse">
@@ -69,7 +69,7 @@
             </td>
 
             <td class="px-3 py-2 border border-gray-300">
-                <a href="/products/<%= pkg.product_id %>" class="text-blue-600 hover:underline">
+                <a href="/packages/<%= pkg.product_id %>" class="text-blue-600 hover:underline">
                     <%= pkg.product_name %>
                 </a>
 

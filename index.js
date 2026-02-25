@@ -60,7 +60,7 @@ app.use(setUserLocals);
 app.use('/', signupRouter);
 app.use('/login', loginRouter);
 
-app.use('/products', ensureAuthenticated, productsRouter);
+app.use('/packages', ensureAuthenticated, productsRouter);
 app.use('/categories', ensureAuthenticated, categoryRouter);
 app.use('/strains', ensureAuthenticated, strainsRouter);
 app.use('/brands', ensureAuthenticated, brandsRouter);

@@ -10,7 +10,7 @@ const getAllProducts = async (req, res) => {
 		// console.log('packages');
 
 		// console.log(packages);
-		res.render('products/products', { message: 'All Products', packages });
+		res.render('products/products', { message: 'All Packages', packages });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
 	}

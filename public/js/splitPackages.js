@@ -56,7 +56,11 @@ splitRows.addEventListener('input', updateTotals);
 // Add/Remove Row
 document.getElementById('addRow').addEventListener('click', () => {
 	const newRow = splitRows.querySelector('.split-row').cloneNode(true);
-	newRow.querySelectorAll('input').forEach((input) => (input.value = ''));
+	newRow.querySelectorAll('input').forEach((input) => {
+		if (input.type !== 'hidden' && !input.hasAttribute('readonly')) {
+			input.value = '';
+		}
+	});
 	splitRows.appendChild(newRow);
 	updateTotals();
 });

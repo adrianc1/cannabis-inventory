@@ -23,6 +23,11 @@ const PORT = 3000;
 
 app.use(cors());
 
+app.use((req, res, next) => {
+	console.log('REQUEST HIT:', req.method, req.originalUrl);
+	next();
+});
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static('public'));

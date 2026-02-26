@@ -118,7 +118,6 @@ const getAllPackages = async (company_id) => {
             LEFT JOIN batches AS bt ON pk.batch_id = bt.id
             LEFT JOIN packages AS parent_pk ON pk.parent_package_id = parent_pk.id
             WHERE pk.company_id = $1 
-              AND pk.status = 'active'
             ORDER BY pk.created_at DESC;
             `,
 			[company_id],
@@ -542,11 +541,7 @@ const applyInventoryMovement = async ({
 			newQty = targetQty;
 
 			if (newQty < 0) throw new Error('Inventory cannot be negative');
-
-			if (status) {
-				status = newQty <= 0 ? 'inactive' : 'active';
-			}
-
+			status = status || (newQty <= 0 ? 'inactive' : 'active');
 			console.log('updating inventory with:', status);
 
 			const { rows: updated } = await client.query(

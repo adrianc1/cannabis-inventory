@@ -297,7 +297,7 @@ const updateProduct = async (req, res) => {
 		categoryId,
 		id,
 	);
-	res.redirect(`/packages/${id}`);
+	res.json({ success: true });
 };
 
 const receiveInventoryPut = async (req, res) => {
@@ -382,8 +382,8 @@ const adjustInventoryGet = async (req, res) => {
 			req.user.company_id,
 		);
 
-		console.log('the package', package);
-		console.log('querywith', product);
+		// console.log('the package', package);
+		// console.log('querywith', product);
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
 			return;
@@ -435,9 +435,10 @@ const updateInventory = async (req, res) => {
 
 	const selectedBatch = await db.getPackage(id, req.user.company_id);
 
-	console.log('selected batch!', selectedBatch);
+	// console.log('selected batch!', selectedBatch);
 
 	const { quantity, movement_type, notes, cost_price_unit, status } = req.body;
+	console.log('updating...', status);
 
 	try {
 		await db.applyInventoryMovement({
@@ -454,7 +455,6 @@ const updateInventory = async (req, res) => {
 			cost_per_unit: cost_price_unit || null,
 			userId,
 			status,
-			package_size: '',
 		});
 
 		res.json({ success: true });

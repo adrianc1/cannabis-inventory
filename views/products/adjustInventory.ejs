@@ -9,17 +9,17 @@
 	<body class="bg-gray-50 min-h-screen">
         <%- include ('../partials/header.ejs') %>
 
-            <a href="/products" class="inline-flex items-center px-4 py-2 mt-4 bg-stone-100 border border-stone-200 text-stone-700 rounded-md hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-800 transition-all shadow-sm">
+            <a href="/packages" class="inline-flex items-center px-4 py-2 mt-4 bg-stone-100 border border-stone-200 text-stone-700 rounded-md hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-800 transition-all shadow-sm">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Back to products
             </a>      
 
                 <form
 					data-id="<%= product.id %>"
-                    data-lot="<%= selectedBatch.lot_number %>"
+                    data-lot="<%= product.lot_number %>"
 					id="adjust-form"
 					method="POST"
-					action="/products/<%= product.id %>/adjust/<%= selectedBatch.lot_number %>"
+					action="/packages/<%= product.id %>/adjust/<%= product.lot_number %>"
 					class="space-y-6 px-8 mt-8"
 				>
 					
@@ -59,7 +59,7 @@
                          type="number"
                          name="quantity"
                          id="quantity"
-                         value="<%= selectedBatch.quantity %>"
+                         value="<%= product.quantity %>"
                          step="0.001"
                          min="0"
                          required
@@ -76,7 +76,7 @@
                                 id="unit"
                                 class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-emerald-600 focus:outline-none transition-colors bg-white"
                             >
-                                <option><%= product.unit %></option>
+                                <option><%= product.unit || 'each' %></option>
                                 <% units.forEach((unit, index) => { %>
                                 <option value="<%= unit %>"><%= unit %></option>
                                 <% }) %>
@@ -92,7 +92,7 @@
                          type="number"
                          name="cost_price_unit"
                          id="cost_price_unit"
-                         value="<%= selectedBatch.cost_price %>"
+                         value="<%= product.cost_price %>"
                          step="0.01"
                          min="0"
                          required
@@ -125,7 +125,7 @@
                                 id="status"
                                 class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-emerald-600 focus:outline-none transition-colors bg-white"
                             >
-                                <option><%= selectedBatch.status %></option>
+                                <option><%= product.status %></option>
                                 <% statusOptions.forEach((status, index) => { %>
                                 <option value="<%= status %>"><%= status %></option>
                                 <% }) %>
@@ -152,7 +152,7 @@
 						<button type="submit" id="edit-btn" class="btn-primary flex-1">
 							Update Quantity
 						</button>
-						<a href="/products/<%= product.id %>" class="btn-secondary flex-1 text-center">
+						<a href="/packages/<%= product.id %>" class="btn-secondary flex-1 text-center">
 							Cancel
 						</a>
 					</div>

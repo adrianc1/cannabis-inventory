@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		console.log('Data to send:', data);
 
-		const res = await fetch(`/products/${productId}/adjust/${lotNumber}`, {
+		const res = await fetch(`/packages/${productId}/adjust/${lotNumber}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -28,10 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
 		console.log(res.body);
 
 		if (res.ok) {
-			window.location.href = `/products/${productId}`;
+			window.location.href = `/packages`;
 			return;
 		} else {
-			alert('failed to update product');
+			alert('failed to update package');
 		}
 	};
 

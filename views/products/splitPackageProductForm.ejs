@@ -10,7 +10,7 @@
 <div class="max-w-4xl mx-auto px-6 py-8">
 
   <!-- Back -->
-  <a href="/products/<%= product.id %>"
+  <a href="/packages/<%= product.id %>"
      class="inline-flex items-center text-emerald-600 hover:text-green-700 font-medium mb-6">
     ← Back to package
   </a>
@@ -42,7 +42,7 @@
     </div>
 
     <!-- Split Form -->
-    <form method="POST" action="/products/<%= product.id %>/split/<%= selectedPackage.lot_number %>" id="splitForm">
+    <form method="POST" action="/packages/<%= product.id %>/split/<%= selectedPackage.lot_number %>" id="splitForm">
 
       <div id="splitRows" class="space-y-4" data-initial-qty="<%= selectedPackage.quantity %>" data-unit="<%= product.unit %>">
 

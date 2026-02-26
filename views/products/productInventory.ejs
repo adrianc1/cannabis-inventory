@@ -54,9 +54,9 @@
           </span>
         </td>
         <td class="px-3 py-2 border border-gray-300">
-          <a href="/products/<%= product.id %>/adjust/<%= package.lot_number %>" class=class="text-xs text-gray-600 hover:text-black">Adjust</a>
+          <a href="/packages/<%= product.id %>/adjust/<%= package.lot_number %>" class=class="text-xs text-gray-600 hover:text-black">Adjust</a>
           <% if (package.quantity > 0 ) { %>
-            <a href="/products/<%= product.id %>/split/<%= package.lot_number %>" 
+            <a href="/packges/<%= product.id %>/split/<%= package.lot_number %>" 
               class="text-xs text-gray-600 hover:text-black">
               Package / Split
             </a>
@@ -74,7 +74,7 @@
         <td class="px-3 py-2 border border-gray-300">$<%= Number(package.remainderQty * (package.cost_price || 0)).toFixed(2) %></td>
         <td class="px-3 py-2 border border-gray-300">N/A</td>
         <td class="px-3 py-2 border border-gray-300">
-          <a href="/products/<%= product.id %>/adjust/<%= package.lot_number %>" class="btn-secondary">Adjust</a>
+          <a href="/packges/<%= product.id %>/adjust/<%= package.lot_number %>" class="btn-secondary">Adjust</a>
         </td>
       </tr>
       <% } %>

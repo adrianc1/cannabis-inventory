@@ -692,15 +692,6 @@ const createBatch = async ({
 	return rows[0];
 };
 
-// const getPackageByLot = async (product_id, location, batch) => {
-// 	const { rows } = await pool.query(
-// 		`SELECT * FROM packages WHERE product_id=$1 AND lot_number=$2`,
-// 		[product_id, batch],
-// 	);
-
-// 	return rows[0] || null;
-// };
-
 const getPackageByLot = async (productId, lotNumber) => {
 	const { rows } = await pool.query(
 		`SELECT * FROM packages WHERE product_id = $1 AND lot_number = $2`,
@@ -710,6 +701,14 @@ const getPackageByLot = async (productId, lotNumber) => {
 	if (!rows || rows.length === 0) return null;
 
 	return rows[0] || null;
+};
+
+const getPackage = async (packageId, companyId) => {
+	const { rows } = await pool.query(
+		`SELECT * FROM packages WHERE id=$1 AND company_id=$2`,
+		[packageId, companyId],
+	);
+	return rows[0];
 };
 
 // const getAllPackages = async (companyId) => {
@@ -979,4 +978,5 @@ module.exports = {
 	createBatch,
 	getBatchByNumber,
 	getAllPackages,
+	getPackage,
 };

@@ -107,7 +107,7 @@ const getAllPackages = async (company_id) => {
                 s.name AS strain_name,
                 -- Batch Details
                 bt.batch_number,
-                -- Parent Info 
+                -- source Info 
                 pk.parent_package_id,
                 parent_pk.package_tag AS parent_package_tag
             FROM packages AS pk
@@ -184,7 +184,7 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 			0,
 		);
 
-		if (totalUsed > parent.quantity) {
+		if (totalUsed > source.quantity) {
 			throw new Error('Split exceeds available inventory');
 		}
 
@@ -193,19 +193,20 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 			const childQty = split.packageSize * split.quantity;
 			const childResult = await client.query(
 				`INSERT INTO packages
-				(product_id, company_id, status, quantity, package_size, unit, parent_lot_id, lot_number, cost_price, batch_id)
-				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+				(product_id, company_id, status, quantity, package_size, unit, parent_package_id, lot_number, cost_price, batch_id, package_tag)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
 				[
-					parent.product_id,
-					parent.company_id,
-					parent.status,
+					source.product_id,
+					source.company_id,
+					source.status,
 					childQty,
 					split.packageSize,
-					parent.unit,
-					parent.id,
+					source.unit,
+					source.id,
 					split.childLotNumber,
-					parent.cost_price,
-					parent.batch_id,
+					source.cost_price,
+					source.batch_id,
+					split.package_tag,
 				],
 			);
 
@@ -213,26 +214,23 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 
 			await client.query(
 				`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit) VALUES ($1,$2,$3,$4,$5)`,
-				[childInventoryId, userId, 'split', childQty, parent.cost_price],
+				[childInventoryId, userId, 'split', childQty, source.cost_price],
 			);
 		}
 
-		//update parent remaining qty
+		//update source remaining qty
 		await client.query(
 			`UPDATE packages
 			SET quantity = quantity - $1
-			WHERE lot_number=$2`,
-			[totalUsed, parent.lot_number],
+			WHERE id=$2`,
+			[totalUsed, source.id],
 		);
 
 		await client.query(
 			`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit)
      VALUES ($1,$2,$3,$4,$5)`,
-			[parent.id, userId, 'split_deduct', totalUsed, parent.cost_price],
+			[source.id, userId, 'split_deduct', totalUsed, source.cost_price],
 		);
-
-		console.log('selected', selectedBatch);
-		console.log('parent', parent);
 
 		await client.query('COMMIT');
 	} catch (error) {
@@ -854,16 +852,16 @@ const getProductInventory = async (productId) => {
 
 	const batchesMap = {};
 	rows.forEach((pkg) => {
-		if (!pkg.parent_lot_id) {
+		if (!pkg.source_lot_id) {
 			batchesMap[pkg.id] = { ...pkg, packages: [] };
 		}
 	});
 
 	rows.forEach((pkg) => {
-		if (pkg.parent_lot_id) {
-			const parent = batchesMap[pkg.parent_lot_id];
-			if (parent) {
-				parent.packages.push(pkg);
+		if (pkg.source_lot_id) {
+			const source = batchesMap[pkg.source_lot_id];
+			if (source) {
+				source.packages.push(pkg);
 			} else {
 				batchesMap[pkg.id] = { ...pkg, packages: [] };
 			}

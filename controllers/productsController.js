@@ -7,9 +7,6 @@ const getAllProducts = async (req, res) => {
 	try {
 		const userCompanyId = req.user.company_id;
 		const packages = await db.getAllPackages(userCompanyId);
-		// console.log('packages');
-
-		// console.log(packages);
 		res.render('products/products', { message: 'All Packages', packages });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
@@ -90,6 +87,7 @@ const getProduct = async (req, res) => {
 	try {
 		const product = await db.getProductWithInventoryDB(req.params.id);
 		const productInventory = await db.getProductInventory(req.params.id);
+		const packages = await db.getAuditTrail(req.params.id);
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
@@ -99,6 +97,7 @@ const getProduct = async (req, res) => {
 		res.render('products/product', {
 			product,
 			productInventory,
+			packages,
 		});
 	} catch (error) {
 		console.error(error);
@@ -317,8 +316,6 @@ const receiveInventoryPut = async (req, res) => {
 		package_tag,
 	} = req.body;
 
-	console.log(product_id);
-
 	const product = await db.getProductDB(product_id, req.user.company_id);
 	const existingInventory = await db.getPackageByLot(product_id, batch);
 	const newBatch = await db.createBatch({
@@ -336,7 +333,6 @@ const receiveInventoryPut = async (req, res) => {
 	const package_id = existingInventory ? existingInventory.id : null;
 
 	const normalizedQty = convertQuantity(quantity, unit, product.unit);
-	console.log('=====', req.body);
 
 	await db.applyInventoryMovement({
 		package_tag,
@@ -358,7 +354,6 @@ const receiveInventoryPut = async (req, res) => {
 };
 
 const adjustInventoryGet = async (req, res) => {
-	console.log('running the inventory get!!');
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
 	const statusOptions = [
@@ -438,7 +433,6 @@ const updateInventory = async (req, res) => {
 	// console.log('selected batch!', selectedBatch);
 
 	const { quantity, movement_type, notes, cost_price_unit, status } = req.body;
-	console.log('updating...', status);
 
 	try {
 		await db.applyInventoryMovement({

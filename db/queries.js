@@ -1,5 +1,58 @@
 const pool = require('./pool');
 
+const getAuditTrail = async (productId) => {
+	try {
+		const { rows } = await pool.query(
+			`SELECT 
+    pk.id AS package_id,
+    pk.package_tag,
+    pk.quantity,
+    pk.cost_price,
+    pk.status,
+    pk.location,
+    pk.unit AS package_unit,
+    pk.batch_id,
+    pk.lot_number,
+    pr.name AS product_name,
+    pr.unit AS product_unit,
+    b.name AS brand_name,
+    s.name AS strain_name,
+    c.name AS category_name,
+    COALESCE(
+      json_agg(
+        json_build_object(
+          'id', im.id,
+          'movement_type', im.movement_type,
+          'quantity', im.quantity,
+          'cost_per_unit', im.cost_per_unit,
+          'notes', im.notes,
+          'user_id', im.user_id,
+		  'user_name', u.first_name || ' ' || u.last_name,
+          'created_at', im.created_at
+        ) ORDER BY im.created_at DESC
+      ) FILTER (WHERE im.id IS NOT NULL), '[]'
+    ) AS movements
+	FROM packages pk
+	JOIN products pr ON pr.id = pk.product_id
+	LEFT JOIN brands b ON b.id = pr.brand_id
+	LEFT JOIN strains s ON s.id = pr.strain_id
+	LEFT JOIN categories c ON c.id = pr.category_id
+	LEFT JOIN inventory_movements im ON im.packages_id = pk.id
+	LEFT JOIN users u ON u.id = im.user_id
+	WHERE pk.product_id = $1
+	GROUP BY pk.id, pr.name, pr.unit, b.name, s.name, c.name
+	ORDER BY pk.id;
+`,
+			[productId],
+		);
+
+		return rows;
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
+};
+
 const getProductWithInventoryDB = async (id) => {
 	try {
 		const { rows } = await pool.query(
@@ -427,26 +480,37 @@ const getAllCategories = async (companyId) => {
 	return rows;
 };
 
+const getCategoryById = async (id, companyId) => {
+	const { rows } = await pool.query(
+		`SELECT id, name FROM categories WHERE id=$1 AND company_id=$2`,
+		[id, companyId],
+	);
+	return rows[0];
+};
+
 const getCategory = async (id, companyId) => {
 	try {
 		const { rows } = await pool.query(
 			`SELECT 
-			p.name,
-			p.description,
-			p.unit,
-			p.category_id,
-			brands.name AS brand_name,
-			categories.name AS category_name,
-			strains.name AS strain_name,
-			packages.quantity
-			FROM products AS p
-			LEFT JOIN brands ON p.brand_id = brands.id
-			LEFT JOIN categories ON p.category_id = categories.id
-			LEFT JOIN strains ON p.strain_id = strains.id
-			LEFT JOIN packages ON p.id = packages.product_id
-			WHERE p.category_id = $1
-			AND p.company_id=$2
-			ORDER BY p.name`,
+            p.id,
+            p.name,
+            p.description,
+            p.unit,
+            p.category_id,
+            p.sku,
+            b.name AS brand_name,
+            c.name AS category_name,
+            s.name AS strain_name,
+            SUM(pk.quantity) AS total_quantity  -- useful to show total stock per product
+            FROM products AS p
+            LEFT JOIN brands b ON p.brand_id = b.id
+            LEFT JOIN categories c ON p.category_id = c.id
+            LEFT JOIN strains s ON p.strain_id = s.id
+            LEFT JOIN packages pk ON p.id = pk.product_id AND pk.status = 'active'
+            WHERE p.category_id = $1
+            AND p.company_id = $2
+            GROUP BY p.id, b.name, c.name, s.name
+            ORDER BY p.name`,
 			[id, companyId],
 		);
 		return rows;
@@ -518,7 +582,6 @@ const applyInventoryMovement = async ({
 }) => {
 	const client = await pool.connect();
 	let delta;
-	console.log('LIVE FROM HE DB', status);
 	try {
 		await client.query('BEGIN');
 
@@ -542,7 +605,6 @@ const applyInventoryMovement = async ({
 
 			if (newQty < 0) throw new Error('Inventory cannot be negative');
 			status = status || (newQty <= 0 ? 'inactive' : 'active');
-			console.log('updating inventory with:', status);
 
 			const { rows: updated } = await client.query(
 				`UPDATE packages
@@ -969,4 +1031,6 @@ module.exports = {
 	getBatchByNumber,
 	getAllPackages,
 	getPackage,
+	getAuditTrail,
+	getCategoryById,
 };

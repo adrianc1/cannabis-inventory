@@ -89,6 +89,8 @@ const getProduct = async (req, res) => {
 		const productInventory = await db.getProductInventory(req.params.id);
 		const packages = await db.getAuditTrail(req.params.id);
 
+		console.log('the packges', packages[0].movements);
+
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
 			return;
@@ -285,7 +287,6 @@ const updateProduct = async (req, res) => {
 	const company_id = req.user.company_id;
 	const { name, description, unit, brandId, strainId, categoryId, status } =
 		req.body;
-	// console.log(req.body);
 	await db.updateProduct(
 		name,
 		description,
@@ -377,8 +378,6 @@ const adjustInventoryGet = async (req, res) => {
 			req.user.company_id,
 		);
 
-		// console.log('the package', package);
-		// console.log('querywith', product);
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
 			return;
@@ -430,9 +429,9 @@ const updateInventory = async (req, res) => {
 
 	const selectedBatch = await db.getPackage(id, req.user.company_id);
 
-	// console.log('selected batch!', selectedBatch);
-
 	const { quantity, movement_type, notes, cost_price_unit, status } = req.body;
+
+	console.log('the real STATUS===', req.body);
 
 	try {
 		await db.applyInventoryMovement({
@@ -454,7 +453,7 @@ const updateInventory = async (req, res) => {
 		res.json({ success: true });
 	} catch (err) {
 		console.error('update inventory error:', err);
-		res.statuss(500).json({ success: true, error: err.message });
+		res.status(500).json({ success: true, error: err.message });
 	}
 };
 

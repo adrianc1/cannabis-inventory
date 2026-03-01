@@ -33,6 +33,7 @@
                         <td class="px-4 py-3 text-sm text-gray-600">
                             <%= package.location || 'Unassigned' %>
                         </td>
+                     
                         <td class="px-4 py-3 text-sm font-semibold">
                             <%= package.quantity %> <span class="text-gray-400 font-normal"><%= package.package_unit || '' %></span>
                         </td>
@@ -63,35 +64,59 @@
                                 <table class="w-full text-left">
                                     <thead class="bg-gray-100 text-[10px] uppercase text-gray-500 font-bold">
                                         <tr>
-                                            <th class="px-4 py-2">Timestamp</th>
-                                            <th class="px-4 py-2">Authorized User</th>
-                                            <th class="px-4 py-2">Transaction Type</th>
-                                            <th class="px-4 py-2">Change</th>
-                                            <th class="px-4 py-2">Notes</th>
-                                        </tr>
+                                        <th class="px-4 py-2">Timestamp</th>
+                                        <th class="px-4 py-2">Authorized User</th>
+                                        <th class="px-4 py-2">Transaction Type</th>
+                                        <th class="px-4 py-2 text-right">Start</th>
+                                        <th class="px-4 py-2 text-right">Change</th>
+                                        <th class="px-4 py-2 text-right">End</th>
+                                        <th class="px-4 py-2">Notes</th>
+                                    </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-100">
                                         <% if (package.movements && package.movements.length > 0) { %>
                                             <% package.movements.forEach(mv => { %>
                                                 <tr class="text-xs">
-                                                    <td class="px-4 py-2 text-gray-500 whitespace-nowrap">
-                                                        <%= new Date(mv.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
-                                                    </td>
-                                                    <td class="px-4 py-2 font-medium"><%= mv.user_name %></td>
-                                                    <td class="px-4 py-2">
-                                                        <span class="capitalize"><%= mv.movement_type %></span>
-                                                    </td>
-                                                    <td class="px-4 py-2 font-bold <%= mv.quantity > 0 ? 'text-green-600' : 'text-red-600' %>">
-                                                        <%= mv.quantity > 0 ? '+' : '' %><%= mv.quantity %>
-                                                    </td>
-                                                    <td class="px-4 py-2 text-gray-400 italic">
-                                                        <%= mv.notes || '--' %>
-                                                    </td>
-                                                </tr>
+    <td class="px-4 py-2 text-gray-500 whitespace-nowrap">
+        <%= new Date(mv.created_at).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }) %>
+    </td>
+
+    <td class="px-4 py-2 font-medium">
+        <%= mv.user_name %>
+    </td>
+
+    <td class="px-4 py-2 capitalize">
+        <%= mv.movement_type %>
+    </td>
+
+    <!-- STARTING QTY -->
+    <td class="px-4 py-2 text-right text-gray-600 font-medium">
+        <%= mv.starting_quantity %>
+    </td>
+
+    <!-- DELTA -->
+    <td class="px-4 py-2 text-right font-bold <%= mv.quantity > 0 ? 'text-green-600' : 'text-red-600' %>">
+        <%= mv.quantity > 0 ? '+' : '' %><%= mv.quantity %>
+    </td>
+
+    <!-- ENDING QTY -->
+    <td class="px-4 py-2 text-right font-semibold text-gray-800">
+        <%= mv.ending_quantity %>
+    </td>
+
+    <td class="px-4 py-2 text-gray-400 italic">
+        <%= mv.notes || '--' %>
+    </td>
+</tr>
                                             <% }) %>
                                         <% } else { %>
                                             <tr>
-                                                <td colspan="5" class="px-4 py-4 text-center text-gray-400 italic text-xs">No transaction history recorded for this package.</td>
+                                                <td colspan="7" class="px-4 py-4 text-center text-gray-400 italic text-xs">No transaction history recorded for this package.</td>
                                             </tr>
                                         <% } %>
                                     </tbody>

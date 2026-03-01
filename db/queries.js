@@ -24,6 +24,8 @@ const getAuditTrail = async (productId) => {
           'id', im.id,
           'movement_type', im.movement_type,
           'quantity', im.quantity,
+		  'starting_quantity', im.starting_quantity,
+		  'ending_quantity', im.ending_quantity,
           'cost_per_unit', im.cost_per_unit,
           'notes', im.notes,
           'user_id', im.user_id,
@@ -563,6 +565,7 @@ const deleteCategory = async (categoryId) => {
 	return category;
 };
 
+// finish fixing applyinventorymovement blocks with starting and ending qty
 const applyInventoryMovement = async ({
 	package_tag,
 	product_id,
@@ -585,12 +588,18 @@ const applyInventoryMovement = async ({
 	try {
 		await client.query('BEGIN');
 
-		let newQty, updateInventory;
-		let invId = packages_id;
+		console.log('debug:', packages_id);
 
-		// check if package exists
+		let invId = packages_id;
+		let newQty;
+		let startingQty = 0;
+		let endingQty = 0;
+		delta = 0;
+		let updateInventory;
+
 		if (packages_id) {
 			invId = packages_id;
+
 			const { rows } = await client.query(
 				`SELECT quantity FROM packages WHERE id=$1 FOR UPDATE`,
 				[packages_id],
@@ -598,33 +607,40 @@ const applyInventoryMovement = async ({
 
 			if (!rows.length) throw new Error('Inventory not found');
 
-			const currentQty = parseFloat(rows[0].quantity);
+			startingQty = Number(rows[0].quantity);
+			endingQty = Number(targetQty);
+			delta = endingQty - startingQty;
 
-			delta = targetQty - currentQty;
-			newQty = targetQty;
+			if (endingQty < 0) throw new Error('Inventory cannot be negative');
 
-			if (newQty < 0) throw new Error('Inventory cannot be negative');
+			newQty = endingQty;
 			status = status || (newQty <= 0 ? 'inactive' : 'active');
 
-			const { rows: updated } = await client.query(
+			const { rows: updatedPackage } = await client.query(
 				`UPDATE packages
-         SET quantity = $1,
-             cost_price = COALESCE($2, cost_price),
-             supplier_name = COALESCE($3, supplier_name),
-			 status = $4,
-			 batch_id = $5,
-			 package_tag = $6,
-             updated_at = NOW()
-         WHERE id = $7
-		 RETURNING *`,
-				[newQty, cost_per_unit, null, status, batch_id, package_tag, invId],
+				 SET quantity = $1,
+				 unit = $2,
+				 cost_price=COALESCE($3, cost_price),
+				 status = $4
+				 WHERE id=$5
+				 RETURNING *;`,
+				[endingQty, unit, cost_per_unit, status, packages_id],
 			);
 
-			updateInventory = updated[0];
-
 			await client.query(
-				`INSERT INTO inventory_movements (packages_id, movement_type, quantity, cost_per_unit, notes, user_id) VALUES ($1,$2,$3,$4,$5,$6)`,
-				[invId, movement_type, delta, cost_per_unit, notes, userId],
+				`INSERT INTO inventory_movements
+     (packages_id, movement_type, quantity, cost_per_unit, notes, user_id, starting_quantity, ending_quantity)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+				[
+					packages_id,
+					movement_type,
+					delta,
+					cost_per_unit,
+					notes,
+					userId,
+					startingQty,
+					endingQty,
+				],
 			);
 		} else {
 			const { rows } = await client.query(
@@ -656,9 +672,18 @@ const applyInventoryMovement = async ({
 
 				await client.query(
 					`INSERT INTO inventory_movements
-           (packages_id, movement_type, quantity, cost_per_unit, notes, user_id)
-           VALUES ($1,$2,$3,$4,$5,$6)`,
-					[invId, movement_type, delta, cost_per_unit, notes, userId],
+     (packages_id, movement_type, quantity, cost_per_unit, notes, user_id, starting_quantity, ending_quantity)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+					[
+						invId,
+						movement_type,
+						delta,
+						cost_per_unit,
+						notes,
+						userId,
+						startingQty,
+						endingQty,
+					],
 				);
 			} else {
 				invId = null;
@@ -689,9 +714,18 @@ const applyInventoryMovement = async ({
 				// log movement
 				await client.query(
 					`INSERT INTO inventory_movements
-       (packages_id, movement_type, quantity, cost_per_unit, notes, user_id)
-       VALUES ($1,$2,$3,$4,$5,$6)`,
-					[invId, movement_type, delta, cost_per_unit, notes, userId],
+     (packages_id, movement_type, quantity, cost_per_unit, notes, user_id, starting_qty, ending_qty)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+					[
+						invId,
+						movement_type,
+						delta,
+						cost_per_unit,
+						notes,
+						userId,
+						startingQty,
+						endingQty,
+					],
 				);
 			}
 		}
@@ -699,8 +733,10 @@ const applyInventoryMovement = async ({
 		await client.query('COMMIT');
 		return {
 			inventoryId: invId,
-			newQty,
-			status: updateInventory.status,
+			startingQty,
+			delta,
+			endingQty: newQty,
+			status: status,
 		};
 	} catch (err) {
 		await client.query('ROLLBACK');
@@ -785,7 +821,7 @@ const adjustProductInventory = async (
 		await client.query('BEGIN');
 
 		const current = await client.query(
-			`SELECT quantity FROM packages WHERE id=$1`,
+			`SELECT quantity FROM packages WHERE id=$1 FOR UPDATE`,
 			[packages_id],
 		);
 
@@ -793,25 +829,45 @@ const adjustProductInventory = async (
 			throw new Error('Inventory record not found');
 		}
 
+		const startingQty = Number(current.rows[0].quantity);
+
 		if (quantity < 0) {
 			throw new Error('New quantity cannot be negative');
 		}
 
-		const currentQty = current.rows[0].quantity;
-		currentStatus = rows[0].status;
-		delta = quantity - currentQty;
+		const endingQty = Number(quantity);
+		const delta = endingQty - startingQty;
 
 		const movementUpdate = await client.query(
-			`INSERT INTO inventory_movements (packages_id, movement_type, quantity, notes, user_id) 
-             VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-			[packages_id, movement_type, delta, notes, userId],
+			`
+      INSERT INTO inventory_movements (
+        packages_id,
+        user_id,
+        movement_type,
+        starting_quantity,
+        quantity,
+        ending_quantity,
+        notes
+      )
+      VALUES ($1,$2,$3,$4,$5,$6,$7)
+      RETURNING *
+      `,
+			[
+				packages_id,
+				userId,
+				movement_type,
+				startingQty,
+				delta,
+				endingQty,
+				notes,
+			],
 		);
 
 		const inventoryUpdate = await client.query(
 			`UPDATE packages 
              SET quantity = $1 
              WHERE id = $2`,
-			[quantity, packages_id],
+			[endingQty, packages_id],
 		);
 
 		await client.query('COMMIT');

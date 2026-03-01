@@ -106,7 +106,6 @@
                 <div class="flex space-x-2">
                     <a href="/packages/<%= pkg.id %>/adjust/<%=pkg.lot_number%>" class="text-xs text-gray-600 hover:text-black cursor-pointer">Adjust</a>
                     <% if (Number(pkg.quantity) > 0) { %>
-                        <% console.log(pkg) %>
                         <a href="/packages/<%= pkg.id %>/split/<%=pkg.lot_number%>" class="text-xs text-blue-600 hover:text-blue-800 font-semibold cursor-pointer">Split</a>
                     <% } %>
                 </div>

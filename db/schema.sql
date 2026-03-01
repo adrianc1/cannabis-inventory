@@ -118,6 +118,8 @@ CREATE TABLE inventory_movements (
     user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     movement_type VARCHAR(50) NOT NULL,
     quantity DECIMAL(10,3) NOT NULL,
+    starting_quantity DECIMAL(10,3),
+    ending_quantity DECIMAL(10,3),
     cost_per_unit DECIMAL(10,2),
     notes TEXT,
     created_at TIMESTAMP DEFAULT NOW()

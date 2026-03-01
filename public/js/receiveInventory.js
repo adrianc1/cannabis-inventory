@@ -22,10 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			product_id: product_id,
 		};
 
-		console.log('Data to send:', data);
-
-		console.log(`PUT -> /packages/${product_id}/receive`);
-
 		const res = await fetch(`/packages/${product_id}/receive`, {
 			method: 'POST',
 			headers: {
@@ -33,8 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			},
 			body: JSON.stringify(data),
 		});
-
-		console.log(res.body);
 
 		if (res.ok) {
 			window.location.href = `/packages/${product_id}`;

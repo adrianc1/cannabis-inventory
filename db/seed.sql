@@ -42,9 +42,9 @@ VALUES
 INSERT INTO users
 (company_id, first_name, last_name, email, password_hash, role)
 VALUES
-(1,'Alice','Admin','alice@gvf.com','$2b$10$fZMjWuFZO8oWsSr7ANyH1.w2NrCAt5A4x0jtpFrfPPkrZm7FGtcnW','admin'),
-(1,'Mark','Manager','mark@gvf.com','$2b$10$fZMjWuFZO8oWsSr7ANyH1.w2NrCAt5A4x0jtpFrfPPkrZm7FGtcnW','manager'),
-(2,'Sam','Staff','sam@gvf.com','$2b$10$fZMjWuFZO8oWsSr7ANyH1.w2NrCAt5A4x0jtpFrfPPkrZm7FGtcnW','staff');
+(1,'Alice','Admin','alice@gvf.com','$2b$10$5Ak1mSY1mXCy199mpkK0FOdRAqr4x4HDlWGHb0u/pLBL8g8y1HWka','admin'),
+(1,'Mark','Manager','mark@gvf.com','$2b$10$5Ak1mSY1mXCy199mpkK0FOdRAqr4x4HDlWGHb0u/pLBL8g8y1HWka','manager'),
+(2,'Sam','Staff','sam@gvf.com','$2b$10$5Ak1mSY1mXCy199mpkK0FOdRAqr4x4HDlWGHb0u/pLBL8g8y1HWka','staff');
 
 -- =========================
 -- PRODUCTS

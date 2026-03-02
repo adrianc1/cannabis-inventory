@@ -25,8 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			body: JSON.stringify(data),
 		});
 
-		console.log(res.body);
-
 		if (res.ok) {
 			window.location.href = `/packages`;
 			return;

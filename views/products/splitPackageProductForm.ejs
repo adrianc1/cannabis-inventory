@@ -1,155 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/tailwind.css">
-  <title>Split Package</title>
-</head>
-<body>
-<div class="max-w-4xl mx-auto px-6 py-8">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/tailwind.css" />
+		<title>Split Package</title>
+	</head>
+	<body>
+		<div class="max-w-4xl mx-auto px-6 py-8">
+			<!-- Back -->
+			<a
+				href="/packages/<%= product.id %>"
+				class="inline-flex items-center text-emerald-600 hover:text-green-700 font-medium mb-6"
+			>
+				← Back to package
+			</a>
 
-  <!-- Back -->
-  <a href="/packages/<%= product.id %>"
-     class="inline-flex items-center text-emerald-600 hover:text-green-700 font-medium mb-6">
-    ← Back to package
-  </a>
+			<div class="bg-white rounded-lg shadow-md p-8">
+				<h1 class="text-3xl font-bold text-gray-800 mb-2">Split Package</h1>
+				<p class="text-gray-600 mb-6">Create child lots from inventory</p>
 
-  <div class="bg-white rounded-lg shadow-md p-8">
+				<!-- Parent Package Info -->
+				<div class="bg-gray-50 border rounded-lg p-4 mb-8">
+					<h2 class="font-semibold text-gray-800 mb-2">Parent Lot</h2>
+					<div class="grid grid-cols-3 gap-4 text-sm">
+						<div>
+							<p class="text-gray-500">SKU</p>
+							<p class="font-semibold"><%= product.sku %></p>
+						</div>
+						<div>
+							<p class="text-gray-500">Product</p>
+							<p class="font-semibold"><%= product.name %></p>
+						</div>
+						<div>
+							<p class="text-gray-500">Available</p>
+							<p class="font-semibold">
+								<span id="availableQty"><%= selectedPackage.quantity %></span>
+								<%= product.unit %>
+							</p>
+						</div>
+					</div>
+				</div>
 
-    <h1 class="text-3xl font-bold text-gray-800 mb-2">Split Package</h1>
-    <p class="text-gray-600 mb-6">Create child lots from inventory</p>
+				<!-- Split Form -->
+				<form
+					method="POST"
+					action="/packages/<%= selectedPackage.id %>/split/<%= selectedPackage.lot_number %>"
+					id="splitForm"
+				>
+					<div
+						id="splitRows"
+						class="space-y-4"
+						data-initial-qty="<%= selectedPackage.quantity %>"
+						data-unit="<%= product.unit %>"
+					>
+						<!-- Split Row Template -->
+						<div class="split-row grid grid-cols-5 gap-3 border rounded-lg p-4">
+							<!-- Package Number -->
+							<div>
+								<label class="text-sm font-semibold text-gray-700"
+									>Package #</label
+								>
+								<input
+									type="text"
+									name="packageTag[]"
+									class="packageTag w-full border-2 rounded-lg px-2 py-2"
+								/>
+							</div>
 
-    <!-- Parent Package Info -->
-    <div class="bg-gray-50 border rounded-lg p-4 mb-8">
-      <h2 class="font-semibold text-gray-800 mb-2">Parent Lot</h2>
-      <div class="grid grid-cols-3 gap-4 text-sm">
-        <div>
-          <p class="text-gray-500">SKU</p>
-          <p class="font-semibold"><%= product.sku %></p>
-        </div>
-        <div>
-          <p class="text-gray-500">Product</p>
-          <p class="font-semibold"><%= product.name %></p>
-        </div>
-        <div>
-          <p class="text-gray-500">Available</p>
-          <p class="font-semibold">
-            <span id="availableQty"><%= selectedPackage.quantity %></span> <%= product.unit %>
-          </p>
-        </div>
-      </div>
-    </div>
+							<!-- Lot Number -->
+							<div>
+								<label class="text-sm font-semibold text-gray-700"
+									>Batch/Lot</label
+								>
+								<input
+									type="text"
+									name="batch[]"
+									class="batch w-full border-2 rounded-lg px-2 py-2"
+								/>
+							</div>
 
-    <!-- Split Form -->
-    <form method="POST" action="/packages/<%= product.id %>/split/<%= selectedPackage.lot_number %>" id="splitForm">
+							<!-- Product -->
+							<div>
+								<label class="text-sm font-semibold text-gray-700"
+									>Product</label
+								>
+								<input
+									type="text"
+									class="w-full border-2 rounded-lg px-3 py-2 bg-gray-100"
+									value="<%= product.name %>"
+									readonly
+								/>
+								<input
+									type="hidden"
+									name="productId[]"
+									value="<%= product.id %>"
+								/>
+							</div>
 
-      <div id="splitRows" class="space-y-4" data-initial-qty="<%= selectedPackage.quantity %>" data-unit="<%= product.unit %>">
+							<!-- Package Size -->
+							<div>
+								<label class="text-sm font-semibold text-gray-700">
+									Package Size (<%= product.unit %>)
+								</label>
+								<input
+									type="number"
+									step="0.01"
+									name="packageSize[]"
+									class="package-size w-full border-2 rounded-lg px-3 py-2"
+									value="<%= product.package_size || 1 %>"
+								/>
+							</div>
 
-        <!-- Split Row Template -->
-        <div class="split-row grid grid-cols-5 gap-3 border rounded-lg p-4">
-
-
-          <!-- Lot Number -->
-          <div>
-            <label class="text-sm font-semibold text-gray-700">Batch/Lot</label>
-            <input type="text"
-                   name="batch[]"
-                   class="batch w-full border-2 rounded-lg px-2 py-2"
-            />
-          </div>
-
-          <!-- Product -->
-          <div>
-            <label class="text-sm font-semibold text-gray-700">Product</label>
-            <input type="text"
-                  class="w-full border-2 rounded-lg px-3 py-2 bg-gray-100"
-                  value="<%= product.name %>"
-                  readonly
-            />
-            <input type="hidden" name="productId[]" value="<%= product.id %>" />
-          </div>
-
-          <!-- Package Size -->
-      <% if (product && product.unit && product.unit !== 'each') { %>
-            <div>
-            <label class="text-sm font-semibold text-gray-700">
-              Package Size (<%= product.unit %>)
-            </label>
-            <input type="number"
-                   step="0.01"
-                   name="packageSize[]"
-                   class="package-size w-full border-2 rounded-lg px-3 py-2"
-                   value="<%= product.package_size || 1 %>"
-            />
-          </div>
-          <% } %>
-
-
-          <!-- Quantity (Number of Packages) -->
-          <div>
+							<!-- Quantity (Number of Packages) -->
+							<!-- <div>
             <label class="text-sm font-semibold text-gray-700"># Packages</label>
             <input type="number"
                    name="quantity[]"
                    class="quantity w-full border-2 rounded-lg px-3 py-2"
             />
-          </div>
+          </div> -->
 
-          <!-- Total Weight -->
-          <div>
-            <label class="text-sm font-semibold text-gray-700">Total Weight (<%= product.unit %>)</label>
-            <input type="text"
-                   class="total-weight w-full border-2 rounded-lg px-3 py-2 bg-gray-100"
-                   readonly
-            />
-          </div>
+							<!-- Total Weight -->
+							<div>
+								<label class="text-sm font-semibold text-gray-700"
+									>Total Weight (<%= product.unit %>)</label
+								>
+								<input
+									type="text"
+									class="total-weight w-full border-2 rounded-lg px-3 py-2 bg-gray-100"
+									readonly
+								/>
+							</div>
 
-          <!-- Remove Row -->
-          <div class="flex items-end">
-            <button type="button"
-                    class="remove-row text-red-600 font-semibold">
-              Remove
-            </button>
-          </div>
+							<!-- Remove Row -->
+							<div class="flex items-end">
+								<button
+									type="button"
+									class="remove-row text-red-600 font-semibold"
+								>
+									Remove
+								</button>
+							</div>
+						</div>
+					</div>
 
-        </div>
-      </div>
+					<!-- Add Row -->
+					<button
+						type="button"
+						id="addRow"
+						class="mt-4 text-emerald-600 font-semibold hover:text-emerald-700"
+					>
+						+ Add Split Row
+					</button>
 
-      <!-- Add Row -->
-      <button type="button"
-              id="addRow"
-              class="mt-4 text-emerald-600 font-semibold hover:text-emerald-700">
-        + Add Split Row
-      </button>
+					<!-- Quantity Summary -->
+					<div class="mt-8 bg-emerald-50 border rounded-lg p-4" id="summaryBox">
+						<div class="flex justify-between">
+							<span>Total Used:</span>
+							<span id="totalUsed">0</span>
+						</div>
+						<div class="flex justify-between font-semibold">
+							<span>Remaining:</span>
+							<span id="remainingQty"><%= selectedPackage.quantity %></span>
+						</div>
+					</div>
 
-      <!-- Quantity Summary -->
-      <div class="mt-8 bg-emerald-50 border rounded-lg p-4" id="summaryBox">
-        <div class="flex justify-between">
-          <span>Total Used:</span>
-          <span id="totalUsed">0</span>
-        </div>
-        <div class="flex justify-between font-semibold">
-          <span>Remaining:</span>
-          <span id="remainingQty"><%= selectedPackage.quantity %></span>
-        </div>
-      </div>
+					<!-- Submit -->
+					<div class="flex gap-3 pt-6">
+						<button type="submit" class="btn-primary flex-1" id="submitSplit">
+							Create Split Lot
+						</button>
+						<a
+							href="/packages/<%= selectedPackage.id %>"
+							class="btn-secondary flex-1 text-center"
+						>
+							Cancel
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
 
-      <!-- Submit -->
-      <div class="flex gap-3 pt-6">
-        <button type="submit" class="btn-primary flex-1" id="submitSplit">
-          Create Split Lot
-        </button>
-        <a href="/packages/<%= product.id %>" class="btn-secondary flex-1 text-center">
-          Cancel
-        </a>
-      </div>
-
-    </form>
-  </div>
-</div>
-
-
-<script src="/js/splitPackages.js"></script>
-
-</body>
+		<script src="/js/splitPackages.js"></script>
+	</body>
 </html>

@@ -14,15 +14,19 @@ const getCategory = async (req, res) => {
 		console.log('Fetching category...');
 
 		const categoryId = req.params.id;
-		const category = await db.getCategory(req.params.id);
+		const category = await db.getCategoryById(categoryId, req.user.company_id);
+		const products = await db.getCategory(req.params.id, req.user.company_id);
 
-		if (!category) {
-			res.status(404).json({ error: 'Category not found' });
-			return;
-		}
+		// if (!products.length) {
+		// 	return res.status(404).json({ error: 'Category not found' });
+		// }
 
-		console.log(category);
-		res.render('categories/categoryProducts', { category, categoryId });
+		console.log(products);
+		res.render('categories/categoryProducts', {
+			products: products || [],
+			category,
+			categoryId,
+		});
 	} catch (error) {}
 };
 

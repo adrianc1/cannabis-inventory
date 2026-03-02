@@ -10,21 +10,22 @@
         return sum + childrenTotal + remainder;
       }, 0) %>
     </div>
+    <div><a href="/packages/<%=product.id%>/movements">Audit Log</a></div>
   </div>
 
-  <table class="w-full table-auto border-collapse border border-gray-300">
+  <table class="w-full border-collapse bg-white">
     <thead>
-      <tr class="bg-gray-200 text-left">
-        <th class="px-3 py-2 border border-gray-300">Package Tag</th>
-        <th class="px-3 py-2 border border-gray-300">Location</th>
-        <th class="px-3 py-2 border border-gray-300">Quantity</th>
-        <th class="px-3 py-2 border border-gray-300">Cost Price</th>
-        <th class="px-3 py-2 border border-gray-300">Total Value</th>
-        <th class="px-3 py-2 border border-gray-300">Status</th>
-        <th class="px-3 py-2 border border-gray-300">Actions</th>
+      <tr class="bg-gray-200 text-left text-xs uppercase tracking-wider text-gray-700">
+        <th class="px-4 py-3 border-b border-gray-300">Package Tag</th>
+        <th class="px-4 py-3 border-b border-gray-300">Location</th>
+        <th class="px-4 py-3 border-b border-gray-300">Quantity</th>
+        <th class="px-4 py-3 border-b border-gray-300">Cost Price</th>
+        <th class="px-4 py-3 border-b border-gray-300">Total Value</th>
+        <th class="px-4 py-3 border-b border-gray-300">Status</th>
+        <th class="px-4 py-3 border-b border-gray-300">Actions</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody class="divide-y divide-gray-200">
       <% productInventory.forEach(package => { %>
         <% 
           const statusClasses = { 
@@ -39,9 +40,8 @@
 
         %>
         
-      <!-- Parent Row -->
-      <tr class="batch-row cursor-pointer bg-gray-50 hover:bg-gray-100" data-package-id="<%= package.id %>">
-        <td class="px-3 py-2 border border-gray-300 font-semibold cursor-pointer">
+      <tr class="batch-row cursor-pointer bg-gray-50 hover:bg-white transition-colors" data-package-id="<%= package.id %>">
+        <td class="px-4 py-3 font-mono text-sm text-emerald-800 font-bold">
           <%= package.package_tag %> 
         </td>
         <td class="px-3 py-2 border border-gray-300"><%= package.location || '-' %></td>
@@ -53,10 +53,10 @@
             <%= package.status %>
           </span>
         </td>
-        <td class="px-3 py-2 border border-gray-300">
-          <a href="/packages/<%= product.id %>/adjust/<%= package.lot_number %>" class=class="text-xs text-gray-600 hover:text-black">Adjust</a>
+        <td class="flex flex-col gap-2 px-3 py-2 border border-gray-300">
+          <a href="/packages/<%= package.id %>/adjust/<%= package.lot_number %>" class="text-xs text-gray-600 hover:text-black">Adjust</a>
           <% if (package.quantity > 0 ) { %>
-            <a href="/packges/<%= product.id %>/split/<%= package.lot_number %>" 
+            <a href="/packages/<%= package.id %>/split/<%= package.lot_number %>" 
               class="text-xs text-gray-600 hover:text-black">
               Package / Split
             </a>

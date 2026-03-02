@@ -1,5 +1,60 @@
 const pool = require('./pool');
 
+const getAuditTrail = async (productId) => {
+	try {
+		const { rows } = await pool.query(
+			`SELECT 
+    pk.id AS package_id,
+    pk.package_tag,
+    pk.quantity,
+    pk.cost_price,
+    pk.status,
+    pk.location,
+    pk.unit AS package_unit,
+    pk.batch_id,
+    pk.lot_number,
+    pr.name AS product_name,
+    pr.unit AS product_unit,
+    b.name AS brand_name,
+    s.name AS strain_name,
+    c.name AS category_name,
+    COALESCE(
+      json_agg(
+        json_build_object(
+          'id', im.id,
+          'movement_type', im.movement_type,
+          'quantity', im.quantity,
+		  'starting_quantity', im.starting_quantity,
+		  'ending_quantity', im.ending_quantity,
+          'cost_per_unit', im.cost_per_unit,
+          'notes', im.notes,
+          'user_id', im.user_id,
+		  'user_name', u.first_name || ' ' || u.last_name,
+          'created_at', im.created_at
+        ) ORDER BY im.created_at DESC
+      ) FILTER (WHERE im.id IS NOT NULL), '[]'
+    ) AS movements
+	FROM packages pk
+	JOIN products pr ON pr.id = pk.product_id
+	LEFT JOIN brands b ON b.id = pr.brand_id
+	LEFT JOIN strains s ON s.id = pr.strain_id
+	LEFT JOIN categories c ON c.id = pr.category_id
+	LEFT JOIN inventory_movements im ON im.packages_id = pk.id
+	LEFT JOIN users u ON u.id = im.user_id
+	WHERE pk.product_id = $1
+	GROUP BY pk.id, pr.name, pr.unit, b.name, s.name, c.name
+	ORDER BY pk.id;
+`,
+			[productId],
+		);
+
+		return rows;
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
+};
+
 const getProductWithInventoryDB = async (id) => {
 	try {
 		const { rows } = await pool.query(
@@ -107,7 +162,7 @@ const getAllPackages = async (company_id) => {
                 s.name AS strain_name,
                 -- Batch Details
                 bt.batch_number,
-                -- Parent Info 
+                -- source Info 
                 pk.parent_package_id,
                 parent_pk.package_tag AS parent_package_tag
             FROM packages AS pk
@@ -118,7 +173,6 @@ const getAllPackages = async (company_id) => {
             LEFT JOIN batches AS bt ON pk.batch_id = bt.id
             LEFT JOIN packages AS parent_pk ON pk.parent_package_id = parent_pk.id
             WHERE pk.company_id = $1 
-              AND pk.status = 'active'
             ORDER BY pk.created_at DESC;
             `,
 			[company_id],
@@ -163,7 +217,6 @@ const getProductDB = async (id, companyId) => {
 
 const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 	const client = await pool.connect();
-
 	try {
 		await client.query('BEGIN');
 		// set source package
@@ -177,62 +230,75 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 		}
 
 		const source = sourcePackage.rows[0];
+		const parentStartingQty = parseFloat(source.quantity);
 
-		//calc total weight used
-		const totalUsed = splits.reduce(
-			(sum, s) => sum + s.packageSize * s.quantity,
-			0,
-		);
+		const totalUsed = splits.reduce((sum, s) => sum + Number(s.totalWeight), 0);
 
-		if (totalUsed > parent.quantity) {
+		if (totalUsed > parentStartingQty) {
 			throw new Error('Split exceeds available inventory');
 		}
+		const parentEndingQty = parentStartingQty - totalUsed;
 
 		// create child packages
 		for (const split of splits) {
-			const childQty = split.packageSize * split.quantity;
+			const childQty = split.totalWeight;
+
 			const childResult = await client.query(
 				`INSERT INTO packages
-				(product_id, company_id, status, quantity, package_size, unit, parent_lot_id, lot_number, cost_price, batch_id)
-				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+				(product_id, company_id, status, quantity, package_size, unit, parent_package_id, lot_number, cost_price, batch_id, package_tag)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
 				[
-					parent.product_id,
-					parent.company_id,
-					parent.status,
+					source.product_id,
+					source.company_id,
+					source.status,
 					childQty,
 					split.packageSize,
-					parent.unit,
-					parent.id,
+					source.unit,
+					source.id,
 					split.childLotNumber,
-					parent.cost_price,
-					parent.batch_id,
+					source.cost_price,
+					source.batch_id,
+					split.package_tag,
 				],
 			);
 
 			const childInventoryId = childResult.rows[0].id;
 
 			await client.query(
-				`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit) VALUES ($1,$2,$3,$4,$5)`,
-				[childInventoryId, userId, 'split', childQty, parent.cost_price],
+				`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit, starting_quantity, ending_quantity) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+				[
+					childInventoryId,
+					userId,
+					'split',
+					childQty,
+					source.cost_price,
+					0,
+					childQty,
+				],
 			);
 		}
 
-		//update parent remaining qty
+		//update source remaining qty
 		await client.query(
 			`UPDATE packages
-			SET quantity = quantity - $1
-			WHERE lot_number=$2`,
-			[totalUsed, parent.lot_number],
+			SET quantity = $1
+			WHERE id=$2`,
+			[parentEndingQty, source.id],
 		);
 
 		await client.query(
-			`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit)
-     VALUES ($1,$2,$3,$4,$5)`,
-			[parent.id, userId, 'split_deduct', totalUsed, parent.cost_price],
+			`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit, starting_quantity, ending_quantity)
+     VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+			[
+				source.id,
+				userId,
+				'split_deduct',
+				totalUsed,
+				source.cost_price,
+				parentStartingQty,
+				parentEndingQty,
+			],
 		);
-
-		console.log('selected', selectedBatch);
-		console.log('parent', parent);
 
 		await client.query('COMMIT');
 	} catch (error) {
@@ -433,26 +499,37 @@ const getAllCategories = async (companyId) => {
 	return rows;
 };
 
+const getCategoryById = async (id, companyId) => {
+	const { rows } = await pool.query(
+		`SELECT id, name FROM categories WHERE id=$1 AND company_id=$2`,
+		[id, companyId],
+	);
+	return rows[0];
+};
+
 const getCategory = async (id, companyId) => {
 	try {
 		const { rows } = await pool.query(
 			`SELECT 
-			p.name,
-			p.description,
-			p.unit,
-			p.category_id,
-			brands.name AS brand_name,
-			categories.name AS category_name,
-			strains.name AS strain_name,
-			packages.quantity
-			FROM products AS p
-			LEFT JOIN brands ON p.brand_id = brands.id
-			LEFT JOIN categories ON p.category_id = categories.id
-			LEFT JOIN strains ON p.strain_id = strains.id
-			LEFT JOIN packages ON p.id = packages.product_id
-			WHERE p.category_id = $1
-			AND p.company_id=$2
-			ORDER BY p.name`,
+            p.id,
+            p.name,
+            p.description,
+            p.unit,
+            p.category_id,
+            p.sku,
+            b.name AS brand_name,
+            c.name AS category_name,
+            s.name AS strain_name,
+            SUM(pk.quantity) AS total_quantity  -- useful to show total stock per product
+            FROM products AS p
+            LEFT JOIN brands b ON p.brand_id = b.id
+            LEFT JOIN categories c ON p.category_id = c.id
+            LEFT JOIN strains s ON p.strain_id = s.id
+            LEFT JOIN packages pk ON p.id = pk.product_id AND pk.status = 'active'
+            WHERE p.category_id = $1
+            AND p.company_id = $2
+            GROUP BY p.id, b.name, c.name, s.name
+            ORDER BY p.name`,
 			[id, companyId],
 		);
 		return rows;
@@ -505,6 +582,7 @@ const deleteCategory = async (categoryId) => {
 	return category;
 };
 
+// finish fixing applyinventorymovement blocks with starting and ending qty
 const applyInventoryMovement = async ({
 	package_tag,
 	product_id,
@@ -524,16 +602,21 @@ const applyInventoryMovement = async ({
 }) => {
 	const client = await pool.connect();
 	let delta;
-	console.log('LIVE FROM HE DB', status);
 	try {
 		await client.query('BEGIN');
 
-		let newQty, updateInventory;
-		let invId = packages_id;
+		console.log('debug:', packages_id);
 
-		// check if package exists
+		let invId = packages_id;
+		let newQty;
+		let startingQty = 0;
+		let endingQty = 0;
+		delta = 0;
+		let updateInventory;
+
 		if (packages_id) {
 			invId = packages_id;
+
 			const { rows } = await client.query(
 				`SELECT quantity FROM packages WHERE id=$1 FOR UPDATE`,
 				[packages_id],
@@ -541,38 +624,40 @@ const applyInventoryMovement = async ({
 
 			if (!rows.length) throw new Error('Inventory not found');
 
-			const currentQty = parseFloat(rows[0].quantity);
+			startingQty = Number(rows[0].quantity);
+			endingQty = Number(targetQty);
+			delta = endingQty - startingQty;
 
-			delta = targetQty - currentQty;
-			newQty = targetQty;
+			if (endingQty < 0) throw new Error('Inventory cannot be negative');
 
-			if (newQty < 0) throw new Error('Inventory cannot be negative');
+			newQty = endingQty;
+			status = status || (newQty <= 0 ? 'inactive' : 'active');
 
-			if (status) {
-				status = newQty <= 0 ? 'inactive' : 'active';
-			}
-
-			console.log('updating inventory with:', status);
-
-			const { rows: updated } = await client.query(
+			const { rows: updatedPackage } = await client.query(
 				`UPDATE packages
-         SET quantity = $1,
-             cost_price = COALESCE($2, cost_price),
-             supplier_name = COALESCE($3, supplier_name),
-			 status = $4,
-			 batch_id = $5,
-			 package_tag = $6,
-             updated_at = NOW()
-         WHERE id = $7
-		 RETURNING *`,
-				[newQty, cost_per_unit, null, status, batch_id, package_tag, invId],
+				 SET quantity = $1,
+				 unit = $2,
+				 cost_price=COALESCE($3, cost_price),
+				 status = $4
+				 WHERE id=$5
+				 RETURNING *;`,
+				[endingQty, unit, cost_per_unit, status, packages_id],
 			);
 
-			updateInventory = updated[0];
-
 			await client.query(
-				`INSERT INTO inventory_movements (packages_id, movement_type, quantity, cost_per_unit, notes, user_id) VALUES ($1,$2,$3,$4,$5,$6)`,
-				[invId, movement_type, delta, cost_per_unit, notes, userId],
+				`INSERT INTO inventory_movements
+     (packages_id, movement_type, quantity, cost_per_unit, notes, user_id, starting_quantity, ending_quantity)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+				[
+					packages_id,
+					movement_type,
+					delta,
+					cost_per_unit,
+					notes,
+					userId,
+					startingQty,
+					endingQty,
+				],
 			);
 		} else {
 			const { rows } = await client.query(
@@ -604,9 +689,18 @@ const applyInventoryMovement = async ({
 
 				await client.query(
 					`INSERT INTO inventory_movements
-           (packages_id, movement_type, quantity, cost_per_unit, notes, user_id)
-           VALUES ($1,$2,$3,$4,$5,$6)`,
-					[invId, movement_type, delta, cost_per_unit, notes, userId],
+     (packages_id, movement_type, quantity, cost_per_unit, notes, user_id, starting_quantity, ending_quantity)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+					[
+						invId,
+						movement_type,
+						delta,
+						cost_per_unit,
+						notes,
+						userId,
+						currentQty,
+						newQty,
+					],
 				);
 			} else {
 				invId = null;
@@ -637,9 +731,18 @@ const applyInventoryMovement = async ({
 				// log movement
 				await client.query(
 					`INSERT INTO inventory_movements
-       (packages_id, movement_type, quantity, cost_per_unit, notes, user_id)
-       VALUES ($1,$2,$3,$4,$5,$6)`,
-					[invId, movement_type, delta, cost_per_unit, notes, userId],
+     (packages_id, movement_type, quantity, cost_per_unit, notes, user_id, starting_quantity, ending_quantity)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+					[
+						invId,
+						movement_type,
+						delta,
+						cost_per_unit,
+						notes,
+						userId,
+						startingQty,
+						endingQty,
+					],
 				);
 			}
 		}
@@ -647,8 +750,10 @@ const applyInventoryMovement = async ({
 		await client.query('COMMIT');
 		return {
 			inventoryId: invId,
-			newQty,
-			status: updateInventory.status,
+			startingQty,
+			delta,
+			endingQty: newQty,
+			status: status,
 		};
 	} catch (err) {
 		await client.query('ROLLBACK');
@@ -733,7 +838,7 @@ const adjustProductInventory = async (
 		await client.query('BEGIN');
 
 		const current = await client.query(
-			`SELECT quantity FROM packages WHERE id=$1`,
+			`SELECT quantity FROM packages WHERE id=$1 FOR UPDATE`,
 			[packages_id],
 		);
 
@@ -741,25 +846,45 @@ const adjustProductInventory = async (
 			throw new Error('Inventory record not found');
 		}
 
+		const startingQty = Number(current.rows[0].quantity);
+
 		if (quantity < 0) {
 			throw new Error('New quantity cannot be negative');
 		}
 
-		const currentQty = current.rows[0].quantity;
-		currentStatus = rows[0].status;
-		delta = quantity - currentQty;
+		const endingQty = Number(quantity);
+		const delta = endingQty - startingQty;
 
 		const movementUpdate = await client.query(
-			`INSERT INTO inventory_movements (packages_id, movement_type, quantity, notes, user_id) 
-             VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-			[packages_id, movement_type, delta, notes, userId],
+			`
+      INSERT INTO inventory_movements (
+        packages_id,
+        user_id,
+        movement_type,
+        starting_quantity,
+        quantity,
+        ending_quantity,
+        notes
+      )
+      VALUES ($1,$2,$3,$4,$5,$6,$7)
+      RETURNING *
+      `,
+			[
+				packages_id,
+				userId,
+				movement_type,
+				startingQty,
+				delta,
+				endingQty,
+				notes,
+			],
 		);
 
 		const inventoryUpdate = await client.query(
 			`UPDATE packages 
              SET quantity = $1 
              WHERE id = $2`,
-			[quantity, packages_id],
+			[endingQty, packages_id],
 		);
 
 		await client.query('COMMIT');
@@ -854,16 +979,16 @@ const getProductInventory = async (productId) => {
 
 	const batchesMap = {};
 	rows.forEach((pkg) => {
-		if (!pkg.parent_lot_id) {
+		if (!pkg.source_lot_id) {
 			batchesMap[pkg.id] = { ...pkg, packages: [] };
 		}
 	});
 
 	rows.forEach((pkg) => {
-		if (pkg.parent_lot_id) {
-			const parent = batchesMap[pkg.parent_lot_id];
-			if (parent) {
-				parent.packages.push(pkg);
+		if (pkg.source_lot_id) {
+			const source = batchesMap[pkg.source_lot_id];
+			if (source) {
+				source.packages.push(pkg);
 			} else {
 				batchesMap[pkg.id] = { ...pkg, packages: [] };
 			}
@@ -979,4 +1104,6 @@ module.exports = {
 	getBatchByNumber,
 	getAllPackages,
 	getPackage,
+	getAuditTrail,
+	getCategoryById,
 };

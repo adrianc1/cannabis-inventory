@@ -12,15 +12,15 @@ function updateTotals() {
 			? parseFloat(packageSizeInput.value) || 1
 			: 1;
 
-		const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+		// const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
 
 		let totalWeight;
 
 		if (unit === 'each') {
-			totalWeight = quantity;
+			totalWeight = packageSize;
 			row.querySelector('.total-weight').value = totalWeight;
 		} else {
-			totalWeight = packageSize * quantity;
+			totalWeight = packageSize;
 			row.querySelector('.total-weight').value = totalWeight.toFixed(3);
 		}
 
@@ -56,7 +56,11 @@ splitRows.addEventListener('input', updateTotals);
 // Add/Remove Row
 document.getElementById('addRow').addEventListener('click', () => {
 	const newRow = splitRows.querySelector('.split-row').cloneNode(true);
-	newRow.querySelectorAll('input').forEach((input) => (input.value = ''));
+	newRow.querySelectorAll('input').forEach((input) => {
+		if (input.type !== 'hidden' && !input.hasAttribute('readonly')) {
+			input.value = '';
+		}
+	});
 	splitRows.appendChild(newRow);
 	updateTotals();
 });

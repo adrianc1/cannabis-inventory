@@ -1,6 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-	const formEl = document.getElementById('receive-form');
+	const formEl = document.getElementById('receive-form-pkg');
 	const product_id = formEl.dataset.product_id;
+
+	if (!formEl) return;
+	if (!product_id) {
+		throw new Error('Missing product_id dataset');
+	}
 
 	const receiveInventoryFunction = async () => {
 		const formData = new FormData(formEl);
@@ -17,20 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
 			product_id: product_id,
 		};
 
-		console.log('Data to send:', data);
-
-		const res = await fetch(`/products/${product_id}/receive`, {
-			method: 'PUT',
+		const res = await fetch(`/packages/${product_id}/receive`, {
+			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify(data),
 		});
 
-		console.log(res.body);
-
 		if (res.ok) {
-			window.location.href = `/products/${product_id}`;
+			window.location.href = `/packages/${product_id}`;
 			return;
 		} else {
 			alert('failed to update product');

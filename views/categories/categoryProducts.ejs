@@ -4,7 +4,7 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link href="/tailwind.css" rel="stylesheet" />
-		<title>Category</title>
+		<title>category</title>
 	</head>
 	<body>
 		<%- include ('../partials/header.ejs') %>
@@ -14,8 +14,10 @@
 			<h1
 				class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-3xl font-bold text-gray-800"
 			>
-				category
+			<%= category.name %>
+
 			</h1>
+
 		</div>
 		<button
 			class="inline-flex items-center text-green-600 hover:text-green-700 font-medium mb-6 transition-colors"
@@ -32,7 +34,13 @@
 			</button>
 		</div>
 
-		<table class="products-table">
+		
+
+		
+			<% if (!products.length) { %>
+			<p class="text-gray-500 mt-8 text-center">No products in this category yet.</p>
+		<% } else { %>
+			<table class="products-table">
 			<tr class="products-table-headers">
 				<!-- <th class="table-header">ID</th> -->
 				<th class="table-header">Name</th>
@@ -41,16 +49,17 @@
 				<th class="table-header">Category</th>
 				<th class="table-header">Quantity</th>
 			</tr>
-			<% category.map((c) => { %>
-			<tr class="product-row" data-id="<%= c.category_id %>">
-				<td><a href="/categories/<%=c.id%>"><%= c.name %></a></td>
-				<td><%=c.strain_name ? c.strain_name : 'N/A' %></td>
-				<td><%=c.brand_name%></td>
-				<td><%=c.category_name%></td>
-				<td><%=c.quantity%></td>
+			<% products.map((product) => { %>
+			<tr class="product-row" data-id="<%= product.category_id %>">
+				<td><a href="/packages/<%=product.id%>"><%= product.name %></a></td>
+				<td><%=product.strain_name ? product.strain_name : 'N/A' %></td>
+				<td><%=product.brand_name%></td>
+				<td><%=product.category_name%></td>
+				<td><%=product.total_quantity ? product.total_quantity : 0 %> <%=product.unit %></td>
 			</tr>
 			<% }) %>
 		</table>
+		<% } %>
 		<script src="/js/deleteCategory.js"></script>
 	</body>
 </html>

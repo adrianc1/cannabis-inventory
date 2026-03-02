@@ -1,3 +1,5 @@
+//For development purposes only! Used on DB reset. Feel free to sign up with your own password!
+
 const bcrypt = require('bcryptjs');
 
 const password = 'password';

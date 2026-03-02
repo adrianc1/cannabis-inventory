@@ -217,7 +217,6 @@ const getProductDB = async (id, companyId) => {
 
 const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 	const client = await pool.connect();
-
 	try {
 		await client.query('BEGIN');
 		// set source package
@@ -231,17 +230,19 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 		}
 
 		const source = sourcePackage.rows[0];
+		const parentStartingQty = parseFloat(source.quantity);
 
-		//calc total weight used
-		const totalUsed = splits.reduce((sum, s) => sum + s.totalWeight, 0);
+		const totalUsed = splits.reduce((sum, s) => sum + Number(s.totalWeight), 0);
 
-		if (totalUsed > source.quantity) {
+		if (totalUsed > parentStartingQty) {
 			throw new Error('Split exceeds available inventory');
 		}
+		const parentEndingQty = parentStartingQty - totalUsed;
 
 		// create child packages
 		for (const split of splits) {
-			const childQty = split.packageSize * split.quantity;
+			const childQty = split.totalWeight;
+
 			const childResult = await client.query(
 				`INSERT INTO packages
 				(product_id, company_id, status, quantity, package_size, unit, parent_package_id, lot_number, cost_price, batch_id, package_tag)
@@ -264,23 +265,39 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 			const childInventoryId = childResult.rows[0].id;
 
 			await client.query(
-				`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit) VALUES ($1,$2,$3,$4,$5)`,
-				[childInventoryId, userId, 'split', childQty, source.cost_price],
+				`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit, starting_quantity, ending_quantity) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+				[
+					childInventoryId,
+					userId,
+					'split',
+					childQty,
+					source.cost_price,
+					0,
+					childQty,
+				],
 			);
 		}
 
 		//update source remaining qty
 		await client.query(
 			`UPDATE packages
-			SET quantity = quantity - $1
+			SET quantity = $1
 			WHERE id=$2`,
-			[totalUsed, source.id],
+			[parentEndingQty, source.id],
 		);
 
 		await client.query(
-			`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit)
-     VALUES ($1,$2,$3,$4,$5)`,
-			[source.id, userId, 'split_deduct', totalUsed, source.cost_price],
+			`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit, starting_quantity, ending_quantity)
+     VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+			[
+				source.id,
+				userId,
+				'split_deduct',
+				totalUsed,
+				source.cost_price,
+				parentStartingQty,
+				parentEndingQty,
+			],
 		);
 
 		await client.query('COMMIT');
@@ -681,8 +698,8 @@ const applyInventoryMovement = async ({
 						cost_per_unit,
 						notes,
 						userId,
-						startingQty,
-						endingQty,
+						currentQty,
+						newQty,
 					],
 				);
 			} else {
@@ -714,7 +731,7 @@ const applyInventoryMovement = async ({
 				// log movement
 				await client.query(
 					`INSERT INTO inventory_movements
-     (packages_id, movement_type, quantity, cost_per_unit, notes, user_id, starting_qty, ending_qty)
+     (packages_id, movement_type, quantity, cost_per_unit, notes, user_id, starting_quantity, ending_quantity)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
 					[
 						invId,

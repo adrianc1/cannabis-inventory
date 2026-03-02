@@ -14,15 +14,13 @@ function updateTotals() {
 
 		// const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
 
-		const quantity = 1;
-
 		let totalWeight;
 
 		if (unit === 'each') {
-			totalWeight = quantity;
+			totalWeight = packageSize;
 			row.querySelector('.total-weight').value = totalWeight;
 		} else {
-			totalWeight = packageSize * quantity;
+			totalWeight = packageSize;
 			row.querySelector('.total-weight').value = totalWeight.toFixed(3);
 		}
 

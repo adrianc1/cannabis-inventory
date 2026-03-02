@@ -89,8 +89,6 @@ const getProduct = async (req, res) => {
 		const productInventory = await db.getProductInventory(req.params.id);
 		const packages = await db.getAuditTrail(req.params.id);
 
-		console.log('the packges', packages[0].movements);
-
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
 			return;
@@ -339,10 +337,10 @@ const receiveInventoryPut = async (req, res) => {
 		package_tag,
 		product_id,
 		packages_id: package_id,
+		batch_id,
 		company_id,
 		location: 'backroom',
 		batch,
-		batch_id,
 		targetQty: Number(normalizedQty),
 		movement_type: reason,
 		notes,
@@ -350,6 +348,7 @@ const receiveInventoryPut = async (req, res) => {
 		userId,
 		status: 'active',
 		package_size: package_size || null,
+		unit,
 	});
 	res.redirect(`/packages/${product_id}`);
 };

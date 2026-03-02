@@ -293,7 +293,7 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 				source.id,
 				userId,
 				'split_deduct',
-				totalUsed,
+				-totalUsed,
 				source.cost_price,
 				parentStartingQty,
 				parentEndingQty,
@@ -670,7 +670,7 @@ const applyInventoryMovement = async ({
 				invId = rows[0].id;
 				const currentQty = parseFloat(rows[0].quantity);
 				delta = targetQty - currentQty;
-				newQty = targetQty;
+				newQty = Number(targetQty);
 
 				if (!status) status = newQty <= 0 ? 'inactive' : 'active';
 
@@ -741,7 +741,7 @@ const applyInventoryMovement = async ({
 						notes,
 						userId,
 						startingQty,
-						endingQty,
+						delta,
 					],
 				);
 			}

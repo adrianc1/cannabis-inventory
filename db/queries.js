@@ -657,8 +657,8 @@ const applyInventoryMovement = async ({
 
 			await client.query(
 				`INSERT INTO inventory_movements
-     (packages_id, movement_type, quantity, cost_per_unit, notes, user_id, starting_quantity, ending_quantity)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+     (packages_id, movement_type, quantity, cost_per_unit, notes, user_id, starting_quantity, ending_quantity, company_id)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
 				[
 					packages_id,
 					movement_type,
@@ -668,6 +668,7 @@ const applyInventoryMovement = async ({
 					userId,
 					startingQty,
 					endingQty,
+					company_id,
 				],
 			);
 		} else {

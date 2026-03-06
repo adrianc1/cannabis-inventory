@@ -37,7 +37,7 @@ const receiveNewPackagesPOST = async (req, res) => {
 		package_tag,
 		product_id,
 		location_id,
-	} = await req.body;
+	} = req.body;
 
 	if (!product_id) {
 		return res
@@ -63,6 +63,7 @@ const receiveNewPackagesPOST = async (req, res) => {
 			cost_per_unit: unit_price,
 			supplier_name: vendor,
 		});
+		batch_id = newBatch.id;
 	}
 
 	await db.applyInventoryMovement({
@@ -433,7 +434,8 @@ const updateInventory = async (req, res) => {
 
 	const selectedBatch = await db.getPackage(id, req.user.company_id);
 
-	const { quantity, movement_type, notes, cost_price_unit, status } = req.body;
+	const { quantity, movement_type, notes, cost_price_unit, status, unit } =
+		req.body;
 
 	console.log('the real STATUS===', req.body);
 
@@ -444,7 +446,7 @@ const updateInventory = async (req, res) => {
 			packages_id: selectedBatch.id,
 			batch_id: selectedBatch.batch_id,
 			company_id: selectedBatch.company_id,
-			location: selectedBatch.location,
+			location: selectedBatch.location_id,
 			batch: lotNumber,
 			targetQty: Number(quantity),
 			movement_type,
@@ -452,6 +454,7 @@ const updateInventory = async (req, res) => {
 			cost_per_unit: cost_price_unit || null,
 			userId,
 			status,
+			unit,
 		});
 
 		res.json({ success: true });
